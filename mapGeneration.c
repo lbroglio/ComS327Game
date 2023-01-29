@@ -20,14 +20,25 @@ typedef struct mapTile{
 mapTile_t mapInit(){
     mapTile_t toReturn;
     
-    for(int i =0; i<21; i++){
-        for(int j = 0; j < 80;j ++){
-            toReturn.mapArr[i][j] = "X";
-        }
+    for(int i = 0; i < 22; i++){
+        for(int j = 0; j < 81;j ++){
+            if(i == 0 || j == 0 || i == 21 || j == 80){
+                toReturn.mapArr[i][j] = '%';
+            }
+            else{
+                toReturn.mapArr[i][j]= 'X';
+            }
+            
+        }    
     }
     return toReturn;
 }
 
+/**
+ * @brief Prints out a map to the console
+ * 
+ * @param map The map to print
+ */
 void printMap(mapTile_t* map){
 
     for(int i =0; i<21; i++){
@@ -102,7 +113,7 @@ biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
     //Places the biomes in the array and on the map
 
     //Decides what type of biomes to place
-    for(int i=0; i<biomeCount; i++){
+    for(int i=0; i < *biomeCount; i++){
         if(i < numSG){
             typeHolder = '.';
         }
@@ -150,7 +161,7 @@ void expandBiome(mapTile_t* map,biome_t biome){
 
     //Places the 1st quadrant expansion
     while((biome.cenRowNum - rowNum) != biome.radius){
-        if(map->mapArr[rowNum][colNum] == "X" && colNum > 0 && rowNum > 0){
+        if(map->mapArr[rowNum][colNum] == 'X' && colNum > 0 && rowNum > 0){
             map->mapArr[rowNum][colNum] = biome.type;
  
         }
@@ -166,7 +177,7 @@ void expandBiome(mapTile_t* map,biome_t biome){
 
     //Places the 2nd quadrant expansion
     while((biome.cenColNum - colNum) != biome.radius){
-        if(map->mapArr[rowNum][colNum] == "X" && rowNum < 21 && colNum > 0){
+        if(map->mapArr[rowNum][colNum] == 'X' && rowNum < 21 && colNum > 0){
             map->mapArr[rowNum][colNum] = biome.type;
 
         }
@@ -181,7 +192,7 @@ void expandBiome(mapTile_t* map,biome_t biome){
 
     //Places the 3rd quadrant expansion
     while((rowNum - biome.cenRowNum) != biome.radius){
-        if(map->mapArr[rowNum][colNum] == "X" && rowNum < 21 && colNum < 80){
+        if(map->mapArr[rowNum][colNum] == 'X' && rowNum < 21 && colNum < 80){
             map->mapArr[rowNum][colNum] = biome.type;
           
         }
@@ -197,7 +208,7 @@ void expandBiome(mapTile_t* map,biome_t biome){
 
     //Places the 4th quadrant expansion
     while((colNum - biome.cenColNum) != biome.radius){
-        if(map->mapArr[rowNum][colNum] == "X" && rowNum > 0 && colNum < 80){
+        if(map->mapArr[rowNum][colNum] == 'X' && rowNum > 0 && colNum < 80){
             map->mapArr[rowNum][colNum] = biome.type;
             rowNum -= 1;
             colNum += 1;

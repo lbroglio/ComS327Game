@@ -38,27 +38,27 @@ int* makeBiomeChoices(){
  * 
  * @return An array of the created biomes
  */
-biome_t* placeBiomesGrassLands(mapTile_t* map){
+biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
     //Decides wheter to have lakes or rivers and mountain ranges or regions
     int* biomeChoiceArr = makeBiomeChoices();
-    int biomeCount = 4;
+    *biomeCount = 4;
     
     //Adjusts biome count to match choices
     if(*(biomeChoiceArr) > 0){
-        biomeCount++;
+        (*biomeCount)++;
     }
 
     if(*(biomeChoiceArr+1) > 0){
-        biomeCount++;
+        (*biomeCount)++;
     }
 
     //Decides whether or not to include a forest
     if(rand() % 1 > 0){
-        biomeCount++;
+        (*biomeCount)++;
     }
     
     //Creates an array to store the biomes in
-    biome_t* biomeArr = malloc(sizeof(biomeArr) * biomeCount);
+    biome_t* biomeArr = malloc(sizeof(biomeArr) * (*biomeCount));
     //Creates a temporary biome holder
     biome_t temp;
 
@@ -110,9 +110,86 @@ biome_t* placeBiomesGrassLands(mapTile_t* map){
     return biomeArr;
 }
 
+/**
+ * @brief Expands a biome increasing its radius by one
+ * 
+ * @param map The map to expands the biome on
+ * @param biome The information on the biome to expand
+ */
+void expandBiome(mapTile_t* map,biome_t biome){
+    //Sets the cursors to be the right of the region
+    int xLoc = biome.cenXLoc + biome.radius;
+    int yLoc = biome.cenXLoc;
 
-void generateMap(mapTile_t* map){
+
+    //Places the 1st quadrant expansion
+    while(xLoc != biome.radius){
+        if(map->mapArr[xLoc][yLoc] == "X" && xLoc > 0 && yLoc < 21){
+            map->mapArr[xLoc][yLoc] = biome.type;
+            xLoc -= 1;
+            yLoc -= 1;
+        }
+     
+    }
+
+    //Sets the cursors to be the right of the region
+    int xLoc = biome.cenXLoc + biome.radius;
+    int yLoc = biome.cenXLoc;
+
+
+    //Places the 2nd quadrant expansion
+    while(xLoc != biome.radius){
+        if(map->mapArr[xLoc][yLoc] == "X" && xLoc > 0 && yLoc < 21){
+            map->mapArr[xLoc][yLoc] = biome.type;
+            xLoc -= 1;
+            yLoc -= 1;
+        }
+     
+    }
+
+    //Sets the cursors to be the top of the region
+    int xLoc = biome.cenXLoc;
+    int yLoc = biome.cenXLoc - biome.radius;
+
+
+    //Places the 3rd quadrant expansion
+    while(xLoc != biome.radius){
+        if(map->mapArr[xLoc][yLoc] == "X" && xLoc > 0 && yLoc < 21){
+            map->mapArr[xLoc][yLoc] = biome.type;
+            xLoc += 1;
+            yLoc += 1;
+        }
+     
+    }
+
+    //Sets the cursors to be the left of the region
+    int xLoc = biome.cenXLoc;
+    int yLoc = biome.cenXLoc + biome.radius;
+
+
+    //Places the 4th quadrant expansion
+    while(xLoc != biome.radius){
+        if(map->mapArr[xLoc][yLoc] == "X" && xLoc > 0 && yLoc < 21){
+            map->mapArr[xLoc][yLoc] = biome.type;
+            xLoc += 1;
+            yLoc -= 1;
+        }
+     
+    }
     
+}
+
+void generateMap(mapTile_t* map, biome_t* biomeArr, int* biomeCount){
+    int tilesPlaced = 0;
+
+    
+    while(tilesPlaced != 1580){
+        for(int i=0; i < *biomeCount; i++){
+           (biomeArr + i)->radius += 1;
+            expandBiome(map,*(biomeArr + i));
+
+        }
+    }
 
 }
 

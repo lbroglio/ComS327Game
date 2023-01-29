@@ -8,8 +8,8 @@
  * 
  */
 typedef struct biome{
-    int cenXLoc;
-    int cenYLoc;
+    int cenRowNum;
+    int cenColNum;
     char type;
     int radius;
 }biome_t;

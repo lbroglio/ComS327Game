@@ -8,10 +8,36 @@
  * 
  */
 typedef struct mapTile{
-    char mapArr[80][21];
+    char mapArr[21][80];
 }mapTile_t;
 
 
+/**
+ * @brief Creates a new map tile
+ * 
+ * @return The created map tile. It has the borders as rocks and all other spaces as X
+ */
+mapTile_t mapInit(){
+    mapTile_t toReturn;
+    
+    for(int i =0; i<21; i++){
+        for(int j = 0; j < 80;j ++){
+            toReturn.mapArr[i][j] = "X";
+        }
+    }
+    return toReturn;
+}
+
+void printMap(mapTile_t* map){
+
+    for(int i =0; i<21; i++){
+        for(int j = 0; j < 80;j ++){
+            char toPrint = map->mapArr[i][j];
+            printf("%c ",toPrint);
+        }
+        printf("\n");
+    }
+}
 
 const char biomeList[5] = {'w','f','m','s','t'};
 
@@ -98,10 +124,10 @@ biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
         }
 
         //Creates a biome to place
-        temp =  biomeInit(typeHolder,78,1,19,1);
+        temp =  biomeInit(typeHolder,19,1,78,1);
 
         //Puts the biome into the arrays
-        map->mapArr[temp.cenXLoc][temp.cenYLoc] = temp.type;
+        map->mapArr[temp.cenRowNum][temp.cenColNum] = temp.type;
         biomeArr[i] = temp;
 
 
@@ -118,61 +144,63 @@ biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
  */
 void expandBiome(mapTile_t* map,biome_t biome){
     //Sets the cursors to be the right of the region
-    int xLoc = biome.cenXLoc + biome.radius;
-    int yLoc = biome.cenXLoc;
+    int rowNum = biome.cenRowNum ;
+    int colNum = biome.cenColNum + biome.radius;
 
 
     //Places the 1st quadrant expansion
-    while(xLoc != biome.radius){
-        if(map->mapArr[xLoc][yLoc] == "X" && xLoc > 0 && yLoc < 21){
-            map->mapArr[xLoc][yLoc] = biome.type;
-            xLoc -= 1;
-            yLoc -= 1;
+    while((biome.cenRowNum - rowNum) != biome.radius){
+        if(map->mapArr[rowNum][colNum] == "X" && colNum > 0 && rowNum > 0){
+            map->mapArr[rowNum][colNum] = biome.type;
+ 
         }
-     
-    }
-
-    //Sets the cursors to be the right of the region
-    int xLoc = biome.cenXLoc + biome.radius;
-    int yLoc = biome.cenXLoc;
-
-
-    //Places the 2nd quadrant expansion
-    while(xLoc != biome.radius){
-        if(map->mapArr[xLoc][yLoc] == "X" && xLoc > 0 && yLoc < 21){
-            map->mapArr[xLoc][yLoc] = biome.type;
-            xLoc -= 1;
-            yLoc -= 1;
-        }
+        rowNum -= 1;
+        colNum -= 1;
      
     }
 
     //Sets the cursors to be the top of the region
-    int xLoc = biome.cenXLoc;
-    int yLoc = biome.cenXLoc - biome.radius;
+    rowNum = biome.cenRowNum - biome.radius;
+    colNum = biome.cenColNum;
 
 
-    //Places the 3rd quadrant expansion
-    while(xLoc != biome.radius){
-        if(map->mapArr[xLoc][yLoc] == "X" && xLoc > 0 && yLoc < 21){
-            map->mapArr[xLoc][yLoc] = biome.type;
-            xLoc += 1;
-            yLoc += 1;
+    //Places the 2nd quadrant expansion
+    while((biome.cenColNum - colNum) != biome.radius){
+        if(map->mapArr[rowNum][colNum] == "X" && rowNum < 21 && colNum > 0){
+            map->mapArr[rowNum][colNum] = biome.type;
+
         }
+        rowNum += 1;
+        colNum -= 1;
      
     }
 
     //Sets the cursors to be the left of the region
-    int xLoc = biome.cenXLoc;
-    int yLoc = biome.cenXLoc + biome.radius;
+
+
+
+    //Places the 3rd quadrant expansion
+    while((rowNum - biome.cenRowNum) != biome.radius){
+        if(map->mapArr[rowNum][colNum] == "X" && rowNum < 21 && colNum < 80){
+            map->mapArr[rowNum][colNum] = biome.type;
+          
+        }
+        rowNum += 1;
+        colNum += 1;
+     
+    }
+
+    //Sets the cursors to be the bottom of the region
+    rowNum = biome.cenRowNum;
+    colNum = biome.cenColNum - biome.radius;
 
 
     //Places the 4th quadrant expansion
-    while(xLoc != biome.radius){
-        if(map->mapArr[xLoc][yLoc] == "X" && xLoc > 0 && yLoc < 21){
-            map->mapArr[xLoc][yLoc] = biome.type;
-            xLoc += 1;
-            yLoc -= 1;
+    while((colNum - biome.cenColNum) != biome.radius){
+        if(map->mapArr[rowNum][colNum] == "X" && rowNum > 0 && colNum < 80){
+            map->mapArr[rowNum][colNum] = biome.type;
+            rowNum -= 1;
+            colNum += 1;
         }
      
     }
@@ -197,6 +225,7 @@ void generateMap(mapTile_t* map, biome_t* biomeArr, int* biomeCount){
     }
 
 }
+
 
 
 int main(int argc,char argv[]){

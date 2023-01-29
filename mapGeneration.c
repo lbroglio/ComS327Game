@@ -179,6 +179,13 @@ void expandBiome(mapTile_t* map,biome_t biome){
     
 }
 
+/**
+ * @brief Takes in a map with biomes placed on it. Expands the biomes to cover the entire map
+ * 
+ * @param map The map to generate
+ * @param biomeArr An array of the biomes on the map
+ * @param biomeCount The number of biomes
+ */
 void generateMap(mapTile_t* map, biome_t* biomeArr, int* biomeCount){
     int tilesPlaced = 0;
 

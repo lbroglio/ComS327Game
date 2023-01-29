@@ -182,12 +182,10 @@ void expandBiome(mapTile_t* map,biome_t biome){
 void generateMap(mapTile_t* map, biome_t* biomeArr, int* biomeCount){
     int tilesPlaced = 0;
 
-    
     while(tilesPlaced != 1580){
         for(int i=0; i < *biomeCount; i++){
            (biomeArr + i)->radius += 1;
             expandBiome(map,*(biomeArr + i));
-
         }
     }
 
@@ -197,6 +195,11 @@ void generateMap(mapTile_t* map, biome_t* biomeArr, int* biomeCount){
 int main(int argc,char argv[]){
     srand(time(NULL));
 
+    mapTile_t* map = malloc(sizeof(map));
+    int* biomeCount = malloc(sizeof(biomeCount));
+
+    biome_t* biomeArr = placeBiomesGrassLands(map,biomeCount);
+    generateMap(map,biomeArr,biomeCount);
 
 
 }

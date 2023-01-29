@@ -3,6 +3,16 @@
 #include<time.h>
 #include"biome.h"
 
+//Colors
+#define GRN "\x1B[32m"
+#define DRKYLLW "\x1B[38;5;58m"
+#define FRSTGRN "\x1B[38;5;28m"
+#define BLUE "\x1B[34m"
+#define GREY "\x1B[38;5;248m"
+#define RESET "\x1B[0m"
+
+
+
 /**
  * @brief Holds the map tile.
  * 
@@ -20,9 +30,9 @@ typedef struct mapTile{
 mapTile_t mapInit(){
     mapTile_t toReturn;
     
-    for(int i = 0; i < 22; i++){
-        for(int j = 0; j < 81;j ++){
-            if(i == 0 || j == 0 || i == 21 || j == 80){
+    for(int i = 0; i < 21; i++){
+        for(int j = 0; j < 80;j ++){
+            if(i == 0 || j == 0 || i == 20 || j == 79){
                 toReturn.mapArr[i][j] = '%';
             }
             else{
@@ -41,10 +51,29 @@ mapTile_t mapInit(){
  */
 void printMap(mapTile_t* map){
 
-    for(int i =0; i<21; i++){
+    for(int i =0; i < 21; i++){
         for(int j = 0; j < 80;j ++){
             char toPrint = map->mapArr[i][j];
-            printf("%c ",toPrint);
+
+            if(toPrint == '.'){
+                printf(GRN "%c " RESET,toPrint);
+            }
+            else if(toPrint == ':'){
+                printf(DRKYLLW "%c " RESET,toPrint);
+            }
+            else if(toPrint == '~'){
+                printf(BLUE "%c " RESET,toPrint);
+            }
+            else if(toPrint == '%'){
+                printf(GREY "%c " RESET,toPrint);
+            }
+             else if(toPrint == '\"'){
+                printf(FRSTGRN "%c " RESET,toPrint);
+            }
+            else{
+                printf("%c ",toPrint);
+            }
+            
         }
         printf("\n");
     }
@@ -62,8 +91,8 @@ const char biomeList[5] = {'w','f','m','s','t'};
 int* makeBiomeChoices(){
     int* biomeChoiceArr = malloc(sizeof(biomeChoiceArr) * 2);
 
-    *biomeChoiceArr = rand() % 2;
-    *(biomeChoiceArr+1) = rand() % 2;
+    *biomeChoiceArr = rand() % 3;
+    *(biomeChoiceArr+1) = rand() % 3;
 
     return biomeChoiceArr;
 }
@@ -78,29 +107,30 @@ int* makeBiomeChoices(){
 biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
     //Decides wheter to have lakes or rivers and mountain ranges or regions
     int* biomeChoiceArr = makeBiomeChoices();
-    *biomeCount = 4;
+    *biomeCount = 6;
     
     //Adjusts biome count to match choices
-    if(*(biomeChoiceArr) > 0){
+    if(*(biomeChoiceArr) == 0){
         (*biomeCount)++;
     }
 
-    if(*(biomeChoiceArr+1) > 0){
+    if(*(biomeChoiceArr+1) == 0){
         (*biomeCount)++;
     }
 
     //Decides whether or not to include a forest
-    if(rand() % 1 > 0){
+    if(rand() % 2 > 0){
         (*biomeCount)++;
     }
     
     //Creates an array to store the biomes in
-    biome_t* biomeArr = malloc(sizeof(biomeArr) * (*biomeCount));
+    biome_t* biomeArr = malloc(sizeof(biome_t) * (*biomeCount));
+
     //Creates a temporary biome holder
     biome_t temp;
 
     //Chooses the ratio of short grass to tall grass biomes
-    int numSG = (rand() % 2) + 2;
+    int numSG = (rand() % 3) + 2;
     int numTG = 6 - numSG;
 
    /*
@@ -113,19 +143,19 @@ biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
     //Places the biomes in the array and on the map
 
     //Decides what type of biomes to place
-    for(int i=0; i < *biomeCount; i++){
+    for(int i=0; i < (*biomeCount); i++){
         if(i < numSG){
             typeHolder = '.';
         }
         else if(i < numTG+numSG){
             typeHolder = ':';
         }
-        else if(i >= (numTG+numSG)){
+        else{
             if(*(biomeChoiceArr) == 0 && marker == 0){
                 typeHolder = '%';
                 marker++;
             }
-            else if(*(biomeChoiceArr) == 0 && marker < 2){
+            else if(*(biomeChoiceArr + 1) == 0 && marker < 2){
                 typeHolder = '~';
                 marker += 2;
             }
@@ -135,7 +165,7 @@ biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
         }
 
         //Creates a biome to place
-        temp =  biomeInit(typeHolder,19,1,78,1);
+        temp = biomeInit(typeHolder,19,1,79,1);
 
         //Puts the biome into the arrays
         map->mapArr[temp.cenRowNum][temp.cenColNum] = temp.type;
@@ -143,7 +173,7 @@ biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
 
 
     }
-
+    
     return biomeArr;
 }
 
@@ -152,8 +182,9 @@ biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
  * 
  * @param map The map to expands the biome on
  * @param biome The information on the biome to expand
+ * @param tilePlaced A tracker of if a tile was placed this expansion
  */
-void expandBiome(mapTile_t* map,biome_t biome){
+void expandBiome(mapTile_t* map,biome_t biome,int* tilePlaced){
     //Sets the cursors to be the right of the region
     int rowNum = biome.cenRowNum ;
     int colNum = biome.cenColNum + biome.radius;
@@ -163,6 +194,7 @@ void expandBiome(mapTile_t* map,biome_t biome){
     while((biome.cenRowNum - rowNum) != biome.radius){
         if(map->mapArr[rowNum][colNum] == 'X' && colNum > 0 && rowNum > 0){
             map->mapArr[rowNum][colNum] = biome.type;
+            *tilePlaced = 1;
  
         }
         rowNum -= 1;
@@ -179,7 +211,7 @@ void expandBiome(mapTile_t* map,biome_t biome){
     while((biome.cenColNum - colNum) != biome.radius){
         if(map->mapArr[rowNum][colNum] == 'X' && rowNum < 21 && colNum > 0){
             map->mapArr[rowNum][colNum] = biome.type;
-
+            *tilePlaced = 1;
         }
         rowNum += 1;
         colNum -= 1;
@@ -187,14 +219,15 @@ void expandBiome(mapTile_t* map,biome_t biome){
     }
 
     //Sets the cursors to be the left of the region
-
+    rowNum = biome.cenRowNum;
+    colNum = biome.cenColNum - biome.radius;
 
 
     //Places the 3rd quadrant expansion
     while((rowNum - biome.cenRowNum) != biome.radius){
         if(map->mapArr[rowNum][colNum] == 'X' && rowNum < 21 && colNum < 80){
             map->mapArr[rowNum][colNum] = biome.type;
-          
+            *tilePlaced = 1;
         }
         rowNum += 1;
         colNum += 1;
@@ -202,17 +235,18 @@ void expandBiome(mapTile_t* map,biome_t biome){
     }
 
     //Sets the cursors to be the bottom of the region
-    rowNum = biome.cenRowNum;
-    colNum = biome.cenColNum - biome.radius;
+    rowNum = biome.cenRowNum + biome.radius;
+    colNum = biome.cenColNum;
 
 
     //Places the 4th quadrant expansion
     while((colNum - biome.cenColNum) != biome.radius){
         if(map->mapArr[rowNum][colNum] == 'X' && rowNum > 0 && colNum < 80){
             map->mapArr[rowNum][colNum] = biome.type;
-            rowNum -= 1;
-            colNum += 1;
+             *tilePlaced = 1;
         }
+        rowNum -= 1;
+        colNum += 1;
      
     }
     
@@ -226,12 +260,14 @@ void expandBiome(mapTile_t* map,biome_t biome){
  * @param biomeCount The number of biomes
  */
 void generateMap(mapTile_t* map, biome_t* biomeArr, int* biomeCount){
-    int tilesPlaced = 0;
+    int tilePlaced = 1;
 
-    while(tilesPlaced != 1580){
+    while(tilePlaced == 1){
+        tilePlaced = 0;
         for(int i=0; i < *biomeCount; i++){
            (biomeArr + i)->radius += 1;
-            expandBiome(map,*(biomeArr + i));
+            expandBiome(map,*(biomeArr + i),&tilePlaced);
+           
         }
     }
 
@@ -240,13 +276,20 @@ void generateMap(mapTile_t* map, biome_t* biomeArr, int* biomeCount){
 
 
 int main(int argc,char argv[]){
+
+
     srand(time(NULL));
 
-    mapTile_t* map = malloc(sizeof(map));
+    
+    mapTile_t map = mapInit();
     int* biomeCount = malloc(sizeof(biomeCount));
 
-    biome_t* biomeArr = placeBiomesGrassLands(map,biomeCount);
-    generateMap(map,biomeArr,biomeCount);
+    
+    biome_t* biomeArr = placeBiomesGrassLands(&map,biomeCount);
+    generateMap(&map,biomeArr,biomeCount);
+    
 
+    printMap(&map);
+    
 
 }

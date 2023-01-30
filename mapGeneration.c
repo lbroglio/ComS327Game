@@ -5,9 +5,11 @@
 
 //Colors
 #define GRN "\x1B[32m"
+#define RED "\x1B[31m"
 #define DRKYLLW "\x1B[38;5;58m"
 #define FRSTGRN "\x1B[38;5;28m"
 #define BLUE "\x1B[34m"
+#define DRKBLUE "\x1B[38;5;17m"
 #define GREY "\x1B[38;5;235m"
 #define DSRTYLLW "\x1B[38;5;220m"
 #define RESET "\x1B[0m"
@@ -23,6 +25,10 @@ typedef struct mapTile{
     char mapType;
     int mountainRegion;
     int waterRegion;
+    int topEntLoc;
+    int bottomEntLoc;
+    int leftEntLoc;
+    int rightEntLoc;
 }mapTile_t;
 
 
@@ -34,13 +40,22 @@ typedef struct mapTile{
 mapTile_t mapInit(char type){
     mapTile_t toReturn;
     
+    toReturn.topEntLoc = (rand() % 78) +1;
+    toReturn.bottomEntLoc = (rand() % 78) +1;
+    toReturn.leftEntLoc = (rand() % 19) +1;
+    toReturn.rightEntLoc = (rand() % 19) +1;
+
     for(int i = 0; i < 21; i++){
         for(int j = 0; j < 80;j ++){
-            if(i == 0 || j == 0 || i == 20 || j == 79){
+            if((i == 0 && j != toReturn.topEntLoc) || (j == 0 && i != toReturn.leftEntLoc) || (i == 20 && j != toReturn.bottomEntLoc) || (j == 79 && i != toReturn.rightEntLoc)){
                 toReturn.mapArr[i][j] = '%';
+                
+            }
+            else if(i != 0 && j != 0 && i != 20 && j != 79){
+                toReturn.mapArr[i][j]= 'X';
             }
             else{
-                toReturn.mapArr[i][j]= 'X';
+                 toReturn.mapArr[i][j]= ' ';
             }
             
         }    
@@ -80,6 +95,12 @@ void printMap(mapTile_t* map){
             }
             else if(toPrint == '*'){
                 printf(DSRTYLLW "%c " RESET,toPrint);
+            }
+            else if(toPrint == 'C'){
+                printf(RED "%c " RESET,toPrint);
+            }
+            else if(toPrint == 'M'){
+                printf(DRKBLUE "%c " RESET,toPrint);
             }
             else{
                 printf("%c ",toPrint);
@@ -191,7 +212,7 @@ biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
         }
 
         //Creates a biome to place
-        temp = biomeInit(typeHolder,19,1,78,1);
+        temp = biomeInit(typeHolder,18,1,77,1);
 
         //Puts the biome into the arrays
         map->mapArr[temp.cenRowNum][temp.cenColNum] = temp.type;
@@ -250,14 +271,14 @@ biome_t* placeBiomesSpecial(mapTile_t* map,int* biomeCount){
 
     //Decides what type of biomes to place
     for(int i=0; i < (*biomeCount); i++){
-        if(i < 6){
-            typeHolder = map->mapType;
-        }
-        else if(i <8){
+        if(i < 2){
             typeHolder = '.';
         }
-        else if(i < 10){
+        else if(i <4){
             typeHolder = ':';
+        }
+        else if(i < 10){
+            typeHolder = map->mapType;
         }
         else{
             if(map->mountainRegion == 0 && marker == 0 && map->mapType != '%'){
@@ -275,7 +296,7 @@ biome_t* placeBiomesSpecial(mapTile_t* map,int* biomeCount){
         }
 
         //Creates a biome to place
-        temp = biomeInit(typeHolder,19,1,78,1);
+        temp = biomeInit(typeHolder,18,1,77,1);
 
         //Puts the biome into the arrays
         map->mapArr[temp.cenRowNum][temp.cenColNum] = temp.type;
@@ -402,7 +423,12 @@ void placeRiversxRanges(mapTile_t* map){
             }
 
             //Place a second  block if the river is two wide
-            if(map->waterRegion == 2){  
+            if(map->waterRegion == 2){
+                //Ends if river reaches edge of map
+                if(placeLoc >= 78){
+                    i+=20;
+                }  
+
                 map->mapArr[i][placeLoc + 1] = '~';
             }
         }
@@ -425,6 +451,38 @@ void placeRiversxRanges(mapTile_t* map){
     }
 }
 
+/**
+ * @brief Adds the Pokecenter and Pokemart to the map
+ * 
+ * @param map Map to place buildings on
+ * @param biomeArr Array contianing biome locations
+ */
+void placeBuildings(mapTile_t* map, biome_t* biomeArr){
+
+    //Gets locations of first biome for the building
+    int rowNum = (biomeArr)->cenRowNum;
+    int colNum = (biomeArr)->cenColNum;
+    
+
+    //Adds the Pokemon Center 
+    map->mapArr[rowNum][colNum] = 'C';
+    map->mapArr[rowNum+1][colNum] = 'C';
+    map->mapArr[rowNum][colNum+1]= 'C';
+    map->mapArr[rowNum+1][colNum+1]= 'C';
+
+    //Gets the location of the second biome for the building 
+    rowNum = (biomeArr + 1)->cenRowNum;
+    colNum = (biomeArr + 1)->cenColNum;
+
+    //Adds the Pokemon Center 
+    map->mapArr[rowNum][colNum] = 'M';
+    map->mapArr[rowNum+1][colNum] = 'M';
+    map->mapArr[rowNum][colNum+1] = 'M';
+    map->mapArr[rowNum+1][colNum+1] = 'M';
+
+}
+
+
 
 
 int main(int argc,char** argv){
@@ -433,13 +491,15 @@ int main(int argc,char** argv){
     srand(time(NULL));
 
     
-    mapTile_t map = mapInit('*');
+    mapTile_t map = mapInit('\"');
     int* biomeCount = malloc(sizeof(biomeCount));
 
 
-    biome_t* biomeArr = placeBiomesGrassLands(&map,biomeCount);
+    biome_t* biomeArr = placeBiomesSpecial(&map,biomeCount);
     generateMap(&map,biomeArr,biomeCount);
     placeRiversxRanges(&map);
+    placeBuildings(&map,biomeArr);
+
     
 
     printMap(&map);

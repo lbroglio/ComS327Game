@@ -9,6 +9,7 @@
 #define FRSTGRN "\x1B[38;5;28m"
 #define BLUE "\x1B[34m"
 #define GREY "\x1B[38;5;235m"
+#define DSRTYLLW "\x1B[38;5;220m"
 #define RESET "\x1B[0m"
 
 
@@ -19,6 +20,7 @@
  */
 typedef struct mapTile{
     char mapArr[21][80];
+    char mapType;
     int mountainRegion;
     int waterRegion;
 }mapTile_t;
@@ -29,7 +31,7 @@ typedef struct mapTile{
  * 
  * @return The created map tile. It has the borders as rocks and all other spaces as X
  */
-mapTile_t mapInit(){
+mapTile_t mapInit(char type){
     mapTile_t toReturn;
     
     for(int i = 0; i < 21; i++){
@@ -46,6 +48,7 @@ mapTile_t mapInit(){
 
     toReturn.mountainRegion = 0;
     toReturn.waterRegion = 0;
+    toReturn.mapType = type;
     return toReturn;
 }
 
@@ -72,8 +75,11 @@ void printMap(mapTile_t* map){
             else if(toPrint == '%'){
                 printf(GREY "%c " RESET,toPrint);
             }
-             else if(toPrint == '\"'){
+            else if(toPrint == '\"'){
                 printf(FRSTGRN "%c " RESET,toPrint);
+            }
+            else if(toPrint == '*'){
+                printf(DSRTYLLW "%c " RESET,toPrint);
             }
             else{
                 printf("%c ",toPrint);
@@ -97,8 +103,22 @@ const char biomeList[5] = {'w','f','m','s','t'};
  * @param map The map to make the choices for and to mark them on  
  */
 void makeBiomeChoices(mapTile_t* map){
-    map->waterRegion = rand() % 3;
-    map->mountainRegion = rand() % 3;
+    //Makes choice for water
+    if(map->mapType != '~'){
+        map->waterRegion = rand() % 3;
+    }
+    else{
+        map->waterRegion =0;
+    }
+
+    //Makes choice for mountains
+    if(map->mapType != '%'){
+        map->mountainRegion = rand() % 3;
+    }
+    else{
+        map->mountainRegion =0;
+    }
+    
 }
 
 /**
@@ -191,17 +211,18 @@ biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
  * 
  * @return An array of the created biomes
  */
-biome_t* placeBiomesSpecial(mapTile_t* map,int* biomeCount,char biomeType){
+biome_t* placeBiomesSpecial(mapTile_t* map,int* biomeCount){
     //Decides wheter to have lakes or rivers and mountain ranges or regions
     makeBiomeChoices(map);
-    *biomeCount = 6;
+    *biomeCount = 10;
     
     //Adjusts biome count to match choices
-    if(map->mountainRegion == 0){
+    if(map->mountainRegion == 0 && map->mapType != '%'){
         (*biomeCount)++;
     }
 
-    if(map->waterRegion == 0){
+
+    if(map->waterRegion == 0 && map->mapType != '~'){
         (*biomeCount)++;
     }
 
@@ -216,9 +237,7 @@ biome_t* placeBiomesSpecial(mapTile_t* map,int* biomeCount,char biomeType){
     //Creates a temporary biome holder
     biome_t temp;
 
-    //Chooses the ratio of short grass to tall grass biomes
-    int numSG = (rand() % 3) + 2;
-    int numTG = 6 - numSG;
+
 
    /*
     temp.cenXLoc = rand(20);
@@ -231,22 +250,25 @@ biome_t* placeBiomesSpecial(mapTile_t* map,int* biomeCount,char biomeType){
 
     //Decides what type of biomes to place
     for(int i=0; i < (*biomeCount); i++){
-        if(i < numSG){
+        if(i < 6){
+            typeHolder = map->mapType;
+        }
+        else if(i <8){
             typeHolder = '.';
         }
-        else if(i < numTG+numSG){
+        else if(i < 10){
             typeHolder = ':';
         }
         else{
-            if(map->mountainRegion == 0 && marker == 0){
+            if(map->mountainRegion == 0 && marker == 0 && map->mapType != '%'){
                 typeHolder = '%';
                 marker++;
             }
-            else if(map->waterRegion == 0 && marker < 2){
+            else if(map->waterRegion == 0 && marker < 2 && map->mapType != '~'){
                 typeHolder = '~';
                 marker += 2;
             }
-            else{
+            else if (map->mapType != '\"'){
                 typeHolder = '\"';
             }
             
@@ -360,6 +382,49 @@ void generateMap(mapTile_t* map, biome_t* biomeArr, int* biomeCount){
 
 }
 
+/**
+ * @brief Adds rivers and mountain ranges to the map if neccessary.
+ * 
+ * @param map The map to place the ranges and rivers on
+ */
+void placeRiversxRanges(mapTile_t* map){
+    //Place River
+    if(map->waterRegion != 0){
+        int placeLoc = (rand() % 78) + 1;
+        for(int i=1; i<20; i++){
+            //Decide if it turns
+            placeLoc =placeLoc + (rand() % 3) - 1;
+            map->mapArr[i][placeLoc] = '~';
+
+            //Ends if river reaches edge of map
+            if(placeLoc >= 79 || placeLoc <= 0){
+                i+= 20;
+            }
+
+            //Place a second  block if the river is two wide
+            if(map->waterRegion == 2){  
+                map->mapArr[i][placeLoc + 1] = '~';
+            }
+        }
+    }
+
+    //Place Range
+    if(map->mountainRegion == 1){
+        int placeLoc = (rand() % 78) + 1;
+        for(int i=1; i<20; i++){
+            //Decide if it turns
+            placeLoc =placeLoc + (rand() % 3) - 1;
+            
+            //Ends if range reaches edge of map
+             if(placeLoc >= 79 || placeLoc <= 0){
+                i+= 20;
+            }
+
+            map->mapArr[i][placeLoc] = '%';
+        }
+    }
+}
+
 
 
 int main(int argc,char** argv){
@@ -368,12 +433,13 @@ int main(int argc,char** argv){
     srand(time(NULL));
 
     
-    mapTile_t map = mapInit();
+    mapTile_t map = mapInit('*');
     int* biomeCount = malloc(sizeof(biomeCount));
 
 
     biome_t* biomeArr = placeBiomesGrassLands(&map,biomeCount);
     generateMap(&map,biomeArr,biomeCount);
+    placeRiversxRanges(&map);
     
 
     printMap(&map);

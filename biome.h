@@ -24,17 +24,8 @@ typedef struct biome{
  * @param colMin The minimum possible random location for the column biome is in
  * @return The newly created biome struct
  */
-biome_t biomeInit(char type, int rowRange, int rowMin, int colRange, int colMin){
-    biome_t toReturn;
-    
-    toReturn.type = type;
-    toReturn.cenRowNum = (rand() % rowRange) + rowMin;
-    toReturn.cenColNum = (rand() % colRange) + colMin;
+biome_t biomeInit(char type, int rowRange, int rowMin, int colRange, int colMin);
 
-    toReturn.radius = 0;
 
-    return toReturn;
-
-}
 
 #endif

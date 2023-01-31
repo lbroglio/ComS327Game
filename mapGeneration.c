@@ -482,7 +482,9 @@ void placeBuildings(mapTile_t* map, biome_t* biomeArr){
 
 }
 
-
+void placeRoads(mapTile_t* map, biome_t* arr){
+    
+}
 
 
 int main(int argc,char** argv){

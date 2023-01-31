@@ -2,116 +2,7 @@
 #include<stdlib.h>
 #include<time.h>
 #include"biome.h"
-
-//Colors
-#define GRN "\x1B[32m"
-#define RED "\x1B[31m"
-#define DRKYLLW "\x1B[38;5;58m"
-#define FRSTGRN "\x1B[38;5;28m"
-#define BLUE "\x1B[34m"
-#define DRKBLUE "\x1B[38;5;17m"
-#define GREY "\x1B[38;5;235m"
-#define DSRTYLLW "\x1B[38;5;220m"
-#define RESET "\x1B[0m"
-
-
-
-/**
- * @brief Holds the map tile.
- * 
- */
-typedef struct mapTile{
-    char mapArr[21][80];
-    char mapType;
-    int mountainRegion;
-    int waterRegion;
-    int topEntLoc;
-    int bottomEntLoc;
-    int leftEntLoc;
-    int rightEntLoc;
-}mapTile_t;
-
-
-/**
- * @brief Creates a new map tile
- * 
- * @return The created map tile. It has the borders as rocks and all other spaces as X
- */
-mapTile_t mapInit(char type){
-    mapTile_t toReturn;
-    
-    toReturn.topEntLoc = (rand() % 78) +1;
-    toReturn.bottomEntLoc = (rand() % 78) +1;
-    toReturn.leftEntLoc = (rand() % 19) +1;
-    toReturn.rightEntLoc = (rand() % 19) +1;
-
-    for(int i = 0; i < 21; i++){
-        for(int j = 0; j < 80;j ++){
-            if((i == 0 && j != toReturn.topEntLoc) || (j == 0 && i != toReturn.leftEntLoc) || (i == 20 && j != toReturn.bottomEntLoc) || (j == 79 && i != toReturn.rightEntLoc)){
-                toReturn.mapArr[i][j] = '%';
-                
-            }
-            else if(i != 0 && j != 0 && i != 20 && j != 79){
-                toReturn.mapArr[i][j]= 'X';
-            }
-            else{
-                 toReturn.mapArr[i][j]= ' ';
-            }
-            
-        }    
-    }
-
-    toReturn.mountainRegion = 0;
-    toReturn.waterRegion = 0;
-    toReturn.mapType = type;
-    return toReturn;
-}
-
-/**
- * @brief Prints out a map to the console
- * 
- * @param map The map to print
- */
-void printMap(mapTile_t* map){
-
-    for(int i =0; i < 21; i++){
-        for(int j = 0; j < 80;j ++){
-            char toPrint = map->mapArr[i][j];
-
-            if(toPrint == '.'){
-                printf(GRN "%c " RESET,toPrint);
-            }
-            else if(toPrint == ':'){
-                printf(DRKYLLW "%c " RESET,toPrint);
-            }
-            else if(toPrint == '~'){
-                printf(BLUE "%c " RESET,toPrint);
-            }
-            else if(toPrint == '%'){
-                printf(GREY "%c " RESET,toPrint);
-            }
-            else if(toPrint == '\"'){
-                printf(FRSTGRN "%c " RESET,toPrint);
-            }
-            else if(toPrint == '*'){
-                printf(DSRTYLLW "%c " RESET,toPrint);
-            }
-            else if(toPrint == 'C'){
-                printf(RED "%c " RESET,toPrint);
-            }
-            else if(toPrint == 'M'){
-                printf(DRKBLUE "%c " RESET,toPrint);
-            }
-            else{
-                printf("%c ",toPrint);
-            }
-            
-        }
-        printf("\n");
-    }
-}
-
-const char biomeList[5] = {'w','f','m','s','t'};
+#include"map.h"
 
 /**
  * @brief Uses random numbers to make choices for how to layout water and mountains. 
@@ -483,7 +374,7 @@ void placeBuildings(mapTile_t* map, biome_t* biomeArr){
 }
 
 void placeRoads(mapTile_t* map, biome_t* arr){
-    
+
 }
 
 
@@ -493,7 +384,7 @@ int main(int argc,char** argv){
     srand(time(NULL));
 
     
-    mapTile_t map = mapInit('\"');
+    mapTile_t map = mapInit('.');
     int* biomeCount = malloc(sizeof(biomeCount));
 
 

@@ -108,7 +108,7 @@ biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
         }
 
         //Creates a biome to place
-        temp = biomeInit(typeHolder,18,1,77,1);
+        temp = biomeInit(typeHolder,17,2,77,1);
 
         //Puts the biome into the arrays
         map->mapArr[temp.cenRowNum][temp.cenColNum] = temp.type;
@@ -192,7 +192,7 @@ biome_t* placeBiomesSpecial(mapTile_t* map,int* biomeCount){
         }
 
         //Creates a biome to place
-        temp = biomeInit(typeHolder,18,1,77,1);
+        temp = biomeInit(typeHolder,17,2,77,1);
 
         //Puts the biome into the arrays
         map->mapArr[temp.cenRowNum][temp.cenColNum] = temp.type;
@@ -381,15 +381,126 @@ void placeBuildings(mapTile_t* map, biome_t* biomeArr){
 }
 
 
-void drawRoad(mapTile_t* map,point_t currLoc, point_t targetLoc){
-    while (currLoc.colNum != targetLoc.colNum)
-    {
-        map->mapArr
+/**
+ * @brief Draws a road on the map between the two given points
+ * 
+ * @param map The map to draw the road on
+ * @param currLoc The starting location to draw the road from. A road will be drawn here
+ * @param targetLoc The end point to draw the road to
+ */
+void drawRoad(mapTile_t* map,point_t* currLoc, point_t targetLoc){
+    //Sets -1 or 1 as the modifier depending on what direction the road needs to move in
+    int colMod = (targetLoc.colNum - currLoc->colNum) / abs(targetLoc.colNum - currLoc->colNum);
+    int rowMod = (targetLoc.rowNum - currLoc->rowNum) / abs(targetLoc.rowNum - currLoc->rowNum);
+
+    //Temporary point used for redirecting
+    point_t temp;
+    int tracker =0;
+    while(currLoc->colNum != targetLoc.colNum || currLoc->rowNum != targetLoc.rowNum){
+        tracker++;
+        char newChar = '#';
+        if(currLoc->colNum != targetLoc.colNum)
+        {   
+            //Gets the char being replaced by the road
+            char repChar = map->mapArr[currLoc->rowNum][currLoc->colNum + colMod];
+        
+            //Checks to make sure a building isnt being replaced
+            if(repChar == 'C' || repChar == 'M'){
+                //Redirects below the building
+                if(currLoc->rowNum < 11){
+                    temp.colNum = currLoc->colNum;
+                    temp.rowNum = currLoc->rowNum + 2;
+                    drawRoad(map,currLoc,temp);
+                }
+                //Redirects above the building
+                else{
+                    temp.colNum = currLoc->colNum;
+                    temp.rowNum = currLoc->rowNum - 2;
+                    drawRoad(map,currLoc,temp);
+                }
+            }
+            else{
+                //If moving over water uses a "bridge" character
+                if(repChar == '~'){
+                    newChar = '=';
+                }  
+
+                //Replaces the character and moves forward
+                currLoc->colNum += colMod;
+                map->mapArr[currLoc->rowNum][currLoc->colNum] = newChar;
+                
+            }
+ 
+
+        }   
+        else if(currLoc->rowNum != targetLoc.rowNum)
+        {  
+            char repChar = map->mapArr[currLoc->rowNum + rowMod][currLoc->colNum];
+            //Checks to make sure a building isnt being replaced
+            if(repChar == 'C' || repChar == 'M'){
+                if(currLoc->colNum < 40){
+                    //Redirects to the right of the building
+                    temp.colNum = currLoc->colNum + 2;
+                    temp.rowNum = currLoc->rowNum;
+                    drawRoad(map,currLoc,temp);
+                }
+                else{
+                    //Redirects to the left of the building
+                    temp.colNum = currLoc->colNum - 2;
+                    temp.rowNum = currLoc->rowNum;
+                    drawRoad(map,currLoc,temp);
+                }
+            }
+            else{
+                //If moving over water uses a "bridge" character
+                if(repChar == '~'){
+                    newChar = '=';
+                }
+
+                //Replaces the character and moves forward
+                currLoc->rowNum += rowMod;
+                map->mapArr[currLoc->rowNum][currLoc->colNum] = newChar;
+                
+            }
+        }
     }
     
+}
+
+void addRoadSystem(mapTile_t* map,biome_t* biomeArr){
+    point_t startPoint;
+    point_t endPoint;
+    point_t meetPoint;
+    meetPoint.colNum = (rand() % 60) + 10;
+    meetPoint.rowNum = (rand() % 10) + 5;
+
+
+    startPoint.colNum = 0;
+    startPoint.rowNum = map->leftEntLoc;
+    drawRoad(map,&startPoint,meetPoint);
+
+    startPoint.colNum = 79;
+    startPoint.rowNum = map->rightEntLoc;
+    drawRoad(map,&startPoint,meetPoint);
+
+
+    startPoint.colNum = meetPoint.colNum;
+    startPoint.rowNum = meetPoint.rowNum;
+
+    endPoint.colNum = biomeArr->cenColNum;
+    endPoint.rowNum = biomeArr->cenRowNum -1;
+    drawRoad(map,&startPoint,endPoint);
+
+    startPoint.colNum = meetPoint.colNum;
+    startPoint.rowNum = meetPoint.rowNum;
+
+    endPoint.colNum = (biomeArr + 1)->cenColNum;
+    endPoint.rowNum = (biomeArr + 1)->cenRowNum -1;
+    drawRoad(map,&startPoint,endPoint);
 
 
 
+    
 }
 
 int main(int argc,char** argv){
@@ -407,18 +518,10 @@ int main(int argc,char** argv){
     placeRiversxRanges(&map);
     placeBuildings(&map,biomeArr);
     
-    point_t start;
-    point_t end;
-    start.rowNum = map.leftEntLoc;
-    start.colNum =1;
-
-    end.rowNum = 10;
-    end.colNum = 50;
-
-    map.mapArr[start.rowNum][1] = '#';
-
-    drawRoad(&map,biomeArr,&start,end);
+    addRoadSystem(&map,biomeArr);
     
+    free(biomeCount);
+    free(biomeArr);
 
     printMap(&map);
     

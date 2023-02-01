@@ -381,119 +381,14 @@ void placeBuildings(mapTile_t* map, biome_t* biomeArr){
 }
 
 
-/**
- * @brief Detects if an undesirable biome can be avoided by a road
- * 
- * @param map The map to check on
- * @param searchLoc The point where the road hit the undesired biome
- * @param searchVert Boolean used to determine the direction of travel. 1 means to check a way around vertically 0 horizontally
- * 
- * @return 0 if the biome can't be avoided. The squares to move if it can't (Negative means move up/left positve means move down/right) 
- */
-int avoidBiome(mapTile_t* map, point_t searchLoc, int searchVert){
-    //How far away from the starting location to check
-    int offset =  0;
-    //Stores the distance for each possible direction to go to avoid the obstacle
-    int dist1 = 0;
-    int dist2 = 0;
-    //Stores the current character being checked
-    char toCheck;
-
-    if(map->mapArr[searchLoc.rowNum][searchLoc.colNum] == '~' && map->waterRegion == ){
-
+void drawRoad(mapTile_t* map,point_t currLoc, point_t targetLoc){
+    while (currLoc.colNum != targetLoc.colNum)
+    {
+        map->mapArr
     }
     
 
-    //Look by moving vertically
-    if(searchVert ==  1){
-        //Searches out until both have found a way around or none is found
-        while((dist1 == 0 || dist2 == 0) && offset < 21){
-            //Makes sure the check isnt outside the array and this direction hasn't already been found
-            if((searchLoc.rowNum - offset) > 0 && dist1 == 0){
-                //Checks if the spot is a prefered biome
-                toCheck = map->mapArr[searchLoc.rowNum - offset][searchLoc.colNum];
-                if(toCheck != '~' & toCheck != '%'){
-                    dist1 = offset * -1;
-                }
-            }
 
-            //Makes sure the check isnt outside the array and this direction hasn't already been found
-            if((searchLoc.rowNum + offset) < 20 && dist2 == 0){
-                toCheck = map->mapArr[searchLoc.rowNum + offset][searchLoc.colNum];
-                 //Checks if the spot is a prefered biome
-                if(toCheck != '~' & toCheck != '%'){
-                    dist2 = offset;
-                }
-            }
-        }
-       
-    }
-    //Look by moving horizontally
-    else{
-        //Searches out until both have found a way around or none is found
-        while((dist1 == 0 || dist2 == 0) && offset < 21){
-            //Makes sure the check isnt outside the array and this direction hasn't already been found
-            if((searchLoc.colNum - offset) > 0){
-                //Checks if the spot is a prefered biome
-                toCheck = map->mapArr[searchLoc.rowNum][searchLoc.colNum - offset];
-                if(toCheck != '~' & toCheck != '%'){
-                    dist1 = offset * -1;
-                }
-            }
-
-            //Makes sure the check isnt outside the array and this direction hasn't already been found
-            if((searchLoc.colNum + offset) < 79){
-                //Checks if the spot is a prefered biome
-                toCheck = map->mapArr[searchLoc.rowNum ][searchLoc.colNum + offset];
-                if(toCheck != '~' & toCheck != '%'){
-                    dist1 = offset;
-                }
-            }
-        }
-       
-    }
-
-    //Returns the smaller distance 
-    if(dist1 < dist2 && dist1 != 0){
-        return dist1;
-    }
-    else{
-        return dist2;
-    }
-}
-
-
-/**
- * @brief Draws a road on the map between two given points
- * Will recursively call to break it into two straight lines of movement avoid undesired biomes and buildings 
- * 
- * @param map The map to draw the road on
- * @param biomeArr List of biomes on the map
- * @param currLoc The location to start drawing the road from. A road will not be placed here
- * @param endPoint The desired point to reach on the map 
- */
-void drawRoad(mapTile_t* map, biome_t* biomeArr, point_t* currLoc, point_t endPoint){
-    point_t temp;
-    if(currLoc->colNum != endPoint.colNum && currLoc->rowNum != endPoint.rowNum){
-        temp.rowNum = endPoint.rowNum;
-        temp.colNum =  currLoc -> rowNum;
-        drawRoad(map,biomeArr,currLoc,temp);
-
-        temp.rowNum = currLoc->rowNum;
-        temp.colNum =  endPoint.colNum;
-        drawRoad(map,biomeArr,currLoc,temp);
-    }
-    else if(currLoc-> colNum != endPoint.colNum){
-        while(currLoc->colNum != endPoint.colNum){
-            char nextChar = map->mapArr[currLoc->rowNum][currLoc->colNum];
-            if(nextChar == '~' || nextChar == '%'){
-                temp.rowNum = currLoc->rowNum;
-                temp.colNum = currLoc->colNum+1;
-
-                avoidBiome(map,*currLoc,0);
-            }
-        }
-    }
 
 }
 
@@ -510,10 +405,19 @@ int main(int argc,char** argv){
     biome_t* biomeArr = placeBiomesGrassLands(&map,biomeCount);
     generateMap(&map,biomeArr,biomeCount);
     placeRiversxRanges(&map);
-    //placeRoadsExits(&map);
     placeBuildings(&map,biomeArr);
     
+    point_t start;
+    point_t end;
+    start.rowNum = map.leftEntLoc;
+    start.colNum =1;
 
+    end.rowNum = 10;
+    end.colNum = 50;
+
+    map.mapArr[start.rowNum][1] = '#';
+
+    drawRoad(&map,biomeArr,&start,end);
     
 
     printMap(&map);

@@ -1,5 +1,5 @@
-#ifndef STACK_H
-#define STACK_H
+#ifndef BIOME_H
+#define BIOME_H
 
 #include<stdlib.h>
 

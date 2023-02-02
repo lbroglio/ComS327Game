@@ -1,0 +1,102 @@
+commit 9461914b9f1fcfda183b80e37641f2905db7eef0
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Feb 1 18:09:55 2023 -0600
+
+    Finished the functions to add roads. Set up the functiosn to run together. READY to TURN IN
+
+commit 58106a7cbee141be3a56af1c414fc60994c7db2b
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Feb 1 15:53:42 2023 -0600
+
+    Roads work in progress
+
+commit 7e210f22e5ed4738ccafb13cee2d18e6752a9669
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Tue Jan 31 23:08:00 2023 -0600
+
+    "Changed metholdogly on how to add roads. Removed road code and started
+    over"
+
+commit 7e6fb6cd5d6a47bdf4924c918366771cc53f55a6
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Tue Jan 31 21:36:30 2023 -0600
+
+    Documentation improvements and halfway through the functions to add roads
+
+commit 109fdd0b9a3d9f9aa9050391c4fa309ff48c9a2c
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Tue Jan 31 14:54:16 2023 -0600
+
+    Seperated code for map into its own header and source file
+
+commit 5486029f19b05c324709346da473faff5d161133
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Tue Jan 31 14:45:27 2023 -0600
+
+    Moved source code out of header file. Changed make to do partial compilation first
+
+commit 91c12ce0efbe9dd5f30a151455f20ecb54bd4492
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Mon Jan 30 17:18:41 2023 -0600
+
+    Added code to put buildings on the map and to handel entraces and exits
+
+commit 0cec4b2c8d161949b0edbe2b997b7e4eae2c5eb3
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Mon Jan 30 15:44:48 2023 -0600
+
+    Added function to place rivers and mountains on the map
+
+commit 86f9d4b269d19f7da62f08c55bb5d1bc53fc8ebc
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Sun Jan 29 19:42:45 2023 -0600
+
+    Wrote makefile, debugged, Refactor makeBiomeChoices() to output to the map struct. Started writing a fucntion make maps primarily of special biomes
+
+commit a1358a8f01ce2b7a53520ecfe2d04e579823e10b
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Sun Jan 29 16:05:58 2023 -0600
+
+    Bug fixes and added color
+
+commit d61eb51f198b681cb14563d93d956f171efc3ba3
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Sun Jan 29 13:59:36 2023 -0600
+
+    Removed uncessary file
+
+commit 54f150b9f26c0caed722850276de8f7b6bde2e97
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Sun Jan 29 13:59:03 2023 -0600
+
+    Bug fixes the finish the array access changes. Updated mapInit to handle borders correctly
+
+commit 61733fd6c77a10ef9a41709be6d0afe446552fd6
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Sun Jan 29 13:49:50 2023 -0600
+
+    Created the mapInit function which creates a map and sets its default squares. Also started the printMap functions and refactored the way the 2D array for the map is handled
+
+commit 4282d9a37b634430139ba5b88a67a3836a187117
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Sun Jan 29 13:23:36 2023 -0600
+
+    Documentation improvements
+
+commit 98e8206a316126759142e2e3ed44518e19c8655a
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Sat Jan 28 19:09:58 2023 -0600
+
+    Finsihed the generateMap() functions which generates a map from placed biomes.
+
+commit 44e8dacf0efc12e8a5dab4cae02ce19a8f2ea3d3
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Sat Jan 28 18:50:47 2023 -0600
+
+    Added the expandBiome() function which expands a biomes radius by one on  the map
+
+commit 4f971c9db453c4ab65fa78c6c9301277f5232cec
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Sat Jan 28 17:24:01 2023 -0600
+
+    Inital Commit- Has Biomes struct and biome init function. And the function to place the biomes for a grass lands map

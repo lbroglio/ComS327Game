@@ -108,8 +108,8 @@ biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
         }
 
         //Creates a biome to place
-        temp = biomeInit(typeHolder,17,2,77,1);
-
+        temp = biomeInit(typeHolder,17,2,75,2);
+        
         //Puts the biome into the arrays
         map->mapArr[temp.cenRowNum][temp.cenColNum] = temp.type;
         biomeArr[i] = temp;
@@ -192,7 +192,7 @@ biome_t* placeBiomesSpecial(mapTile_t* map,int* biomeCount){
         }
 
         //Creates a biome to place
-        temp = biomeInit(typeHolder,17,2,77,1);
+        temp = biomeInit(typeHolder,17,2,75,2);
 
         //Puts the biome into the arrays
         map->mapArr[temp.cenRowNum][temp.cenColNum] = temp.type;
@@ -390,22 +390,23 @@ void placeBuildings(mapTile_t* map, biome_t* biomeArr){
  */
 void drawRoad(mapTile_t* map,point_t* currLoc, point_t targetLoc){
     //Sets -1 or 1 as the modifier depending on what direction the road needs to move in
-    int colMod = (targetLoc.colNum - currLoc->colNum) / abs(targetLoc.colNum - currLoc->colNum);
-    int rowMod = (targetLoc.rowNum - currLoc->rowNum) / abs(targetLoc.rowNum - currLoc->rowNum);
+    
 
     //Temporary point used for redirecting
     point_t temp;
-    int tracker =0;
+
     while(currLoc->colNum != targetLoc.colNum || currLoc->rowNum != targetLoc.rowNum){
-        tracker++;
-        char newChar = '#';
-        if(currLoc->colNum != targetLoc.colNum)
+        
+        while(currLoc->colNum != targetLoc.colNum)
         {   
+            int colMod = (targetLoc.colNum - currLoc->colNum) / abs(targetLoc.colNum - currLoc->colNum);
+            char newChar = '#';
             //Gets the char being replaced by the road
             char repChar = map->mapArr[currLoc->rowNum][currLoc->colNum + colMod];
         
             //Checks to make sure a building isnt being replaced
             if(repChar == 'C' || repChar == 'M'){
+                 
                 //Redirects below the building
                 if(currLoc->rowNum < 11){
                     temp.colNum = currLoc->colNum;
@@ -433,15 +434,17 @@ void drawRoad(mapTile_t* map,point_t* currLoc, point_t targetLoc){
  
 
         }   
-        else if(currLoc->rowNum != targetLoc.rowNum)
+        while(currLoc->rowNum != targetLoc.rowNum)
         {  
+            int rowMod = (targetLoc.rowNum - currLoc->rowNum) / abs(targetLoc.rowNum - currLoc->rowNum);
+            char newChar = '#';
             char repChar = map->mapArr[currLoc->rowNum + rowMod][currLoc->colNum];
             //Checks to make sure a building isnt being replaced
             if(repChar == 'C' || repChar == 'M'){
                 if(currLoc->colNum < 40){
                     //Redirects to the right of the building
                     temp.colNum = currLoc->colNum + 2;
-                    temp.rowNum = currLoc->rowNum;
+                    temp.rowNum = currLoc->rowNum ;
                     drawRoad(map,currLoc,temp);
                 }
                 else{
@@ -467,23 +470,35 @@ void drawRoad(mapTile_t* map,point_t* currLoc, point_t targetLoc){
     
 }
 
+/**
+ * @brief Adds the road network connecting the entrances and buildings to the map
+ * 
+ * @param map The map to add roads to
+ * @param biomeArr Array of biomes on the map
+ */
 void addRoadSystem(mapTile_t* map,biome_t* biomeArr){
+    //Intialzied points to hold location
     point_t startPoint;
     point_t endPoint;
     point_t meetPoint;
+
+    //Randomly chooses a point for the roads to converge
     meetPoint.colNum = (rand() % 60) + 10;
     meetPoint.rowNum = (rand() % 10) + 5;
 
 
+    //Draws a road from the left entrance
     startPoint.colNum = 0;
     startPoint.rowNum = map->leftEntLoc;
     drawRoad(map,&startPoint,meetPoint);
 
+    //Draws a road from the right entrance
     startPoint.colNum = 79;
     startPoint.rowNum = map->rightEntLoc;
     drawRoad(map,&startPoint,meetPoint);
 
 
+    //Draws a road to the Pokecenter
     startPoint.colNum = meetPoint.colNum;
     startPoint.rowNum = meetPoint.rowNum;
 
@@ -491,16 +506,99 @@ void addRoadSystem(mapTile_t* map,biome_t* biomeArr){
     endPoint.rowNum = biomeArr->cenRowNum -1;
     drawRoad(map,&startPoint,endPoint);
 
+    //Draws a road to the Pokemart
     startPoint.colNum = meetPoint.colNum;
     startPoint.rowNum = meetPoint.rowNum;
 
     endPoint.colNum = (biomeArr + 1)->cenColNum;
     endPoint.rowNum = (biomeArr + 1)->cenRowNum -1;
     drawRoad(map,&startPoint,endPoint);
+    
 
+    //Make a variable to hold row num of roads
+    int locTracker = 1;
+
+    //Draws a road from the top entrance
+    startPoint.colNum = map->topEntLoc;
+    startPoint.rowNum = 0;
+    char toCheck = map->mapArr[startPoint.colNum][locTracker];
+
+    while(toCheck != '#' && toCheck != '='){
+        locTracker++;
+        toCheck = map->mapArr[locTracker][startPoint.colNum];
+    }
+
+    endPoint.colNum = startPoint.colNum;
+    endPoint.rowNum = locTracker;
+    drawRoad(map,&startPoint,endPoint);
+
+    //Draws a road from the bottom entrance
+    locTracker = 79;
+
+    startPoint.colNum = map->bottomEntLoc;
+    startPoint.rowNum = 20;
+    toCheck = map->mapArr[startPoint.colNum][locTracker];
+
+    while(toCheck != '#' && toCheck != '='){
+        locTracker -= 1;
+        toCheck = map->mapArr[locTracker][startPoint.colNum];
+    }
+
+    endPoint.colNum = startPoint.colNum;
+    endPoint.rowNum = locTracker;
+    drawRoad(map,&startPoint,endPoint);
 
 
     
+}
+
+mapTile_t* createMapTile(){
+    //Randomly chooses what type of map this is. Grasslands maps are weighted slightly highrt
+    char mapType;
+
+    int typeChooser = rand() % 5;
+
+    if(typeChooser == 2){
+        mapType = '\"';
+    }
+    else if(typeChooser == 3){
+        mapType = '%';
+    }
+    else if(typeChooser == 4){
+        mapType = '~';
+    }
+    else{
+         mapType = '.';
+    }
+
+    //Creates a struct to hold the map
+    mapTile_t* map = malloc(sizeof(mapTile_t));
+    *map = mapInit(mapType);
+
+    //Creates a variable to store the number of biomes
+    int* biomeCount = malloc(sizeof(biomeCount));
+
+
+    //Randomly generates the biomes of this  map depending on type
+    biome_t* biomeArr;
+    if(mapType == '.'){
+        biomeArr = placeBiomesGrassLands(map,biomeCount);
+    }
+    else{
+        biomeArr = placeBiomesSpecial(map,biomeCount);
+    }
+
+    generateMap(map,biomeArr,biomeCount);
+    //Places other necessary items
+    placeRiversxRanges(map);
+    placeBuildings(map,biomeArr);
+    addRoadSystem(map,biomeArr);
+    
+    //free(biomeCount);
+    //free(biomeArr);
+
+    return map;
+
 }
 
 int main(int argc,char** argv){
@@ -509,21 +607,9 @@ int main(int argc,char** argv){
     srand(time(NULL));
 
     
-    mapTile_t map = mapInit('.');
-    int* biomeCount = malloc(sizeof(biomeCount));
+    mapTile_t* map =createMapTile();
 
-
-    biome_t* biomeArr = placeBiomesGrassLands(&map,biomeCount);
-    generateMap(&map,biomeArr,biomeCount);
-    placeRiversxRanges(&map);
-    placeBuildings(&map,biomeArr);
-    
-    addRoadSystem(&map,biomeArr);
-    
-    free(biomeCount);
-    free(biomeArr);
-
-    printMap(&map);
+    printMap(map);
     
 
 }

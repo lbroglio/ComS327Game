@@ -12,6 +12,7 @@
 #define DRKBLUE "\x1B[38;5;17m"
 #define GREY "\x1B[38;5;235m"
 #define DSRTYLLW "\x1B[38;5;220m"
+#define BROWN "\x1B[38;5;94m"
 #define RESET "\x1B[0m"
 
 
@@ -82,6 +83,9 @@ void printMap(mapTile_t* map){
             }
             else if(toPrint == 'M'){
                 printf(DRKBLUE "%c " RESET,toPrint);
+            }
+            else if(toPrint == '='){
+                printf(BROWN "%c " RESET,toPrint);
             }
             else{
                 printf("%c ",toPrint);

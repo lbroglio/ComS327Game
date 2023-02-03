@@ -388,85 +388,22 @@ void placeBuildings(mapTile_t* map, biome_t* biomeArr){
  * @param currLoc The starting location to draw the road from. A road will be drawn here
  * @param targetLoc The end point to draw the road to
  */
-void drawRoad(mapTile_t* map,point_t* currLoc, point_t targetLoc){
-    //Sets -1 or 1 as the modifier depending on what direction the road needs to move in
+int drawRoad(mapTile_t* map,point_t currLoc, point_t targetLoc, int avoidTracker){
+    if(map->mapArr[currLoc.rowNum][currLoc.colNum] != '~'){
+         map->mapArr[currLoc.rowNum][currLoc.colNum] = '#';
+    }
+    else{
+        map->mapArr[currLoc.rowNum][currLoc.colNum] = '=';
+    }
+
+    if(currLoc.rowNum == targetLoc.rowNum && currLoc.colNum == targetLoc.colNum){
+        return;
+    }
+
+    char nextChar = map->mapArr[currLoc.rowNum][currLoc.colNum];
     
 
-    //Temporary point used for redirecting
-    point_t temp;
-
-    while(currLoc->colNum != targetLoc.colNum || currLoc->rowNum != targetLoc.rowNum){
-        
-        while(currLoc->colNum != targetLoc.colNum)
-        {   
-            int colMod = (targetLoc.colNum - currLoc->colNum) / abs(targetLoc.colNum - currLoc->colNum);
-            char newChar = '#';
-            //Gets the char being replaced by the road
-            char repChar = map->mapArr[currLoc->rowNum][currLoc->colNum + colMod];
-        
-            //Checks to make sure a building isnt being replaced
-            if(repChar == 'C' || repChar == 'M'){
-                 
-                //Redirects below the building
-                if(currLoc->rowNum < 11){
-                    temp.colNum = currLoc->colNum;
-                    temp.rowNum = currLoc->rowNum + 2;
-                    drawRoad(map,currLoc,temp);
-                }
-                //Redirects above the building
-                else{
-                    temp.colNum = currLoc->colNum;
-                    temp.rowNum = currLoc->rowNum - 2;
-                    drawRoad(map,currLoc,temp);
-                }
-            }
-            else{
-                //If moving over water uses a "bridge" character
-                if(repChar == '~'){
-                    newChar = '=';
-                }  
-
-                //Replaces the character and moves forward
-                currLoc->colNum += colMod;
-                map->mapArr[currLoc->rowNum][currLoc->colNum] = newChar;
-                
-            }
- 
-
-        }   
-        while(currLoc->rowNum != targetLoc.rowNum)
-        {  
-            int rowMod = (targetLoc.rowNum - currLoc->rowNum) / abs(targetLoc.rowNum - currLoc->rowNum);
-            char newChar = '#';
-            char repChar = map->mapArr[currLoc->rowNum + rowMod][currLoc->colNum];
-            //Checks to make sure a building isnt being replaced
-            if(repChar == 'C' || repChar == 'M'){
-                if(currLoc->colNum < 40){
-                    //Redirects to the right of the building
-                    temp.colNum = currLoc->colNum + 2;
-                    temp.rowNum = currLoc->rowNum ;
-                    drawRoad(map,currLoc,temp);
-                }
-                else{
-                    //Redirects to the left of the building
-                    temp.colNum = currLoc->colNum - 2;
-                    temp.rowNum = currLoc->rowNum;
-                    drawRoad(map,currLoc,temp);
-                }
-            }
-            else{
-                //If moving over water uses a "bridge" character
-                if(repChar == '~'){
-                    newChar = '=';
-                }
-
-                //Replaces the character and moves forward
-                currLoc->rowNum += rowMod;
-                map->mapArr[currLoc->rowNum][currLoc->colNum] = newChar;
-                
-            }
-        }
-    }
+    
     
 }
 

@@ -29,7 +29,10 @@ typedef struct mapTile{
  * @brief Stores a point on the map
  * 
  */
-
+typedef struct mapPoint{
+    int rowNum;
+    int colNum;
+} point_t;
 /**
  * @brief Creates a new map tile
  * 

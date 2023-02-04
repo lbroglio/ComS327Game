@@ -380,8 +380,9 @@ void placeBuildings(mapTile_t* map, biome_t* biomeArr){
 
 }
 
-void dijkstraPathfindRoad(){
-    
+
+void dijkstraPathfindRoad(mapTile_t map, point_t){
+
 } 
 
 

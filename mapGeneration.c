@@ -380,6 +380,10 @@ void placeBuildings(mapTile_t* map, biome_t* biomeArr){
 
 }
 
+void dijkstraPathfindRoad(){
+    
+} 
+
 
 /**
  * @brief Draws a road on the map between the two given points
@@ -388,23 +392,8 @@ void placeBuildings(mapTile_t* map, biome_t* biomeArr){
  * @param currLoc The starting location to draw the road from. A road will be drawn here
  * @param targetLoc The end point to draw the road to
  */
-int drawRoad(mapTile_t* map,point_t currLoc, point_t targetLoc, int avoidTracker){
-    if(map->mapArr[currLoc.rowNum][currLoc.colNum] != '~'){
-         map->mapArr[currLoc.rowNum][currLoc.colNum] = '#';
-    }
-    else{
-        map->mapArr[currLoc.rowNum][currLoc.colNum] = '=';
-    }
+int drawRoad(mapTile_t map,point_t currLoc, point_t targetLoc, int avoidTracker){
 
-    if(currLoc.rowNum == targetLoc.rowNum && currLoc.colNum == targetLoc.colNum){
-        return;
-    }
-
-    char nextChar = map->mapArr[currLoc.rowNum][currLoc.colNum];
-    
-
-    
-    
 }
 
 /**

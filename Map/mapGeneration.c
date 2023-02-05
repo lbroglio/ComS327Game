@@ -3,6 +3,7 @@
 #include<time.h>
 #include"biome.h"
 #include"map.h"
+#include"./Data-Structures/priorityQueue.h"
 
 
 
@@ -381,7 +382,8 @@ void placeBuildings(mapTile_t* map, biome_t* biomeArr){
 }
 
 
-void dijkstraPathfindRoad(mapTile_t map, point_t){
+void dijkstraPathfindRoad(mapTile_t map, point_t startLoc, point_t  targetLoc){
+    
 
 } 
 

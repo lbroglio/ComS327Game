@@ -1,6 +1,8 @@
 #ifndef PRI_QUEUE_H
 #define PRI_QUEUE_H
 
+#include"../Map/map.h"
+
 /**
  * @brief Stores an entry in a priority queue representing a spot on the board
  * 
@@ -10,10 +12,6 @@ typedef struct queueEntry{
     int colNum;
     int  dist;
     int id;
-    int heapAd;
-    char charHere;
-    int prevId;
-
 
 }queueEntry_t;
 
@@ -23,7 +21,7 @@ typedef struct queueEntry{
  */
 typedef struct queue{
     queueEntry_t* heapArr; 
-    queueEntry_t* storageArr;
+    int* locArr;
     int size;
 }queue_t;
 
@@ -39,12 +37,11 @@ void queueInit(queue_t* s, int queueSize);
 /**
  * @brief Createa a new queue entry
  * 
- * @param rowNum Which row the space this entry represents is at 
- * @param colNum Which column the space this entry represents is at 
- * @param charAt The char at the location this represents
- * @return The created queue entry
+ * @param point The point to create an entry for
+ * @param dist The starting distance from the source
+ * @return The created entry 
  */
-queueEntry_t queueEntryInit(int rowNum, int colNum, char charAt);
+queueEntry_t queueEntryInit(point_t point, int dist);
 
 /**
  * @brief Returns the minmum value of the queue without removing it
@@ -52,7 +49,7 @@ queueEntry_t queueEntryInit(int rowNum, int colNum, char charAt);
  * @param s Pointer to the queue to get minmum from
  * @return The extracted entry
  */
-queueEntry_t peekMin(queue_t* s);
+point_t queuePeekMin(queue_t* s);
 
 /**
  * @brief Returns the minmum value of the queue and removes it 
@@ -60,7 +57,7 @@ queueEntry_t peekMin(queue_t* s);
  * @param s Pointer to the queue to get minmum from
  * @return The extracted entry
  */
-queueEntry_t extractMin(queue_t* s);
+point_t queueExtractMin(queue_t* s);
 
 /**
  * @brief Decreases the priority of a given entry in the queue
@@ -70,7 +67,7 @@ queueEntry_t extractMin(queue_t* s);
  * @param newPriority The number to change the priority to 
  * @return 0 on sucess other on fail
  */
-int decreasePriority(queue_t* s,queueEntry_t toDecrease, int newPriority);
+int queueDecreasePriority(queue_t* s,point_t toDecrease, int newPriority);
 
 /**
  * @brief Adds a new entry to the queue 
@@ -79,7 +76,7 @@ int decreasePriority(queue_t* s,queueEntry_t toDecrease, int newPriority);
  * @param toAdd The entry to add to the queue
  * @param priority The priority of this entry
  */
-void addWithPriority(queue_t* s, queueEntry_t toAdd, int priority);
+void queueAddWithPriority(queue_t* s, point_t toAdd, int priority);
 
 /**
  * @brief Gets the size of the queue
@@ -87,6 +84,33 @@ void addWithPriority(queue_t* s, queueEntry_t toAdd, int priority);
  * @param s Pointer to the queue to get the size of
  * @return The size of the queue
  */
-int size(queue_t* s);
+int queueSize(queue_t* s);
+
+/**
+ * @brief Destroys a queue freeing the memory in it
+ * 
+ * @param s The queue to destroy
+ */
+void queueDestroy(queue_t* s);
+
+/**
+ * @brief Gets the entry struct for a space based on its row and column
+ * 
+ * @param s Pointer to the queue to retrieve the entry from from
+ * @param row The row the space is in
+ * @param col The column the space is in
+ * @return The retrieved entry
+ */
+queueEntry_t queueGetEntryLoc(queue_t* s, int row, int col);
+
+/**
+ * @brief Gets the entry struct for a space based on its ID
+ * 
+ * @param s Pointer to the queue to retrieve the entry from from
+ * @param id The id of the space
+ * @return The retrieved entry
+ */
+queueEntry_t queueGetEntryID(queue_t* s, int id);
+
 
 #endif

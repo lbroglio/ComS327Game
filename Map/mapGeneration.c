@@ -3,8 +3,7 @@
 #include<time.h>
 #include"biome.h"
 #include"map.h"
-#include"./Data-Structures/priorityQueue.h"
-
+#include"../Data-Structures/priorityQueue.h"
 
 
 /**
@@ -35,9 +34,6 @@ void makeBiomeChoices(mapTile_t* map){
     }
     
 }
-
-
-
 
 /**
  * @brief Places the starting points of biomes unto a map array. The number of each type of biome determines the type of map. 
@@ -381,9 +377,122 @@ void placeBuildings(mapTile_t* map, biome_t* biomeArr){
 
 }
 
+/**
+ * @brief Converts a given point to its integer id
+ * 
+ * @param toConvert The point to convert
+ * @return The ID 
+ */
+int convertPoint(point_t toConvert){
+   return (toConvert.rowNum * 80) + toConvert.colNum;
+}
 
-void dijkstraPathfindRoad(mapTile_t map, point_t startLoc, point_t  targetLoc){
+/**
+ * @brief Converts a given ID to its corresponding point
+ * 
+ * @param toConvert The ID to convert
+ * @return The point 
+ */
+point_t convertID(int toConvert){
+    point_t converted;
+    converted.rowNum = toConvert / 80;
+    converted.colNum = toConvert % 80;
+
+   return converted;
+}
+
+
+void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
+    int mapSize = 1680;
+    int* dist = malloc(sizeof(int) * mapSize);
+    dist[convertPoint(startLoc)] = 0;
+
+    queue_t* priQueue = malloc(sizeof(priQueue) * mapSize);
+    queueInit(priQueue,mapSize);
+
+    point_t temp;
+    int  id;
+
+    for(int i=0; i< 21; i++){
+        for(int j=0; j< 80; j++){
+ 
+            temp.rowNum = i;
+            temp.colNum = j;
+            id = convertPoint(temp);
+
+            if(i != startLoc.rowNum || j != startLoc.colNum){
+                dist[id] =  __INT_MAX__;
+                prev[id] = -1;
+            }
+
+            queueAddWithPriority(priQueue,temp,dist[id]);
+        }
+    }
+
+    int size = queueSize(priQueue);
     
+    while (size > 0){
+        point_t currEntry  =  queueExtractMin(priQueue);
+        int currID = convertPoint(currEntry);
+
+        point_t currNeighbor;
+
+
+
+        for(int i =0; i < 4; i++){
+            int rowMod = 0;
+            int colMod = 0;
+
+            if(i == 0 && currEntry.rowNum > 1){
+                rowMod = -1;
+            }
+            else if(i == 1 && currEntry.rowNum < 19){
+                rowMod = 1;
+            }
+            else if(i == 2 && currEntry.colNum > 1){
+                colMod = -1;
+            }
+            else if(i == 3 && currEntry.colNum < 78){
+                colMod = 1;
+            }
+            else{
+                continue;
+            }   
+
+            currNeighbor.rowNum = currEntry.rowNum + rowMod;      
+            currNeighbor.colNum = currEntry.colNum +  colMod;
+            int neighborID = convertPoint(currNeighbor);
+            int currMod;
+            char neighborChar = map.mapArr[currNeighbor.rowNum][currNeighbor.colNum];
+
+            if(neighborChar == '%' || neighborChar == '~'){
+                currMod = 1000;
+            }
+            else if(neighborChar == '#' || neighborChar == '='){
+                currMod = 1;
+            }
+            else if(neighborChar == 'C' || neighborChar == 'M'){
+                currMod = 1000000;
+            }
+            else{
+                currMod = 2;
+            }
+            
+            int altDist = dist[currID] + currMod;
+
+            if (altDist < dist[neighborID]){
+                dist[neighborID] = altDist;
+                prev[neighborID] = currID; 
+                queueDecreasePriority(priQueue,currNeighbor, altDist);
+            }
+        }
+      
+                
+
+    size = queueSize(priQueue);
+    }             
+    free(dist);
+
 
 } 
 
@@ -392,10 +501,30 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc, point_t  targetLoc){
  * @brief Draws a road on the map between the two given points
  * 
  * @param map The map to draw the road on
- * @param currLoc The starting location to draw the road from. A road will be drawn here
+ * @param startLoc The starting location to draw the road from.
  * @param targetLoc The end point to draw the road to
  */
-int drawRoad(mapTile_t map,point_t currLoc, point_t targetLoc, int avoidTracker){
+void drawRoad(mapTile_t* map,point_t startLoc, point_t targetLoc){
+    
+    int* prevArr = malloc(sizeof(int) * 1680);
+
+    dijkstraPathfindRoad(*map,startLoc,prevArr);
+    
+    int startID = convertPoint(startLoc);
+    int currID  = 0;
+    int nextID = convertPoint(targetLoc);
+
+    while(currID != startID){
+        currID = prevArr[nextID];
+        point_t currPoint = convertID(currID);
+        if(map->mapArr[currPoint.rowNum][currPoint.colNum] == '~'){
+            map->mapArr[currPoint.rowNum][currPoint.colNum] = '=';
+        }
+        else{
+            map->mapArr[currPoint.rowNum][currPoint.colNum] = '#';
+        }
+        nextID = currID;
+    }
 
 }
 
@@ -406,78 +535,16 @@ int drawRoad(mapTile_t map,point_t currLoc, point_t targetLoc, int avoidTracker)
  * @param biomeArr Array of biomes on the map
  */
 void addRoadSystem(mapTile_t* map,biome_t* biomeArr){
-    //Intialzied points to hold location
-    point_t startPoint;
-    point_t endPoint;
-    point_t meetPoint;
+    point_t leftEnt;
+    point_t rightEnt;
 
-    //Randomly chooses a point for the roads to converge
-    meetPoint.colNum = (rand() % 60) + 10;
-    meetPoint.rowNum = (rand() % 10) + 5;
+    leftEnt.rowNum = map->leftEntLoc;
+    leftEnt.colNum = 1;
 
+    rightEnt.rowNum = map->rightEntLoc;
+    rightEnt.colNum = 78;
 
-    //Draws a road from the left entrance
-    startPoint.colNum = 0;
-    startPoint.rowNum = map->leftEntLoc;
-    drawRoad(map,&startPoint,meetPoint);
-
-    //Draws a road from the right entrance
-    startPoint.colNum = 79;
-    startPoint.rowNum = map->rightEntLoc;
-    drawRoad(map,&startPoint,meetPoint);
-
-
-    //Draws a road to the Pokecenter
-    startPoint.colNum = meetPoint.colNum;
-    startPoint.rowNum = meetPoint.rowNum;
-
-    endPoint.colNum = biomeArr->cenColNum;
-    endPoint.rowNum = biomeArr->cenRowNum -1;
-    drawRoad(map,&startPoint,endPoint);
-
-    //Draws a road to the Pokemart
-    startPoint.colNum = meetPoint.colNum;
-    startPoint.rowNum = meetPoint.rowNum;
-
-    endPoint.colNum = (biomeArr + 1)->cenColNum;
-    endPoint.rowNum = (biomeArr + 1)->cenRowNum -1;
-    drawRoad(map,&startPoint,endPoint);
-    
-
-    //Make a variable to hold row num of roads
-    int locTracker = 1;
-
-    //Draws a road from the top entrance
-    startPoint.colNum = map->topEntLoc;
-    startPoint.rowNum = 0;
-    char toCheck = map->mapArr[startPoint.colNum][locTracker];
-
-    while(toCheck != '#' && toCheck != '='){
-        locTracker++;
-        toCheck = map->mapArr[locTracker][startPoint.colNum];
-    }
-
-    endPoint.colNum = startPoint.colNum;
-    endPoint.rowNum = locTracker;
-    drawRoad(map,&startPoint,endPoint);
-
-    //Draws a road from the bottom entrance
-    locTracker = 79;
-
-    startPoint.colNum = map->bottomEntLoc;
-    startPoint.rowNum = 20;
-    toCheck = map->mapArr[startPoint.colNum][locTracker];
-
-    while(toCheck != '#' && toCheck != '='){
-        locTracker -= 1;
-        toCheck = map->mapArr[locTracker][startPoint.colNum];
-    }
-
-    endPoint.colNum = startPoint.colNum;
-    endPoint.rowNum = locTracker;
-    drawRoad(map,&startPoint,endPoint);
-
-
+    drawRoad(map,leftEnt,rightEnt);
     
 }
 
@@ -537,7 +604,6 @@ int main(int argc,char** argv){
 
     
     mapTile_t* map =createMapTile();
-
     printMap(map);
     
 

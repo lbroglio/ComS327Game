@@ -16,4 +16,4 @@ priorityQueue.o: Data-Structures/priorityQueue.c Data-Structures/priorityQueue.h
 
 
 clean:
-	rm mapGen mapGeneration.o biome.o map.o
+	rm mapGen mapGeneration.o biome.o map.o priorityQueue.o

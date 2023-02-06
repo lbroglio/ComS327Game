@@ -93,24 +93,7 @@ int queueSize(queue_t* s);
  */
 void queueDestroy(queue_t* s);
 
-/**
- * @brief Gets the entry struct for a space based on its row and column
- * 
- * @param s Pointer to the queue to retrieve the entry from from
- * @param row The row the space is in
- * @param col The column the space is in
- * @return The retrieved entry
- */
-queueEntry_t queueGetEntryLoc(queue_t* s, int row, int col);
 
-/**
- * @brief Gets the entry struct for a space based on its ID
- * 
- * @param s Pointer to the queue to retrieve the entry from from
- * @param id The id of the space
- * @return The retrieved entry
- */
-queueEntry_t queueGetEntryID(queue_t* s, int id);
 
 
 #endif

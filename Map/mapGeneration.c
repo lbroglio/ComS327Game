@@ -401,11 +401,23 @@ point_t convertID(int toConvert){
    return converted;
 }
 
+/**
+ * @brief Downshifts an ID to convert it to the number of space it is without the border. 
+ * This value serves as its index in the arrays used in pathfinding
+ * 
+ * @param id The id to downshift
+ * @return The downshifted id
+ */
+int indexID(int id){
+    int rowNum =  id / 80;
+    return id - (81 + ((rowNum -1) * 2));
+}
+
 
 void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
-    int mapSize = 1680;
+    int mapSize = 1482;
     int* dist = malloc(sizeof(int) * mapSize);
-    dist[convertPoint(startLoc)] = 0;
+    dist[indexID(convertPoint(startLoc))] = 0;
 
     queue_t* priQueue = malloc(sizeof(priQueue) * mapSize);
     queueInit(priQueue,mapSize);
@@ -413,19 +425,19 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
     point_t temp;
     int  id;
 
-    for(int i=0; i< 21; i++){
-        for(int j=0; j< 80; j++){
+    for(int i=1; i< 20; i++){
+        for(int j=1; j< 79; j++){
  
             temp.rowNum = i;
             temp.colNum = j;
             id = convertPoint(temp);
 
             if(i != startLoc.rowNum || j != startLoc.colNum){
-                dist[id] =  __INT_MAX__;
-                prev[id] = -1;
+                dist[indexID(id)] =  __INT_MAX__ - 500000;
+                prev[indexID(id)] = -1;
             }
 
-            queueAddWithPriority(priQueue,temp,dist[id]);
+            queueAddWithPriority(priQueue,temp,dist[indexID(id)]);
         }
     }
 
@@ -466,23 +478,23 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
             char neighborChar = map.mapArr[currNeighbor.rowNum][currNeighbor.colNum];
 
             if(neighborChar == '%' || neighborChar == '~'){
-                currMod = 1000;
+                currMod = 5000;
             }
             else if(neighborChar == '#' || neighborChar == '='){
                 currMod = 1;
             }
             else if(neighborChar == 'C' || neighborChar == 'M'){
-                currMod = 1000000;
+                currMod = 500000;
             }
             else{
                 currMod = 2;
             }
             
-            int altDist = dist[currID] + currMod;
-
-            if (altDist < dist[neighborID]){
-                dist[neighborID] = altDist;
-                prev[neighborID] = currID; 
+            int altDist = dist[indexID(currID)] + currMod;
+            
+            if (altDist < dist[indexID(neighborID)]){
+                dist[indexID(neighborID) ] = altDist;
+                prev[indexID(neighborID)] = currID; 
                 queueDecreasePriority(priQueue,currNeighbor, altDist);
             }
         }
@@ -506,7 +518,7 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
  */
 void drawRoad(mapTile_t* map,point_t startLoc, point_t targetLoc){
     
-    int* prevArr = malloc(sizeof(int) * 1680);
+    int* prevArr = malloc(sizeof(int) * 1482);
 
     dijkstraPathfindRoad(*map,startLoc,prevArr);
     
@@ -515,7 +527,7 @@ void drawRoad(mapTile_t* map,point_t startLoc, point_t targetLoc){
     int nextID = convertPoint(targetLoc);
 
     while(currID != startID){
-        currID = prevArr[nextID];
+        currID = prevArr[indexID(nextID)];
         point_t currPoint = convertID(currID);
         if(map->mapArr[currPoint.rowNum][currPoint.colNum] == '~'){
             map->mapArr[currPoint.rowNum][currPoint.colNum] = '=';
@@ -523,6 +535,7 @@ void drawRoad(mapTile_t* map,point_t startLoc, point_t targetLoc){
         else{
             map->mapArr[currPoint.rowNum][currPoint.colNum] = '#';
         }
+
         nextID = currID;
     }
 

@@ -14,8 +14,8 @@ void swap(queue_t* s, int x, int y){
     queueEntry_t xEntry = s->heapArr[x];
     queueEntry_t yEntry = s->heapArr[y];
 
-    s->locArr[xEntry.id] = y;
-    s->locArr[yEntry.id] = x;
+    s->locArr[xEntry.id - (81 + ((xEntry.rowNum -1) * 2))] = y;
+    s->locArr[yEntry.id - (81 + ((yEntry.rowNum -1) * 2))] = x;
 
     s->heapArr[x] = yEntry;
     s->heapArr[y] = xEntry;    
@@ -139,7 +139,7 @@ point_t queueExtractMin(queue_t* s){
 
 int queueDecreasePriority(queue_t* s,point_t toDecrease, int newPriority){
 
-    int getAt = (80 * toDecrease.rowNum) + toDecrease.colNum;
+    int getAt = s->locArr[(80 * toDecrease.rowNum) + toDecrease.colNum  - (81 + ((toDecrease.rowNum -1) * 2))];
 
     s->heapArr[getAt].dist = newPriority;
     percolateUp(s,getAt);
@@ -152,7 +152,7 @@ void queueAddWithPriority(queue_t* s, point_t toAdd, int priority){
     queueEntry_t newEntry = queueEntryInit(toAdd, priority);
 
     s->heapArr[s->size] =  newEntry;
-    s->locArr[newEntry.id] = s->size;
+    s->locArr[newEntry.id - (81 + ((newEntry.rowNum -1) * 2))] = s->size;
 
     percolateUp(s,s->size);
 
@@ -170,12 +170,3 @@ void queueDestroy(queue_t* s){
     s->size = 0;
 }
 
-queueEntry_t queueGetEntryLoc(queue_t* s, int row, int col){
-    int id = (row  * 80) + col;
-
-    return s->heapArr[s->locArr[id]];
-}
-
-queueEntry_t queueGetEntryID(queue_t* s, int id){
-    return s->heapArr[s->locArr[id]];
-}

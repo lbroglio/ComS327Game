@@ -552,8 +552,8 @@ void addRoadSystem(mapTile_t* map,biome_t* biomeArr){
     
 }
 
-mapTile_t* createMapTile(){
-    //Randomly chooses what type of map this is. Grasslands maps are weighted slightly highrt
+mapTile_t createMapTile(mapTile_t** worldMap, int worldRow, int worldCol){
+    //Randomly chooses what type of map this is. Grasslands maps are weighted slightly higher
     char mapType;
 
     int typeChooser = rand() % 5;
@@ -572,8 +572,8 @@ mapTile_t* createMapTile(){
     }
 
     //Creates a struct to hold the map
-    mapTile_t* map = malloc(sizeof(mapTile_t));
-    *map = mapInit(mapType);
+    //mapTile_t* map = malloc(sizeof(mapTile_t));
+    mapTile_t map = mapInit(mapType,worldMap,worldRow,worldCol);
 
     //Creates a variable to store the number of biomes
     int* biomeCount = malloc(sizeof(biomeCount));
@@ -582,34 +582,21 @@ mapTile_t* createMapTile(){
     //Randomly generates the biomes of this  map depending on type
     biome_t* biomeArr;
     if(mapType == '.'){
-        biomeArr = placeBiomesGrassLands(map,biomeCount);
+        biomeArr = placeBiomesGrassLands(&map,biomeCount);
     }
     else{
-        biomeArr = placeBiomesSpecial(map,biomeCount);
+        biomeArr = placeBiomesSpecial(&map,biomeCount);
     }
 
-    generateMap(map,biomeArr,biomeCount);
+    generateMap(&map,biomeArr,biomeCount);
     //Places other necessary items
-    placeRiversxRanges(map);
-    placeBuildings(map,biomeArr);
-    addRoadSystem(map,biomeArr);
+    placeRiversxRanges(&map);
+    placeBuildings(&map,biomeArr);
+    addRoadSystem(&map,biomeArr);
     
     //free(biomeCount);
     //free(biomeArr);
 
     return map;
-
-}
-
-int main(int argc,char** argv){
-
-
-    srand(time(NULL));
-
-    
-    mapTile_t* map =createMapTile();
-
-    printMap(map);
-    
 
 }

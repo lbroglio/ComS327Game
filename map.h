@@ -34,14 +34,17 @@ typedef struct mapPoint{
     int colNum;
 } point_t;
 
+
 /**
- * @brief Creates a new map tile
+ * @brief 
  * 
- * @param type The type of map this is. Represente by the symbol of the dominant biome
- * 
- * @return The created map tile. It has the borders as rocks and all other spaces as X
+ * @param type 
+ * @param worldMap 
+ * @param worldRow 
+ * @param worldCol 
+ * @return mapTile_t 
  */
-mapTile_t mapInit(char type);
+mapTile_t mapInit(char type,mapTile_t** worldMap, int worldRow, int worldCol);
 
 
 /**

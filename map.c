@@ -17,14 +17,66 @@
 
 
 
-mapTile_t mapInit(char type){
+mapTile_t mapInit(char type,mapTile_t** worldMap, int worldRow, int worldCol){
     mapTile_t toReturn;
+    mapTile_t* neighbor;
     
     //Selects the locations of the entraces/ exits
-    toReturn.topEntLoc = (rand() % 78) +1;
-    toReturn.bottomEntLoc = (rand() % 78) +1;
-    toReturn.leftEntLoc = (rand() % 19) +1;
-    toReturn.rightEntLoc = (rand() % 19) +1;
+    if(worldRow == 0){
+        toReturn.topEntLoc = -1;
+    }
+    else{
+        neighbor =  worldMap[worldRow - 1];
+
+        if((neighbor + worldCol) != NULL){
+            toReturn.topEntLoc = neighbor->bottomEntLoc;
+        }
+        else{
+             toReturn.topEntLoc = (rand() % 78) +1;
+        }
+    }
+
+    if(worldRow == 400){
+        toReturn.bottomEntLoc = -1;
+    }
+    else{
+        neighbor = worldMap[worldRow + 1];
+
+        if((neighbor + worldCol) != NULL){
+            toReturn.bottomEntLoc = neighbor->topEntLoc;
+        }
+        else{
+             toReturn.bottomEntLoc = (rand() % 78) +1;
+        }
+    }
+
+    if(worldCol == 0){
+        toReturn.leftEntLoc = -1;
+    }
+    else{
+        neighbor = worldMap[worldRow - 1];
+
+        if((neighbor + worldCol) != NULL){
+            toReturn.leftEntLoc = neighbor->rightEntLoc;
+        }
+        else{
+             toReturn.leftEntLoc = (rand() % 78) +1;
+        }
+    }
+
+    if(worldCol == 400){
+        toReturn.rightEntLoc = -1;
+    }
+    else{
+        neighbor = worldMap[worldRow + 1];
+
+        if((neighbor + worldCol) != NULL){
+            toReturn.rightEntLoc = neighbor->leftEntLoc;
+        }
+        else{
+             toReturn.rightEntLoc = (rand() % 78) +1;
+        }
+    }
 
 
     //Draws the map

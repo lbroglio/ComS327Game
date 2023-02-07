@@ -87,10 +87,11 @@ int main (int argc, char** argv){
             printf("\nEnding Program\n");
         }
         else{
-            printf("\nUnrecegnized Input. Please enter n, s, e, w, f, or q.\n");
+            printf("\nUnrecognized Input. Please enter n, s, e, w, f, or q.\n");
         }
     }
 
+    worldMapDestroy(worldMap);
    
 
     return 0;

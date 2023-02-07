@@ -67,7 +67,9 @@ int main (int argc, char** argv){
         }
 
         printMap((*(worldMap.worldArr + currWorldRow)) + currWorldCol);
+        fflush(stdin);
         scanf("%c",&enteredChar);
+
 
         if(enteredChar == 'n'){
             currWorldRow -= 1;

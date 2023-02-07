@@ -16,4 +16,4 @@ map.o: map.c map.h
 	gcc -Wall -Werror -ggdb map.c -c
 
 clean:
-	rm mapGen mapGeneration.o biome.o map.o worldGeneration.o
+	rm worldGen mapGeneration.o biome.o map.o worldGeneration.o

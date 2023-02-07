@@ -624,7 +624,7 @@ mapTile_t createMapTile(mapTile_t** worldMap, int worldRow, int worldCol){
     else{
         neighbor = worldMap[worldRow][worldCol + 1];
         if(neighbor.mapType != '@'){
-            rightEnt = neighbor.rightEntLoc;
+            rightEnt = neighbor.leftEntLoc;
         }
         else{
             rightEnt = (rand() % 19) +1;

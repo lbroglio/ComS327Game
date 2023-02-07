@@ -571,9 +571,69 @@ mapTile_t createMapTile(mapTile_t** worldMap, int worldRow, int worldCol){
          mapType = '.';
     }
 
+
+    //mapTile_t* neighbor;
+    int topEnt, bottomEnt, leftEnt,rightEnt;
+
+    mapTile_t neighbor;
+
+    
+
+    if(worldRow == 0){
+        topEnt = -1;
+    }
+    else{
+        neighbor = worldMap[worldRow -1][worldCol];
+        if(neighbor.mapType != '@'){
+            topEnt = neighbor.bottomEntLoc;
+        }
+        else{
+            topEnt = (rand() % 78) +1;
+        }
+    }
+   
+    if(worldRow  == 400){
+        bottomEnt = -1;
+    }
+    else{
+        neighbor = worldMap[worldRow + 1][worldCol];
+        if(neighbor.mapType != '@'){
+            bottomEnt = neighbor.topEntLoc;
+        }
+        else{
+            bottomEnt = (rand() % 78) +1;
+        }
+    }
+
+    if(worldCol == 0){
+        leftEnt = -1;
+    }
+    else{
+        neighbor = worldMap[worldRow][worldCol - 1];
+        if(neighbor.mapType != '@'){
+            leftEnt = neighbor.rightEntLoc;
+        }
+        else{
+            leftEnt = (rand() % 19) +1;
+        }
+    }
+
+    if(worldCol == 400){
+        rightEnt = -1;
+    }
+    else{
+        neighbor = worldMap[worldRow][worldCol + 1];
+        if(neighbor.mapType != '@'){
+            rightEnt = neighbor.rightEntLoc;
+        }
+        else{
+            rightEnt = (rand() % 19) +1;
+        }
+    }
+
     //Creates a struct to hold the map
     //mapTile_t* map = malloc(sizeof(mapTile_t));
-    mapTile_t map = mapInit(mapType,worldMap,worldRow,worldCol);
+    mapTile_t map = mapTileInit(mapType,topEnt,bottomEnt,leftEnt,rightEnt);
 
     //Creates a variable to store the number of biomes
     int* biomeCount = malloc(sizeof(biomeCount));
@@ -591,11 +651,20 @@ mapTile_t createMapTile(mapTile_t** worldMap, int worldRow, int worldCol){
     generateMap(&map,biomeArr,biomeCount);
     //Places other necessary items
     placeRiversxRanges(&map);
-    placeBuildings(&map,biomeArr);
+
+    int manDist = abs(200 - worldRow) + abs(200 - worldCol);
+    int spawnChance = (((-45.0 * manDist)/200.0) + 50);
+    int spawnNum = (rand() % 100) + 1;
+
+    if(spawnNum < spawnChance || (worldRow == 200 && worldCol == 200)){
+        placeBuildings(&map,biomeArr);
+    }
+    
     addRoadSystem(&map,biomeArr);
     
-    //free(biomeCount);
-    //free(biomeArr);
+    
+    free(biomeCount);
+    free(biomeArr);
 
     return map;
 

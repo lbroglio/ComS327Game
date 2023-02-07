@@ -1,7 +1,12 @@
-mapGen: mapGeneration.o biome.o map.o
-	gcc mapGeneration.o biome.o map.o -o mapGen
+worldGen: mapGeneration.o biome.o map.o worldGeneration.o
+	gcc worldGeneration.o mapGeneration.o biome.o map.o -o worldGen
 
-mapGeneration.o: mapGeneration.c biome.h
+
+worldGeneration.o: worldGeneration.c 
+	gcc -Wall -Werror -ggdb worldGeneration.c -c
+
+
+mapGeneration.o: mapGeneration.c mapGeneration.h
 	gcc -Wall -Werror -ggdb mapGeneration.c -c
 
 biome.o: biome.c biome.h
@@ -11,4 +16,4 @@ map.o: map.c map.h
 	gcc -Wall -Werror -ggdb map.c -c
 
 clean:
-	rm mapGen mapGeneration.o biome.o map.o
+	rm mapGen mapGeneration.o biome.o map.o worldGeneration.o

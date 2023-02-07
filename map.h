@@ -36,16 +36,16 @@ typedef struct mapPoint{
 
 
 /**
- * @brief 
+ * @brief Creates a new map tile
  * 
- * @param type 
- * @param worldMap 
- * @param worldRow 
- * @param worldCol 
- * @return mapTile_t 
+ * @param type The type of map this should be represented by the symbol of the dominant biome
+ * @param topEnt The location of the top gate. 
+ * @param bottomEnt The location of the bottom gate. 
+ * @param leftEnt The location of the left gate.
+ * @param rightEnt The location of the right gate.
+ * @return The newly created map tile
  */
-mapTile_t mapInit(char type,mapTile_t** worldMap, int worldRow, int worldCol);
-
+mapTile_t mapTileInit(char type, int topEnt, int bottomEnt, int leftEnt, int rightEnt);
 
 /**
  * @brief Prints out a map to the console

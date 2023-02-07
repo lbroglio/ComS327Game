@@ -9,9 +9,9 @@
  * @param worldMap The array representing the existing tiles on the map
  * @param worldRow The row location in the worldMap Array
  * @param worldCol The column location in the worldMap Array
- * @return A pointer to the newly created map tile
+ * @return The newly created map tile
  */
-mapTile_t* createMapTile(mapTile_t** worldMap, int worldRow, int worldCol);
+mapTile_t createMapTile(mapTile_t** worldMap, int worldRow, int worldCol);
 
 
 

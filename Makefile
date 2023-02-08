@@ -2,7 +2,7 @@ worldGen: mapGeneration.o biome.o map.o worldGeneration.o
 	gcc worldGeneration.o mapGeneration.o biome.o map.o -o worldGen
 
 
-worldGeneration.o:  Map/worldGeneration.c 
+worldGeneration.o:  Map/worldGeneration.c Map/worldGeneration.h
 	gcc -Wall -Werror -ggdb  Map/worldGeneration.c -c
 
 

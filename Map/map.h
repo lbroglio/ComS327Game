@@ -1,6 +1,7 @@
 #ifndef MAP_H
 #define MAP_H
 
+#include"biome.h"
 
 /**
  * @brief Holds the map tile.
@@ -9,6 +10,8 @@
 typedef struct mapTile{
     /**2D array of chars that holds the map*/
     char mapArr[21][80];
+    /**Array which stores the biome structs in this map*/
+    biome_t* biomeArr;
     /**Stores the symbol of the dominant biome of this map*/
     char mapType;
     /**Determines how mountains are on this map. 0 means a normal biome, 1 means a range, 2 means no mountains*/
@@ -53,5 +56,12 @@ mapTile_t mapTileInit(char type, int topEnt, int bottomEnt, int leftEnt, int rig
  * @param map The map to print
  */
 void printMap(mapTile_t* map);
+
+/**
+ * @brief Destroys a map tile freeing the memory inside it
+ * 
+ * @param map The map to destroy
+ */
+void mapTileDestory(mapTile_t* map);
 
 #endif

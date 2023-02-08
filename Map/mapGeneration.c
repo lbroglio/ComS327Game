@@ -3,6 +3,7 @@
 #include<time.h>
 #include"biome.h"
 #include"map.h"
+#include"worldGeneration.h"
 
 
 
@@ -43,10 +44,10 @@ void makeBiomeChoices(mapTile_t* map){
  * This function creates a grasslands(Default) map.
  * 
  * @param map The map to place biomes on 
+ * @param biomeCount Memory address to set with the number of biomes
  * 
- * @return An array of the created biomes
  */
-biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
+void placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
     //Decides wheter to have lakes or rivers and mountain ranges or regions
     makeBiomeChoices(map);
     *biomeCount = 6;
@@ -66,7 +67,7 @@ biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
     }
     
     //Creates an array to store the biomes in
-    biome_t* biomeArr = malloc(sizeof(biome_t) * (*biomeCount));
+    map->biomeArr = malloc(sizeof(biome_t) * (*biomeCount));
 
     //Creates a temporary biome holder
     biome_t temp;
@@ -112,12 +113,11 @@ biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
         
         //Puts the biome into the arrays
         map->mapArr[temp.cenRowNum][temp.cenColNum] = temp.type;
-        biomeArr[i] = temp;
+        map->biomeArr[i] = temp;
 
 
     }
     
-    return biomeArr;
 }
 
 /**
@@ -126,9 +126,8 @@ biome_t* placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
  * 
  * @param map The map to place biomes on 
  * 
- * @return An array of the created biomes
  */
-biome_t* placeBiomesSpecial(mapTile_t* map,int* biomeCount){
+void placeBiomesSpecial(mapTile_t* map,int* biomeCount){
     //Decides wheter to have lakes or rivers and mountain ranges or regions
     makeBiomeChoices(map);
     *biomeCount = 10;
@@ -149,7 +148,7 @@ biome_t* placeBiomesSpecial(mapTile_t* map,int* biomeCount){
     }
     
     //Creates an array to store the biomes in
-    biome_t* biomeArr = malloc(sizeof(biome_t) * (*biomeCount));
+    map->biomeArr = malloc(sizeof(biome_t) * (*biomeCount));
 
     //Creates a temporary biome holder
     biome_t temp;
@@ -196,12 +195,11 @@ biome_t* placeBiomesSpecial(mapTile_t* map,int* biomeCount){
 
         //Puts the biome into the arrays
         map->mapArr[temp.cenRowNum][temp.cenColNum] = temp.type;
-        biomeArr[i] = temp;
+        map->biomeArr[i] = temp;
 
 
     }
     
-    return biomeArr;
 }
 
 /**
@@ -283,17 +281,16 @@ void expandBiome(mapTile_t* map,biome_t biome,int* tilePlaced){
  * @brief Takes in a map with biomes placed on it. Expands the biomes to cover the entire map
  * 
  * @param map The map to generate
- * @param biomeArr An array of the biomes on the map
  * @param biomeCount The number of biomes
  */
-void generateMap(mapTile_t* map, biome_t* biomeArr, int* biomeCount){
+void generateMap(mapTile_t* map, int* biomeCount){
     int tilePlaced = 1;
 
     while(tilePlaced == 1){
         tilePlaced = 0;
         for(int i=0; i < *biomeCount; i++){
-           (biomeArr + i)->radius += 1;
-            expandBiome(map,*(biomeArr + i),&tilePlaced);
+           ((map->biomeArr) + i)->radius += 1;
+            expandBiome(map,*((map->biomeArr) + i),&tilePlaced);
         }
     }
 
@@ -353,13 +350,12 @@ void placeRiversxRanges(mapTile_t* map){
  * @brief Adds the Pokecenter and Pokemart to the map
  * 
  * @param map Map to place buildings on
- * @param biomeArr Array contianing biome locations
  */
-void placeBuildings(mapTile_t* map, biome_t* biomeArr){
+void placeBuildings(mapTile_t* map){
 
     //Gets locations of first biome for the building
-    int rowNum = (biomeArr)->cenRowNum;
-    int colNum = (biomeArr)->cenColNum;
+    int rowNum = (map->biomeArr)->cenRowNum;
+    int colNum = (map->biomeArr)->cenColNum;
     
 
     //Adds the Pokemon Center 
@@ -369,8 +365,8 @@ void placeBuildings(mapTile_t* map, biome_t* biomeArr){
     map->mapArr[rowNum+1][colNum+1]= 'C';
 
     //Gets the location of the second biome for the building 
-    rowNum = (biomeArr + 1)->cenRowNum;
-    colNum = (biomeArr + 1)->cenColNum;
+    rowNum = ((map->biomeArr) + 1)->cenRowNum;
+    colNum = ((map->biomeArr) + 1)->cenColNum;
 
     //Adds the Pokemart 
     map->mapArr[rowNum][colNum] = 'M';
@@ -474,9 +470,8 @@ void drawRoad(mapTile_t* map,point_t* currLoc, point_t targetLoc){
  * @brief Adds the road network connecting the entrances and buildings to the map
  * 
  * @param map The map to add roads to
- * @param biomeArr Array of biomes on the map
  */
-void addRoadSystem(mapTile_t* map,biome_t* biomeArr){
+void addRoadSystem(mapTile_t* map){
     //Intialzied points to hold location
     point_t startPoint;
     point_t endPoint;
@@ -488,71 +483,84 @@ void addRoadSystem(mapTile_t* map,biome_t* biomeArr){
 
 
     //Draws a road from the left entrance
-    startPoint.colNum = 0;
-    startPoint.rowNum = map->leftEntLoc;
-    drawRoad(map,&startPoint,meetPoint);
+    if(map->leftEntLoc != -1){
+        startPoint.colNum = 0;
+        startPoint.rowNum = map->leftEntLoc;
+        drawRoad(map,&startPoint,meetPoint);
+    }
+   
 
     //Draws a road from the right entrance
-    startPoint.colNum = 79;
-    startPoint.rowNum = map->rightEntLoc;
-    drawRoad(map,&startPoint,meetPoint);
+    if(map-> rightEntLoc != -1){
+        startPoint.colNum = 79;
+        startPoint.rowNum = map->rightEntLoc;
+        drawRoad(map,&startPoint,meetPoint);
+    }
+    
 
 
     //Draws a road to the Pokecenter
     startPoint.colNum = meetPoint.colNum;
     startPoint.rowNum = meetPoint.rowNum;
 
-    endPoint.colNum = biomeArr->cenColNum;
-    endPoint.rowNum = biomeArr->cenRowNum -1;
+    endPoint.colNum = (map->biomeArr)->cenColNum;
+    endPoint.rowNum = (map->biomeArr)->cenRowNum -1;
     drawRoad(map,&startPoint,endPoint);
 
     //Draws a road to the Pokemart
     startPoint.colNum = meetPoint.colNum;
     startPoint.rowNum = meetPoint.rowNum;
 
-    endPoint.colNum = (biomeArr + 1)->cenColNum;
-    endPoint.rowNum = (biomeArr + 1)->cenRowNum -1;
+    endPoint.colNum = ((map->biomeArr) + 1)->cenColNum;
+    endPoint.rowNum = ((map->biomeArr) + 1)->cenRowNum -1;
     drawRoad(map,&startPoint,endPoint);
     
+    int locTracker;
+    char toCheck;
+    if(map->topEntLoc != -1){
+        //Make a variable to hold row num of roads
+        locTracker = 1;
 
-    //Make a variable to hold row num of roads
-    int locTracker = 1;
+        //Draws a road from the top entrance
+        startPoint.colNum = map->topEntLoc;
+        startPoint.rowNum = 0;
+        toCheck = map->mapArr[startPoint.colNum][locTracker];
 
-    //Draws a road from the top entrance
-    startPoint.colNum = map->topEntLoc;
-    startPoint.rowNum = 0;
-    char toCheck = map->mapArr[startPoint.colNum][locTracker];
+        while(toCheck != '#' && toCheck != '='){
+            locTracker++;
+            toCheck = map->mapArr[locTracker][startPoint.colNum];
+        }
 
-    while(toCheck != '#' && toCheck != '='){
-        locTracker++;
-        toCheck = map->mapArr[locTracker][startPoint.colNum];
+        endPoint.colNum = startPoint.colNum;
+        endPoint.rowNum = locTracker;
+        drawRoad(map,&startPoint,endPoint);
     }
 
-    endPoint.colNum = startPoint.colNum;
-    endPoint.rowNum = locTracker;
-    drawRoad(map,&startPoint,endPoint);
+    if(map->bottomEntLoc != -1){
+        //Draws a road from the bottom entrance
+        locTracker = 78;
 
-    //Draws a road from the bottom entrance
-    locTracker = 79;
+        startPoint.colNum = map->bottomEntLoc;
+        startPoint.rowNum = 20;
+        toCheck = map->mapArr[startPoint.colNum][locTracker];
 
-    startPoint.colNum = map->bottomEntLoc;
-    startPoint.rowNum = 20;
-    toCheck = map->mapArr[startPoint.colNum][locTracker];
+        while(toCheck != '#' && toCheck != '='){
+            locTracker -= 1;
+            toCheck = map->mapArr[locTracker][startPoint.colNum];
+        }
 
-    while(toCheck != '#' && toCheck != '='){
-        locTracker -= 1;
-        toCheck = map->mapArr[locTracker][startPoint.colNum];
+        endPoint.colNum = startPoint.colNum;
+        endPoint.rowNum = locTracker;
+        drawRoad(map,&startPoint,endPoint);
     }
-
-    endPoint.colNum = startPoint.colNum;
-    endPoint.rowNum = locTracker;
-    drawRoad(map,&startPoint,endPoint);
 
 
     
 }
 
-mapTile_t createMapTile(mapTile_t** worldMap, int worldRow, int worldCol){
+mapTile_t createMapTile(worldMap_t worldMap, int worldRow, int worldCol){
+    
+
     //Randomly chooses what type of map this is. Grasslands maps are weighted slightly higher
     char mapType;
 
@@ -574,17 +582,16 @@ mapTile_t createMapTile(mapTile_t** worldMap, int worldRow, int worldCol){
 
     //mapTile_t* neighbor;
     int topEnt, bottomEnt, leftEnt,rightEnt;
-
+    int placedInd;
     mapTile_t neighbor;
-
-    
 
     if(worldRow == 0){
         topEnt = -1;
     }
     else{
-        neighbor = worldMap[worldRow -1][worldCol];
-        if(neighbor.mapType != '@'){
+        placedInd = worldMap.placedArr[worldRow -1][worldCol];
+        if(placedInd == 1){
+            neighbor = worldMap.worldArr[worldRow -1][worldCol];
             topEnt = neighbor.bottomEntLoc;
         }
         else{
@@ -596,8 +603,9 @@ mapTile_t createMapTile(mapTile_t** worldMap, int worldRow, int worldCol){
         bottomEnt = -1;
     }
     else{
-        neighbor = worldMap[worldRow + 1][worldCol];
-        if(neighbor.mapType != '@'){
+        placedInd = worldMap.placedArr[worldRow + 1][worldCol];
+        if(placedInd == 1){
+            neighbor = worldMap.worldArr[worldRow + 1][worldCol];
             bottomEnt = neighbor.topEntLoc;
         }
         else{
@@ -609,8 +617,9 @@ mapTile_t createMapTile(mapTile_t** worldMap, int worldRow, int worldCol){
         leftEnt = -1;
     }
     else{
-        neighbor = worldMap[worldRow][worldCol - 1];
-        if(neighbor.mapType != '@'){
+        placedInd = worldMap.placedArr[worldRow][worldCol - 1];
+        if(placedInd == 1){
+            neighbor = worldMap.worldArr[worldRow][worldCol - 1];
             leftEnt = neighbor.rightEntLoc;
         }
         else{
@@ -622,8 +631,9 @@ mapTile_t createMapTile(mapTile_t** worldMap, int worldRow, int worldCol){
         rightEnt = -1;
     }
     else{
-        neighbor = worldMap[worldRow][worldCol + 1];
-        if(neighbor.mapType != '@'){
+         placedInd = worldMap.placedArr[worldRow][worldCol + 1];
+        if(placedInd == 1){
+            neighbor = worldMap.worldArr[worldRow][worldCol + 1];
             rightEnt = neighbor.leftEntLoc;
         }
         else{
@@ -636,19 +646,18 @@ mapTile_t createMapTile(mapTile_t** worldMap, int worldRow, int worldCol){
     mapTile_t map = mapTileInit(mapType,topEnt,bottomEnt,leftEnt,rightEnt);
 
     //Creates a variable to store the number of biomes
-    int* biomeCount = malloc(sizeof(biomeCount));
+    int biomeCount;
 
 
     //Randomly generates the biomes of this  map depending on type
-    biome_t* biomeArr;
     if(mapType == '.'){
-        biomeArr = placeBiomesGrassLands(&map,biomeCount);
+        placeBiomesGrassLands(&map,&biomeCount);
     }
     else{
-        biomeArr = placeBiomesSpecial(&map,biomeCount);
+       placeBiomesSpecial(&map,&biomeCount);
     }
 
-    generateMap(&map,biomeArr,biomeCount);
+    generateMap(&map,&biomeCount);
     //Places other necessary items
     placeRiversxRanges(&map);
 
@@ -657,14 +666,12 @@ mapTile_t createMapTile(mapTile_t** worldMap, int worldRow, int worldCol){
     int spawnNum = (rand() % 100) + 1;
 
     if(spawnNum < spawnChance || (worldRow == 200 && worldCol == 200)){
-        placeBuildings(&map,biomeArr);
+        placeBuildings(&map);
     }
     
-    addRoadSystem(&map,biomeArr);
+    addRoadSystem(&map);
     
     
-    free(biomeCount);
-    free(biomeArr);
 
     return map;
 

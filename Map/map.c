@@ -94,3 +94,7 @@ void printMap(mapTile_t* map){
         printf("\n");
     }
 }
+
+void mapTileDestroy(mapTile_t* map){
+    free(map->biomeArr);
+}

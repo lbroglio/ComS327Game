@@ -3,15 +3,8 @@
 #include<time.h>
 #include"map.h"
 #include"mapGeneration.h"
+#include"worldGeneration.h"
 
-
-/**
- * @brief Wrapper struct for the array holding all the tiles in the world map
- * 
- */
-typedef struct worldMap{
-    mapTile_t** worldArr;
-}worldMap_t;
 
 /**
  * @brief Creates a world map - Allocates all the memory for the tiles
@@ -20,8 +13,6 @@ typedef struct worldMap{
  */
 worldMap_t worldMapInit(){
     worldMap_t toReturn;
-    mapTile_t placeHolder;
-    placeHolder.mapType = '@';
 
     toReturn.worldArr = malloc(sizeof(mapTile_t*) * 401);
 
@@ -29,7 +20,7 @@ worldMap_t worldMapInit(){
         *(toReturn.worldArr + i) =  malloc(sizeof(mapTile_t) * 401);
 
         for(int j =0; j < 401; j++){
-            toReturn.worldArr[i][j] =  placeHolder;
+            toReturn.placedArr[i][j] = 0;
         }
     }
 
@@ -54,21 +45,28 @@ int main (int argc, char** argv){
     
     worldMap_t worldMap = worldMapInit();
 
-    worldMap.worldArr[200][200] = createMapTile(worldMap.worldArr,200,200);
+    worldMap.worldArr[200][200] = createMapTile(worldMap,200,200);
+    worldMap.placedArr[200][200] = 1;
     
     int currWorldRow = 200;
     int currWorldCol = 200;
     
     char enteredChar = 'x';
-
+    char junk;
+    int xTemp;
+    int yTemp;
     while(enteredChar != 'q'){
-        if(worldMap.worldArr[currWorldRow][currWorldCol].mapType == '@'){
-            worldMap.worldArr[currWorldRow][currWorldCol] = createMapTile(worldMap.worldArr,currWorldRow,currWorldCol);
+        if(worldMap.placedArr[currWorldRow][currWorldCol] == 0){
+            worldMap.worldArr[currWorldRow][currWorldCol] = createMapTile(worldMap,currWorldRow,currWorldCol);
+            worldMap.placedArr[currWorldRow][currWorldCol] = 1;
         }
 
         printMap((*(worldMap.worldArr + currWorldRow)) + currWorldCol);
-        fflush(stdin);
         scanf("%c",&enteredChar);
+        if(enteredChar == 'f'){
+            scanf(" %d %d",&xTemp,&yTemp);
+        }
+        scanf("%c",&junk);
 
 
         if(enteredChar == 'n'){
@@ -82,6 +80,10 @@ int main (int argc, char** argv){
         }
         else if(enteredChar == 'w'){
             currWorldCol -= 1;
+        }
+        else if(enteredChar == 'f'){
+            currWorldRow = xTemp;
+            currWorldCol = yTemp;
         }
         else if(enteredChar == 'q'){
             printf("\nEnding Program\n");

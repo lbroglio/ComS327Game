@@ -488,12 +488,22 @@ void addRoadSystem(mapTile_t* map){
         startPoint.rowNum = map->leftEntLoc;
         drawRoad(map,&startPoint,meetPoint);
     }
+    else{
+        startPoint.colNum =0;
+        startPoint.rowNum = (rand() % 15) +1;
+        drawRoad(map,&startPoint,meetPoint);
+    }
    
 
     //Draws a road from the right entrance
     if(map-> rightEntLoc != -1){
         startPoint.colNum = 79;
         startPoint.rowNum = map->rightEntLoc;
+        drawRoad(map,&startPoint,meetPoint);
+    }
+    else{
+        startPoint.colNum =79;
+        startPoint.rowNum = (rand() % 15) +1;
         drawRoad(map,&startPoint,meetPoint);
     }
     
@@ -524,6 +534,7 @@ void addRoadSystem(mapTile_t* map){
         //Draws a road from the top entrance
         startPoint.colNum = map->topEntLoc;
         startPoint.rowNum = 0;
+        
         toCheck = map->mapArr[startPoint.colNum][locTracker];
 
         while(toCheck != '#' && toCheck != '='){
@@ -538,11 +549,11 @@ void addRoadSystem(mapTile_t* map){
 
     if(map->bottomEntLoc != -1){
         //Draws a road from the bottom entrance
-        locTracker = 78;
+        locTracker = 20;
 
         startPoint.colNum = map->bottomEntLoc;
         startPoint.rowNum = 20;
-        toCheck = map->mapArr[startPoint.colNum][locTracker];
+        toCheck = map->mapArr[locTracker][startPoint.colNum];
 
         while(toCheck != '#' && toCheck != '='){
             locTracker -= 1;

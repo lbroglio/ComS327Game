@@ -93,9 +93,12 @@ void percolateDown(queue_t* s, int currentLoc){
 void queueInit(queue_t* s, int queueSize){
     s->heapArr = malloc(sizeof(queueEntry_t) * queueSize);
     s->locArr = malloc(sizeof(int) * queueSize);
+
+    for(int i =0; i < queueSize; i++){
+        s->locArr[i] = -1;
+    }
     s->size =0;
 }
-
 
 queueEntry_t queueEntryInit(point_t point, int dist){
     queueEntry_t toReturn;
@@ -122,6 +125,7 @@ point_t queuePeekMin(queue_t* s){
 point_t queueExtractMin(queue_t* s){
     //Extracts the minmum value
     queueEntry_t extracted = s->heapArr[0];
+    s->locArr[extracted.id - (81 + ((extracted.rowNum -1) * 2))] = -1;
     point_t toReturn;
     toReturn.rowNum = extracted.rowNum;
     toReturn.colNum = extracted.colNum;
@@ -139,7 +143,7 @@ point_t queueExtractMin(queue_t* s){
 
 int queueDecreasePriority(queue_t* s,point_t toDecrease, int newPriority){
 
-    int getAt = s->locArr[(80 * toDecrease.rowNum) + toDecrease.colNum  - (81 + ((toDecrease.rowNum -1) * 2))];
+    int getAt = s->locArr[((80 * toDecrease.rowNum) + toDecrease.colNum)  - (81 + ((toDecrease.rowNum -1) * 2))];
 
     s->heapArr[getAt].dist = newPriority;
     percolateUp(s,getAt);
@@ -159,6 +163,22 @@ void queueAddWithPriority(queue_t* s, point_t toAdd, int priority){
     s->size += 1;
 }
 
+int checkInQueue(queue_t* s, point_t toCheck){
+    int id =  ((toCheck.rowNum * 80) + toCheck.colNum) - (81 + ((toCheck.rowNum -1) * 2));
+
+    if(toCheck.rowNum == 0 || toCheck.rowNum == 20 || toCheck.colNum == 0 || toCheck.colNum == 79){
+        return 0;
+    }
+    else if(id < 0 || id > 1481 || s->locArr[id] == -1){
+        return 0;
+    }
+    else{
+        return 1;
+    }
+
+
+
+}
 
 int queueSize(queue_t* s){
     return s->size;

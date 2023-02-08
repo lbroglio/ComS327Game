@@ -336,7 +336,7 @@ void placeRiversxRanges(mapTile_t* map){
             
             //Ends if range reaches edge of map
              if(placeLoc >= 79 || placeLoc <= 0){
-                i+= 20;
+               break;
             }
 
             map->mapArr[i][placeLoc] = '%';
@@ -437,15 +437,17 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
                 dist[indexID(id)] =  __INT_MAX__ - 500000;
                 prev[indexID(id)] = -1;
             }
-
-            queueAddWithPriority(priQueue,temp,dist[indexID(id)]);
+            if(map.mapArr[i][j] != 'C' && map.mapArr[i][j] != 'M'){
+                queueAddWithPriority(priQueue,temp,dist[indexID(id)]);
+            }
+            
         }
     }
 
     int size = queueSize(priQueue);
     
     while (size > 0){
-        point_t currEntry  =  queueExtractMin(priQueue);
+        point_t currEntry = queueExtractMin(priQueue);
         int currID = convertPoint(currEntry);
 
         point_t currNeighbor;
@@ -456,25 +458,31 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
             int rowMod = 0;
             int colMod = 0;
 
-            if(i == 0 && currEntry.rowNum > 1){
+            if(i == 0 ){
                 rowMod = -1;
             }
-            else if(i == 1 && currEntry.rowNum < 19){
+            else if(i == 1){
                 rowMod = 1;
             }
-            else if(i == 2 && currEntry.colNum > 1){
+            else if(i == 2){
                 colMod = -1;
             }
-            else if(i == 3 && currEntry.colNum < 78){
+            else if(i == 3){
                 colMod = 1;
             }
-            else{
-                continue;
-            }   
+
+
 
             currNeighbor.rowNum = currEntry.rowNum + rowMod;      
             currNeighbor.colNum = currEntry.colNum +  colMod;
+            if(checkInQueue(priQueue,currNeighbor) == 0){
+                continue;
+            }
+
             int neighborID = convertPoint(currNeighbor);
+
+
+
             int currMod;
             char neighborChar = map.mapArr[currNeighbor.rowNum][currNeighbor.colNum];
             currMod = 1;
@@ -483,9 +491,6 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
             }
             else if(neighborChar == '#' || neighborChar == '='){
                 currMod = 1;
-            }
-            else if(neighborChar == 'C' || neighborChar == 'M'){
-                currMod = 500000;
             }
             else{
                 currMod = 2;
@@ -497,6 +502,7 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
                 track++;
                 dist[indexID(neighborID) ] = altDist;
                 prev[indexID(neighborID)] = currID; 
+
                 queueDecreasePriority(priQueue,currNeighbor, altDist);
             }
         }
@@ -504,7 +510,8 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
                 
 
     size = queueSize(priQueue);
-    }             
+    }
+    queueDestroy(priQueue);             
     free(dist);
     printf("%d\n",track);
 

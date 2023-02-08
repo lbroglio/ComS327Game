@@ -79,6 +79,14 @@ int queueDecreasePriority(queue_t* s,point_t toDecrease, int newPriority);
 void queueAddWithPriority(queue_t* s, point_t toAdd, int priority);
 
 /**
+ * @brief Checks to see if a given point is currently in the queue
+ * 
+ * @param s - The queue to check for the point
+ * @param toCheck The point to check
+ * @return 1 if it is in the queue. 0 if it isnt
+ */
+int checkInQueue(queue_t* s, point_t toCheck);
+/**
  * @brief Gets the size of the queue
  * 
  * @param s Pointer to the queue to get the size of

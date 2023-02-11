@@ -72,7 +72,8 @@ void percolateDown(queue_t* s, int currentLoc){
         //Check to see if second child is smaller
         if ((childLoc + 1) < s->size){
             if (child.dist > s->heapArr[childLoc + 1].dist){
-                child = s->heapArr[childLoc + 1];
+                childLoc += 1;
+                child = s->heapArr[childLoc];
             }
             
         }
@@ -125,13 +126,14 @@ point_t queuePeekMin(queue_t* s){
 point_t queueExtractMin(queue_t* s){
     //Extracts the minmum value
     queueEntry_t extracted = s->heapArr[0];
-    s->locArr[extracted.id - (81 + ((extracted.rowNum -1) * 2))] = -1;
+    
     point_t toReturn;
     toReturn.rowNum = extracted.rowNum;
     toReturn.colNum = extracted.colNum;
 
     //Puts the last item to the front
     swap(s,0,s->size-1);
+    s->locArr[extracted.id - (81 + ((extracted.rowNum -1) * 2))] = -1;
     s->size -= 1;
 
     //Restores heap order

@@ -37,7 +37,6 @@ typedef struct mapPoint{
     int colNum;
 } point_t;
 
-
 /**
  * @brief Creates a new map tile
  * 

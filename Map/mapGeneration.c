@@ -3,6 +3,7 @@
 #include<time.h>
 #include"biome.h"
 #include"map.h"
+#include"../Data-Structures/priorityQueue.h"
 #include"worldGeneration.h"
 
 
@@ -35,9 +36,6 @@ void makeBiomeChoices(mapTile_t* map){
     }
     
 }
-
-
-
 
 /**
  * @brief Places the starting points of biomes unto a map array. The number of each type of biome determines the type of map. 
@@ -336,7 +334,7 @@ void placeRiversxRanges(mapTile_t* map){
             
             //Ends if range reaches edge of map
              if(placeLoc >= 79 || placeLoc <= 0){
-                i+= 20;
+               break;
             }
 
             map->mapArr[i][placeLoc] = '%';
@@ -376,94 +374,181 @@ void placeBuildings(mapTile_t* map){
 
 }
 
+/**
+ * @brief Converts a given point to its integer id
+ * 
+ * @param toConvert The point to convert
+ * @return The ID 
+ */
+int convertPoint(point_t toConvert){
+   return (toConvert.rowNum * 80) + toConvert.colNum;
+}
+
+/**
+ * @brief Converts a given ID to its corresponding point
+ * 
+ * @param toConvert The ID to convert
+ * @return The point 
+ */
+point_t convertID(int toConvert){
+    point_t converted;
+    converted.rowNum = toConvert / 80;
+    converted.colNum = toConvert % 80;
+
+   return converted;
+}
+
+/**
+ * @brief Downshifts an ID to convert it to the number of space it is without the border. 
+ * This value serves as its index in the arrays used in pathfinding
+ * 
+ * @param id The id to downshift
+ * @return The downshifted id
+ */
+int indexID(int id){
+    int rowNum =  id / 80;
+    return id - (81 + ((rowNum -1) * 2));
+}
+
+
+void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
+    int mapSize = 1482;
+    int dist[mapSize];
+    dist[indexID(convertPoint(startLoc))] = 0;
+    
+    queue_t priQueue;
+    queueInit(&priQueue,mapSize);
+
+    point_t temp;
+    int  id;
+
+    for(int i=1; i< 20; i++){
+        for(int j=1; j< 79; j++){
+ 
+            temp.rowNum = i;
+            temp.colNum = j;
+            id = convertPoint(temp);
+
+            if(i != startLoc.rowNum || j != startLoc.colNum){
+                dist[indexID(id)] =  __INT_MAX__ - 500000;
+                prev[indexID(id)] = -1;
+            }
+            if(map.mapArr[i][j] != 'C' && map.mapArr[i][j] != 'M'){
+                queueAddWithPriority(&priQueue,temp,dist[indexID(id)]);
+            }
+            
+        }
+    }
+
+    int size = queueSize(&priQueue);
+    
+    while (size > 0){
+        point_t currEntry = queueExtractMin(&priQueue);
+        int currID = convertPoint(currEntry);
+
+        point_t currNeighbor;
+
+
+
+        for(int i =0; i < 4; i++){
+            int rowMod = 0;
+            int colMod = 0;
+
+            if(i == 0 ){
+                rowMod = -1;
+            }
+            else if(i == 1){
+                rowMod = 1;
+            }
+            else if(i == 2){
+                colMod = -1;
+            }
+            else if(i == 3){
+                colMod = 1;
+            }
+
+
+
+            currNeighbor.rowNum = currEntry.rowNum + rowMod;      
+            currNeighbor.colNum = currEntry.colNum +  colMod;
+            if(checkInQueue(&priQueue,currNeighbor) == 0){
+                continue;
+            }
+
+            int neighborID = convertPoint(currNeighbor);
+
+
+
+            int currMod;
+            char neighborChar = map.mapArr[currNeighbor.rowNum][currNeighbor.colNum];
+            currMod = 1;
+            if(neighborChar == '%' || neighborChar == '~'){
+                currMod = 5000;
+            }
+            else if(neighborChar == '#' || neighborChar == '='){
+                currMod = 1;
+            }
+            else{
+                currMod = 2;
+            }
+            
+            int altDist = dist[indexID(currID)] + currMod;
+            
+            if (altDist < dist[indexID(neighborID)]){
+                dist[indexID(neighborID) ] = altDist;
+                prev[indexID(neighborID)] = currID; 
+
+                queueDecreasePriority(&priQueue,currNeighbor, altDist);
+            }
+        }
+      
+                
+
+    size = queueSize(&priQueue);
+    }
+    queueDestroy(&priQueue);             
+} 
+
 
 /**
  * @brief Draws a road on the map between the two given points
  * 
  * @param map The map to draw the road on
- * @param currLoc The starting location to draw the road from. A road will be drawn here
+ * @param startLoc The starting location to draw the road from.
  * @param targetLoc The end point to draw the road to
  */
-void drawRoad(mapTile_t* map,point_t* currLoc, point_t targetLoc){
-    //Sets -1 or 1 as the modifier depending on what direction the road needs to move in
+void drawRoad(mapTile_t* map,point_t startLoc, point_t targetLoc){
     
+    int prevArr[1482];
 
-    //Temporary point used for redirecting
-    point_t temp;
+    dijkstraPathfindRoad(*map,startLoc,prevArr);
+    
+    int startID = convertPoint(startLoc);
+    int currID  = convertPoint(targetLoc);
+    //int nextID = convertPoint(targetLoc);
+    int trigger = 1;
 
-    while(currLoc->colNum != targetLoc.colNum || currLoc->rowNum != targetLoc.rowNum){
-        
-        while(currLoc->colNum != targetLoc.colNum)
-        {   
-            int colMod = (targetLoc.colNum - currLoc->colNum) / abs(targetLoc.colNum - currLoc->colNum);
-            char newChar = '#';
-            //Gets the char being replaced by the road
-            char repChar = map->mapArr[currLoc->rowNum][currLoc->colNum + colMod];
-        
-            //Checks to make sure a building isnt being replaced
-            if(repChar == 'C' || repChar == 'M'){
-                 
-                //Redirects below the building
-                if(currLoc->rowNum < 11){
-                    temp.colNum = currLoc->colNum;
-                    temp.rowNum = currLoc->rowNum + 2;
-                    drawRoad(map,currLoc,temp);
-                }
-                //Redirects above the building
-                else{
-                    temp.colNum = currLoc->colNum;
-                    temp.rowNum = currLoc->rowNum - 2;
-                    drawRoad(map,currLoc,temp);
-                }
-            }
-            else{
-                //If moving over water uses a "bridge" character
-                if(repChar == '~'){
-                    newChar = '=';
-                }  
+    while(trigger != 0){
 
-                //Replaces the character and moves forward
-                currLoc->colNum += colMod;
-                map->mapArr[currLoc->rowNum][currLoc->colNum] = newChar;
-                
-            }
- 
-
-        }   
-        while(currLoc->rowNum != targetLoc.rowNum)
-        {  
-            int rowMod = (targetLoc.rowNum - currLoc->rowNum) / abs(targetLoc.rowNum - currLoc->rowNum);
-            char newChar = '#';
-            char repChar = map->mapArr[currLoc->rowNum + rowMod][currLoc->colNum];
-            //Checks to make sure a building isnt being replaced
-            if(repChar == 'C' || repChar == 'M'){
-                if(currLoc->colNum < 40){
-                    //Redirects to the right of the building
-                    temp.colNum = currLoc->colNum + 2;
-                    temp.rowNum = currLoc->rowNum ;
-                    drawRoad(map,currLoc,temp);
-                }
-                else{
-                    //Redirects to the left of the building
-                    temp.colNum = currLoc->colNum - 2;
-                    temp.rowNum = currLoc->rowNum;
-                    drawRoad(map,currLoc,temp);
-                }
-            }
-            else{
-                //If moving over water uses a "bridge" character
-                if(repChar == '~'){
-                    newChar = '=';
-                }
-
-                //Replaces the character and moves forward
-                currLoc->rowNum += rowMod;
-                map->mapArr[currLoc->rowNum][currLoc->colNum] = newChar;
-                
-            }
+        point_t currPoint = convertID(currID);
+        if(map->mapArr[currPoint.rowNum][currPoint.colNum] == '~' || map->mapArr[currPoint.rowNum][currPoint.colNum] == '='){
+            map->mapArr[currPoint.rowNum][currPoint.colNum] = '=';
         }
+        else{
+            map->mapArr[currPoint.rowNum][currPoint.colNum] = '#';
+        }
+
+        if(currID != startID){
+            currID = prevArr[indexID(currID)];
+        }
+        else{
+            trigger =0;
+        }
+        
+        //nextID = currID;
     }
-    
+
+
 }
 
 /**
@@ -473,57 +558,42 @@ void drawRoad(mapTile_t* map,point_t* currLoc, point_t targetLoc){
  */
 void addRoadSystem(mapTile_t* map){
     //Intialzied points to hold location
-    point_t startPoint;
-    point_t endPoint;
-    point_t meetPoint;
+    point_t leftEnt;
+    point_t rightEnt;
+    point_t  startPoint;
+    point_t  endPoint;
 
-    //Randomly chooses a point for the roads to converge
-    meetPoint.colNum = (rand() % 60) + 10;
-    meetPoint.rowNum = (rand() % 10) + 5;
-
-
-    //Draws a road from the left entrance
     if(map->leftEntLoc != -1){
-        startPoint.colNum = 0;
-        startPoint.rowNum = map->leftEntLoc;
-        drawRoad(map,&startPoint,meetPoint);
+        leftEnt.rowNum = map->leftEntLoc;
     }
     else{
-        startPoint.colNum =0;
-        startPoint.rowNum = (rand() % 15) +1;
-        drawRoad(map,&startPoint,meetPoint);
+         leftEnt.rowNum = (rand() % 15) +1;;
     }
-   
 
-    //Draws a road from the right entrance
-    if(map-> rightEntLoc != -1){
-        startPoint.colNum = 79;
-        startPoint.rowNum = map->rightEntLoc;
-        drawRoad(map,&startPoint,meetPoint);
+    if(map->rightEntLoc != -1){
+        rightEnt.rowNum = map->rightEntLoc;
     }
     else{
-        startPoint.colNum =79;
-        startPoint.rowNum = (rand() % 15) +1;
-        drawRoad(map,&startPoint,meetPoint);
+         rightEnt.rowNum = (rand() % 15) +1;;
     }
     
+    leftEnt.colNum = 1;
+    rightEnt.colNum = 78;
 
 
+    //Draws a road from the left entrance to the right
+     drawRoad(map,leftEnt,rightEnt);
+
+    
     //Draws a road to the Pokecenter
-    startPoint.colNum = meetPoint.colNum;
-    startPoint.rowNum = meetPoint.rowNum;
-
     endPoint.colNum = (map->biomeArr)->cenColNum;
     endPoint.rowNum = (map->biomeArr)->cenRowNum -1;
-    drawRoad(map,&startPoint,endPoint);
+    drawRoad(map,leftEnt,endPoint);
 
     //Draws a road to the Pokemart
-    startPoint.colNum = meetPoint.colNum;
-    startPoint.rowNum = meetPoint.rowNum;
-
     endPoint.colNum = ((map->biomeArr) + 1)->cenColNum;
     endPoint.rowNum = ((map->biomeArr) + 1)->cenRowNum -1;
-    drawRoad(map,&startPoint,endPoint);
+    drawRoad(map,leftEnt,endPoint);
     
     int locTracker;
     char toCheck;
@@ -533,7 +603,7 @@ void addRoadSystem(mapTile_t* map){
 
         //Draws a road from the top entrance
         startPoint.colNum = map->topEntLoc;
-        startPoint.rowNum = 0;
+        startPoint.rowNum = 1;
         
         toCheck = map->mapArr[startPoint.colNum][locTracker];
 
@@ -544,7 +614,7 @@ void addRoadSystem(mapTile_t* map){
 
         endPoint.colNum = startPoint.colNum;
         endPoint.rowNum = locTracker;
-        drawRoad(map,&startPoint,endPoint);
+        drawRoad(map,startPoint,endPoint);
     }
 
     if(map->bottomEntLoc != -1){
@@ -552,7 +622,7 @@ void addRoadSystem(mapTile_t* map){
         locTracker = 20;
 
         startPoint.colNum = map->bottomEntLoc;
-        startPoint.rowNum = 20;
+        startPoint.rowNum = 19;
         toCheck = map->mapArr[locTracker][startPoint.colNum];
 
         while(toCheck != '#' && toCheck != '='){
@@ -562,7 +632,7 @@ void addRoadSystem(mapTile_t* map){
 
         endPoint.colNum = startPoint.colNum;
         endPoint.rowNum = locTracker;
-        drawRoad(map,&startPoint,endPoint);
+        drawRoad(map,startPoint,endPoint);
     }
 
 
@@ -571,7 +641,6 @@ void addRoadSystem(mapTile_t* map){
 
 mapTile_t createMapTile(worldMap_t worldMap, int worldRow, int worldCol){
     
-
     //Randomly chooses what type of map this is. Grasslands maps are weighted slightly higher
     char mapType;
 

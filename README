@@ -1,5 +1,0 @@
-This program adds a world map to the game. This allows the user to move between different map tiles. If the user returns to a tile they have already visited the terrain will be the same.
-
-The World Map can be navigated with n, s, e, w for North South, East, and West and the command f x y. In the f command x and y are coordiantes and will take you anywhere on the 401 - 401 grid. 
-
-The gates will sync up in between map tiles and there will be no gates on the edge of the map. Row 0 does not have a top gate, Row 400 does not have a bottom gate, column 0 does not have a left gate and column 400 does not have a right gate.

@@ -410,7 +410,14 @@ int indexID(int id){
     return id - (81 + ((rowNum -1) * 2));
 }
 
-
+/**
+ * @brief Uses dijkstra's algorithm to generate an array which stores the shortest path for a road to take by holding the
+ * predecessor of each point in the array
+ * 
+ * @param map The map to draw the roads on
+ * @param startLoc The starting location to use as the source in  dijkstra's algorithm
+ * @param prev The array to store the predecessors in
+ */
 void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
     int mapSize = 1482;
     int dist[mapSize];
@@ -748,6 +755,66 @@ mapTile_t createMapTile(worldMap_t worldMap, int worldRow, int worldCol){
     if(spawnNum < spawnChance || (worldRow == 200 && worldCol == 200)){
         placeBuildings(&map);
     }
+    
+    addRoadSystem(&map);
+    
+    
+
+    return map;
+
+}
+
+mapTile_t createMapTileIndependent(){
+    
+    //Randomly chooses what type of map this is. Grasslands maps are weighted slightly higher
+    char mapType;
+
+    int typeChooser = rand() % 5;
+
+    if(typeChooser == 2){
+        mapType = '\"';
+    }
+    else if(typeChooser == 3){
+        mapType = '%';
+    }
+    else if(typeChooser == 4){
+        mapType = '~';
+    }
+    else{
+         mapType = '.';
+    }
+
+
+    //mapTile_t* neighbor;
+    int topEnt, bottomEnt, leftEnt,rightEnt;
+
+    topEnt = (rand() % 78) +1;
+    bottomEnt = (rand() % 78) +1;
+    leftEnt = (rand() % 19) +1;
+    rightEnt = (rand() % 19) +1;
+  
+
+    //Creates a struct to hold the map
+    //mapTile_t* map = malloc(sizeof(mapTile_t));
+    mapTile_t map = mapTileInit(mapType,topEnt,bottomEnt,leftEnt,rightEnt);
+
+    //Creates a variable to store the number of biomes
+    int biomeCount;
+
+
+    //Randomly generates the biomes of this  map depending on type
+    if(mapType == '.'){
+        placeBiomesGrassLands(&map,&biomeCount);
+    }
+    else{
+       placeBiomesSpecial(&map,&biomeCount);
+    }
+
+    generateMap(&map,&biomeCount);
+    //Places other necessary items
+    placeRiversxRanges(&map);
+    placeBuildings(&map);
+    
     
     addRoadSystem(&map);
     

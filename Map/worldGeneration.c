@@ -6,11 +6,7 @@
 #include"worldGeneration.h"
 
 
-/**
- * @brief Creates a world map - Allocates all the memory for the tiles
- * 
- * @return The created worldMap
- */
+
 worldMap_t worldMapInit(){
     worldMap_t toReturn;
 
@@ -27,11 +23,7 @@ worldMap_t worldMapInit(){
     return toReturn;
 }
 
-/**
- * @brief Destorys a world map - Dellocates the memory
- * 
- * @param toDestroy The world map to destroy
- */
+
 void worldMapDestroy(worldMap_t toDestroy){
         for(int i =0; i < 401; i++){
             free((toDestroy.worldArr + i));

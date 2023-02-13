@@ -15,5 +15,13 @@
 mapTile_t createMapTile(worldMap_t worldMap, int worldRow, int worldCol);
 
 
+/**
+ * @brief Creates a map tile which exists independant of a greater world map. 
+ * Will always have all four gates and buildings
+ * Meant for testing
+ * 
+ * @return The created map tile 
+ */
+mapTile_t createMapTileIndependent();
 
 #endif

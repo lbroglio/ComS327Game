@@ -1,5 +1,11 @@
+npcDist: mapGeneration.o map.o priorityQueue.o NPCMovement.o biome.o
+	gcc NPCMovement.o mapGeneration.o map.o biome.o priorityQueue.o -o npcDist
+
 worldGen: mapGeneration.o biome.o map.o worldGeneration.o priorityQueue.o
 	gcc worldGeneration.o mapGeneration.o biome.o map.o priorityQueue.o -o worldGen
+
+NPCMovement.o: NPC/NPCMovement.c
+	gcc -Wall -Werror -ggdb  NPC/NPCMovement.c -c
 
 worldGeneration.o:  Map/worldGeneration.c Map/worldGeneration.h
 	gcc -Wall -Werror -ggdb  Map/worldGeneration.c -c
@@ -20,4 +26,4 @@ map.o:  Map/map.c  Map/map.h
 	gcc -Wall -Werror -ggdb  Map/map.c -c
 
 clean:
-	rm worldGen mapGeneration.o biome.o map.o worldGeneration.o priorityQueue.o
+	rm worldGen npcDist mapGeneration.o biome.o map.o worldGeneration.o priorityQueue.o NPCMovement.o

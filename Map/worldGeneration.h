@@ -14,4 +14,19 @@ typedef struct worldMap{
 }worldMap_t;
 
 
+/**
+ * @brief Creates a world map - Allocates all the memory for the tiles
+ * 
+ * @return The created worldMap
+ */
+worldMap_t worldMapInit();
+
+/**
+ * @brief Destorys a world map - Dellocates the memory
+ * 
+ * @param toDestroy The world map to destroy
+ */
+void worldMapDestroy(worldMap_t toDestroy);
+
+
 #endif

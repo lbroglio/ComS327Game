@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<time.h>
 #include"../Map/map.h"
 #include"../Map/biome.h"
 #include"../Map/mapGeneration.h"
@@ -14,14 +15,17 @@
  * @param dist Array to store the tiles distances in 
  */
 void dijkstraPathfindHiker(mapTile_t map, player_t player,int dist[21][80]){
+    //Creates the necessary array
     int mapSize = 1482;
     dist[player.rowNum][player.colNum] = 0;
     
+    //Creates Priority Queue
     queue_t priQueue;
     queueInit(&priQueue,mapSize);
 
     point_t temp;
 
+    //Puts all the points into the Queue 
     for(int i=1; i< 20; i++){
         for(int j=1; j< 79; j++){
  
@@ -31,8 +35,11 @@ void dijkstraPathfindHiker(mapTile_t map, player_t player,int dist[21][80]){
             if(i != player.rowNum || j != player.colNum){
                 dist[i][j] =  __INT_MAX__ - 500000;
             }
-            if(map.mapArr[i][j] != '='){
+            if(map.mapArr[i][j] != '~'){
                 queueAddWithPriority(&priQueue,temp,dist[i][j]);
+            }
+            else{
+                dist[i][j] =  -1;
             }
             
         }
@@ -46,7 +53,7 @@ void dijkstraPathfindHiker(mapTile_t map, player_t player,int dist[21][80]){
         point_t currNeighbor;
 
 
-
+        //For Every neighbor
         for(int i =0; i < 4; i++){
             int rowMod = 0;
             int colMod = 0;
@@ -73,7 +80,7 @@ void dijkstraPathfindHiker(mapTile_t map, player_t player,int dist[21][80]){
             }
 
 
-
+            //Check Distance
             int currMod;
             char neighborChar = map.mapArr[currNeighbor.rowNum][currNeighbor.colNum];
             currMod = 1;
@@ -87,6 +94,7 @@ void dijkstraPathfindHiker(mapTile_t map, player_t player,int dist[21][80]){
                 currMod = 50;
             }
             
+            //Change  its distance if its left
             int altDist = dist[currEntry.rowNum][currEntry.colNum] + currMod;
             
             if (altDist < dist[currNeighbor.rowNum][currNeighbor.colNum]){
@@ -112,14 +120,17 @@ void dijkstraPathfindHiker(mapTile_t map, player_t player,int dist[21][80]){
  * @param dist Array to store the tiles distances in 
  */
 void dijkstraPathfindRival(mapTile_t map,  player_t player,int dist[21][80]){
+    //Creates the necessary array
     int mapSize = 1482;
     dist[player.rowNum][player.colNum] = 0;
     
+     //Creates Priority Queue
     queue_t priQueue;
     queueInit(&priQueue,mapSize);
 
     point_t temp;
 
+     //Creates Priority Queue
     for(int i=1; i< 20; i++){
         for(int j=1; j< 79; j++){
  
@@ -129,8 +140,11 @@ void dijkstraPathfindRival(mapTile_t map,  player_t player,int dist[21][80]){
             if(i != player.rowNum || j != player.colNum){
                 dist[i][j] =  __INT_MAX__ - 500000;
             }
-            if(map.mapArr[i][j] != '=' || map.mapArr[i][j] != '%' || map.mapArr[i][j] != '\"'){
+            if(map.mapArr[i][j] != '~' && map.mapArr[i][j] != '%' && map.mapArr[i][j] != '\"'){
                 queueAddWithPriority(&priQueue,temp,dist[i][j]);
+            }
+            else{
+                dist[i][j] =  -1;
             }
             
         }
@@ -145,7 +159,7 @@ void dijkstraPathfindRival(mapTile_t map,  player_t player,int dist[21][80]){
 
 
 
-        for(int i =0; i < 4; i++){
+        for(int i =0; i < 8; i++){
             int rowMod = 0;
             int colMod = 0;
 
@@ -210,7 +224,13 @@ void dijkstraPathfindRival(mapTile_t map,  player_t player,int dist[21][80]){
 void printDistArr(int dist[21][80]){
     for(int i =0; i < 21; i++){
         for(int j =0; j < 80; j++){
-            printf("%02d ",dist[i][j] % 100);
+            if(i != 0 && i != 20 && j != 0 && j != 79 && dist[i][j] != -1){
+                printf("%02d ",dist[i][j] % 100);
+            }
+            else{
+                printf("  ");
+            }
+            
     }
     printf("\n");
     }
@@ -218,13 +238,16 @@ void printDistArr(int dist[21][80]){
 
 
 int main(int argc, char* argv[]){
+    srand(time(NULL));
     int hikerDist[21][80];
     int rivalDist[21][80];
     
     mapTile_t map = createMapTileIndependent();
+    
     player_t player;
     player.colNum = ((map.biomeArr) + 1)->cenColNum;
     player.rowNum = ((map.biomeArr) + 1)->cenRowNum -1;
+    map.mapArr[player.rowNum][player.colNum] = '@';
 
     dijkstraPathfindHiker(map,player,hikerDist);
     dijkstraPathfindRival(map,player,rivalDist);

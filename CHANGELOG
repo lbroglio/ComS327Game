@@ -1,3 +1,15 @@
+commit 659152324f2ce5397db22eb5ed7ec78bda1ec146
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Feb 15 19:08:13 2023 -0600
+
+    Added diagnil movement
+
+commit d234695563a17164b9c89759975c8fdffc9cd3f1
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Feb 15 18:39:52 2023 -0600
+
+    README and changelog for assigment 1.03
+
 commit cef442795cfdac300caffd16533f261ea208402c
 Author: lbroglio <lbroglio@iastate.edu>
 Date:   Tue Feb 14 16:06:44 2023 -0600

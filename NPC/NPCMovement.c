@@ -54,7 +54,7 @@ void dijkstraPathfindHiker(mapTile_t map, player_t player,int dist[21][80]){
 
 
         //For Every neighbor
-        for(int i =0; i < 4; i++){
+        for(int i =0; i < 8; i++){
             int rowMod = 0;
             int colMod = 0;
 
@@ -69,6 +69,22 @@ void dijkstraPathfindHiker(mapTile_t map, player_t player,int dist[21][80]){
             }
             else if(i == 3){
                 colMod = 1;
+            }
+            else if(i == 4){
+                rowMod = -1;
+                colMod = -1;
+            }
+            else if(i ==  5){
+                rowMod = 1;
+                colMod = 1;
+            }
+            else if(i == 6){
+                colMod = -1;
+                rowMod  = 1;
+            }
+            else if(i == 7){
+                colMod = 1;
+                rowMod = -1;
             }
 
 
@@ -174,6 +190,22 @@ void dijkstraPathfindRival(mapTile_t map,  player_t player,int dist[21][80]){
             }
             else if(i == 3){
                 colMod = 1;
+            }
+            else if(i == 4){
+                rowMod = -1;
+                colMod = -1;
+            }
+            else if(i ==  5){
+                rowMod = 1;
+                colMod = 1;
+            }
+            else if(i == 6){
+                colMod = -1;
+                rowMod  = 1;
+            }
+            else if(i == 7){
+                colMod = 1;
+                rowMod = -1;
             }
 
 

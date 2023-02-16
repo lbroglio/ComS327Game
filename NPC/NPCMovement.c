@@ -253,9 +253,9 @@ int main(int argc, char* argv[]){
     dijkstraPathfindRival(map,player,rivalDist);
 
     printMap(&map);
-    printf("\n");
+    printf("\n Hiker:\n");
     printDistArr(hikerDist);
-    printf("\n");
+    printf("\n Rival:\n");
     printDistArr(rivalDist);
 
 

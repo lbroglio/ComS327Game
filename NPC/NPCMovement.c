@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<time.h>
+#include<string.h>
 #include"../Map/map.h"
 #include"../Map/biome.h"
 #include"../Map/mapGeneration.h"
@@ -21,7 +22,7 @@ void dijkstraPathfindHiker(mapTile_t map, player_t player,int dist[21][80]){
     
     //Creates Priority Queue
     queue_t priQueue;
-    queueInit(&priQueue,mapSize);
+    queueInit(&priQueue,mapSize,sizeof(point_t),pointToLocID);
 
     point_t temp;
 
@@ -36,7 +37,12 @@ void dijkstraPathfindHiker(mapTile_t map, player_t player,int dist[21][80]){
                 dist[i][j] =  __INT_MAX__ - 500000;
             }
             if(map.mapArr[i][j] != '~'){
-                queueAddWithPriority(&priQueue,temp,dist[i][j]);
+                void* tempV = malloc(sizeof(temp));
+                memcpy(tempV,&temp,sizeof(temp));
+
+                queueAddWithPriority(&priQueue,tempV,dist[i][j]);
+
+                free(tempV);
             }
             else{
                 dist[i][j] =  -1;
@@ -48,7 +54,9 @@ void dijkstraPathfindHiker(mapTile_t map, player_t player,int dist[21][80]){
     int size = queueSize(&priQueue);
     
     while (size > 0){
-        point_t currEntry = queueExtractMin(&priQueue);
+        void* currEntryV = (queueExtractMin(&priQueue));
+        point_t currEntry = *((point_t*) currEntryV);
+        free(currEntryV);
 
         point_t currNeighbor;
 
@@ -91,9 +99,15 @@ void dijkstraPathfindHiker(mapTile_t map, player_t player,int dist[21][80]){
 
             currNeighbor.rowNum = currEntry.rowNum + rowMod;      
             currNeighbor.colNum = currEntry.colNum +  colMod;
-            if(checkInQueue(&priQueue,currNeighbor) == 0){
+
+            void* neighborV = malloc(sizeof(currNeighbor));
+            memcpy(neighborV,&currNeighbor,sizeof(currNeighbor));
+
+            if(checkInQueue(&priQueue,neighborV) == 0){
+                 free(neighborV);
                 continue;
             }
+             free(neighborV);
 
 
             //Check Distance
@@ -116,7 +130,13 @@ void dijkstraPathfindHiker(mapTile_t map, player_t player,int dist[21][80]){
             if (altDist < dist[currNeighbor.rowNum][currNeighbor.colNum]){
                 dist[currNeighbor.rowNum][currNeighbor.colNum] = altDist; 
 
-                queueDecreasePriority(&priQueue,currNeighbor, altDist);
+                
+                void* neighborV = malloc(sizeof(currNeighbor));
+                memcpy(neighborV,&currNeighbor,sizeof(currNeighbor));
+
+                queueDecreasePriority(&priQueue,neighborV, altDist);
+
+                free(neighborV);
             }
         }
       
@@ -136,17 +156,17 @@ void dijkstraPathfindHiker(mapTile_t map, player_t player,int dist[21][80]){
  * @param dist Array to store the tiles distances in 
  */
 void dijkstraPathfindRival(mapTile_t map,  player_t player,int dist[21][80]){
-    //Creates the necessary array
+//Creates the necessary array
     int mapSize = 1482;
     dist[player.rowNum][player.colNum] = 0;
     
-     //Creates Priority Queue
+    //Creates Priority Queue
     queue_t priQueue;
-    queueInit(&priQueue,mapSize);
+    queueInit(&priQueue,mapSize,sizeof(point_t),pointToLocID);
 
     point_t temp;
 
-     //Creates Priority Queue
+    //Puts all the points into the Queue 
     for(int i=1; i< 20; i++){
         for(int j=1; j< 79; j++){
  
@@ -157,7 +177,12 @@ void dijkstraPathfindRival(mapTile_t map,  player_t player,int dist[21][80]){
                 dist[i][j] =  __INT_MAX__ - 500000;
             }
             if(map.mapArr[i][j] != '~' && map.mapArr[i][j] != '%' && map.mapArr[i][j] != '\"'){
-                queueAddWithPriority(&priQueue,temp,dist[i][j]);
+                void* tempV = malloc(sizeof(temp));
+                memcpy(tempV,&temp,sizeof(temp));
+
+                queueAddWithPriority(&priQueue,tempV,dist[i][j]);
+
+                free(tempV);
             }
             else{
                 dist[i][j] =  -1;
@@ -169,12 +194,14 @@ void dijkstraPathfindRival(mapTile_t map,  player_t player,int dist[21][80]){
     int size = queueSize(&priQueue);
     
     while (size > 0){
-        point_t currEntry = queueExtractMin(&priQueue);
+        void* currEntryV = (queueExtractMin(&priQueue));
+        point_t currEntry = *((point_t*) currEntryV);
+        free(currEntryV);
 
         point_t currNeighbor;
 
 
-
+        //For Every neighbor
         for(int i =0; i < 8; i++){
             int rowMod = 0;
             int colMod = 0;
@@ -212,16 +239,21 @@ void dijkstraPathfindRival(mapTile_t map,  player_t player,int dist[21][80]){
 
             currNeighbor.rowNum = currEntry.rowNum + rowMod;      
             currNeighbor.colNum = currEntry.colNum +  colMod;
-            if(checkInQueue(&priQueue,currNeighbor) == 0){
+
+            void* neighborV = malloc(sizeof(currNeighbor));
+            memcpy(neighborV,&currNeighbor,sizeof(currNeighbor));
+
+            if(checkInQueue(&priQueue,neighborV) == 0){
+                 free(neighborV);
                 continue;
             }
+             free(neighborV);
 
 
-
+            //Check Distance
             int currMod;
             char neighborChar = map.mapArr[currNeighbor.rowNum][currNeighbor.colNum];
             currMod = 1;
-         
             if(neighborChar == ':' ){
                 currMod = 20;
             }
@@ -232,12 +264,19 @@ void dijkstraPathfindRival(mapTile_t map,  player_t player,int dist[21][80]){
                 currMod = 50;
             }
             
+            //Change  its distance if its left
             int altDist = dist[currEntry.rowNum][currEntry.colNum] + currMod;
             
             if (altDist < dist[currNeighbor.rowNum][currNeighbor.colNum]){
                 dist[currNeighbor.rowNum][currNeighbor.colNum] = altDist; 
 
-                queueDecreasePriority(&priQueue,currNeighbor, altDist);
+                
+                void* neighborV = malloc(sizeof(currNeighbor));
+                memcpy(neighborV,&currNeighbor,sizeof(currNeighbor));
+
+                queueDecreasePriority(&priQueue,neighborV, altDist);
+
+                free(neighborV);
             }
         }
       
@@ -245,7 +284,7 @@ void dijkstraPathfindRival(mapTile_t map,  player_t player,int dist[21][80]){
 
     size = queueSize(&priQueue);
     }
-    queueDestroy(&priQueue);             
+    queueDestroy(&priQueue);                     
 } 
 
 /**

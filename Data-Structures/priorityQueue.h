@@ -8,9 +8,8 @@
  * 
  */
 typedef struct queueEntry{
-    int rowNum;
-    int colNum;
-    int  dist;
+    void* data;
+    int  priority;
     int id;
 
 }queueEntry_t;
@@ -22,7 +21,11 @@ typedef struct queueEntry{
 typedef struct queue{
     queueEntry_t* heapArr; 
     int* locArr;
+    int maxIndex;
     int size;
+    int dataSize;
+    int (*idFunc)(void*);
+
 }queue_t;
 
 
@@ -32,16 +35,16 @@ typedef struct queue{
  * @param s The memory address of the struct
  * @param queueSize The number of maximum entries for the queue
  */
-void queueInit(queue_t* s, int queueSize);
+void queueInit(queue_t* s, int queueSize,int dataSize, int (*idFunc)(void*));
 
 /**
  * @brief Createa a new queue entry
  * 
- * @param point The point to create an entry for
+ * @param data The data to create an entry for
  * @param dist The starting distance from the source
  * @return The created entry 
  */
-queueEntry_t queueEntryInit(point_t point, int dist);
+queueEntry_t queueEntryInit(void* data,int dataSize, int priority, int (*idfunc)(void*));
 
 /**
  * @brief Returns the minmum value of the queue without removing it
@@ -49,7 +52,7 @@ queueEntry_t queueEntryInit(point_t point, int dist);
  * @param s Pointer to the queue to get minmum from
  * @return The extracted entry
  */
-point_t queuePeekMin(queue_t* s);
+void* queuePeekMin(queue_t* s);
 
 /**
  * @brief Returns the minmum value of the queue and removes it 
@@ -57,7 +60,7 @@ point_t queuePeekMin(queue_t* s);
  * @param s Pointer to the queue to get minmum from
  * @return The extracted entry
  */
-point_t queueExtractMin(queue_t* s);
+void* queueExtractMin(queue_t* s);
 
 /**
  * @brief Decreases the priority of a given entry in the queue
@@ -67,7 +70,7 @@ point_t queueExtractMin(queue_t* s);
  * @param newPriority The number to change the priority to 
  * @return 0 on sucess other on fail
  */
-int queueDecreasePriority(queue_t* s,point_t toDecrease, int newPriority);
+int queueDecreasePriority(queue_t* s,void* toDecrease, int newPriority);
 
 /**
  * @brief Adds a new entry to the queue 
@@ -76,16 +79,16 @@ int queueDecreasePriority(queue_t* s,point_t toDecrease, int newPriority);
  * @param toAdd The entry to add to the queue
  * @param priority The priority of this entry
  */
-void queueAddWithPriority(queue_t* s, point_t toAdd, int priority);
+void queueAddWithPriority(queue_t* s, void* toAdd, int priority);
 
 /**
- * @brief Checks to see if a given point is currently in the queue
+ * @brief Checks to see if a given data is currently in the queue
  * 
- * @param s - The queue to check for the point
- * @param toCheck The point to check
+ * @param s - The queue to check for the data
+ * @param toCheck The data to check
  * @return 1 if it is in the queue. 0 if it isnt
  */
-int checkInQueue(queue_t* s, point_t toCheck);
+int checkInQueue(queue_t* s, void* toCheck);
 /**
  * @brief Gets the size of the queue
  * 

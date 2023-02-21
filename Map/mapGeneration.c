@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
+#include<string.h>
 #include"biome.h"
 #include"map.h"
 #include"../Data-Structures/priorityQueue.h"
@@ -410,6 +411,26 @@ int indexID(int id){
     return id - (81 + ((rowNum -1) * 2));
 }
 
+
+/**
+ * @brief Converts a point to an ID and then downshifts it to be used as its location in arrays.
+ * Invalid points return -1
+ * 
+ * @param toConvert The point to get the ID for
+ * @return The downshifted ID
+ */
+int pointToLocID(void* toConvert){
+    point_t point = *((point_t*) toConvert);
+    
+    if(point.rowNum == 0 || point.rowNum == 20 || point.colNum == 0 || point.colNum == 79){
+        return -1;
+    }
+
+    int id = convertPoint(point);
+    return indexID(id);
+}
+
+
 /**
  * @brief Uses dijkstra's algorithm to generate an array which stores the shortest path for a road to take by holding the
  * predecessor of each point in the array
@@ -424,7 +445,7 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
     dist[indexID(convertPoint(startLoc))] = 0;
     
     queue_t priQueue;
-    queueInit(&priQueue,mapSize);
+    queueInit(&priQueue,mapSize,sizeof(point_t), pointToLocID);
 
     point_t temp;
     int  id;
@@ -441,7 +462,12 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
                 prev[indexID(id)] = -1;
             }
             if(map.mapArr[i][j] != 'C' && map.mapArr[i][j] != 'M'){
-                queueAddWithPriority(&priQueue,temp,dist[indexID(id)]);
+                void* tempV = malloc(sizeof(temp));
+                memcpy(tempV,&temp,sizeof(temp));
+
+                queueAddWithPriority(&priQueue,tempV,dist[indexID(id)]);
+
+                free(tempV);
             }
             
         }
@@ -450,7 +476,10 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
     int size = queueSize(&priQueue);
     
     while (size > 0){
-        point_t currEntry = queueExtractMin(&priQueue);
+        void* currEntryV = (queueExtractMin(&priQueue));
+        point_t currEntry = *((point_t*) currEntryV);
+        free(currEntryV);
+
         int currID = convertPoint(currEntry);
 
         point_t currNeighbor;
@@ -478,9 +507,14 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
 
             currNeighbor.rowNum = currEntry.rowNum + rowMod;      
             currNeighbor.colNum = currEntry.colNum +  colMod;
-            if(checkInQueue(&priQueue,currNeighbor) == 0){
+            void* neighborV = malloc(sizeof(currNeighbor));
+            memcpy(neighborV,&currNeighbor,sizeof(currNeighbor));
+
+            if(checkInQueue(&priQueue,neighborV) == 0){
+                free(neighborV);
                 continue;
             }
+            free(neighborV);
 
             int neighborID = convertPoint(currNeighbor);
 
@@ -504,8 +538,14 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
             if (altDist < dist[indexID(neighborID)]){
                 dist[indexID(neighborID) ] = altDist;
                 prev[indexID(neighborID)] = currID; 
+                
+                 void* neighborV = malloc(sizeof(currNeighbor));
+                 memcpy(neighborV,&currNeighbor,sizeof(currNeighbor));
 
-                queueDecreasePriority(&priQueue,currNeighbor, altDist);
+                queueDecreasePriority(&priQueue,neighborV, altDist);
+
+                free(neighborV);
+
             }
         }
       

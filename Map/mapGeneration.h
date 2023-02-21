@@ -24,4 +24,13 @@ mapTile_t createMapTile(worldMap_t worldMap, int worldRow, int worldCol);
  */
 mapTile_t createMapTileIndependent();
 
+/**
+ * @brief Converts a point to an ID and then downshifts it to be used as its location in arrays.
+ * Invalid points return -1
+ * 
+ * @param toConvert The point to get the ID for
+ * @return The downshifted ID
+ */
+int pointToLocID(void* toConvert);
+
 #endif

@@ -1,4 +1,5 @@
 #include<stdlib.h>
+#include<string.h>
 #include"priorityQueue.h"
 #include"../Map/map.h"
 
@@ -14,11 +15,19 @@ void swap(queue_t* s, int x, int y){
     queueEntry_t xEntry = s->heapArr[x];
     queueEntry_t yEntry = s->heapArr[y];
 
-    s->locArr[xEntry.id - (81 + ((xEntry.rowNum -1) * 2))] = y;
-    s->locArr[yEntry.id - (81 + ((yEntry.rowNum -1) * 2))] = x;
+    void* xVoid = malloc(sizeof(xEntry));
+    void* yVoid = malloc(sizeof(yEntry));
+    memcpy(xVoid,xEntry.data,s->dataSize);
+    memcpy(yVoid,yEntry.data,s->dataSize);
+
+    s->locArr[s->idFunc(xVoid)] = y;
+    s->locArr[s->idFunc(yVoid)] = x;
 
     s->heapArr[x] = yEntry;
     s->heapArr[y] = xEntry;    
+
+    free(xVoid);
+    free(yVoid);
 }
 
 /**
@@ -36,7 +45,7 @@ void percolateUp(queue_t* s, int currentLoc){
     queueEntry_t parent = s->heapArr[parentLoc];
 
 
-    while (currentLoc > 0 &&  current.dist < parent.dist) {  
+    while (currentLoc > 0 &&  current.priority < parent.priority) {  
         //Swaps the current up
         swap(s,currentLoc,parentLoc);
 
@@ -71,7 +80,7 @@ void percolateDown(queue_t* s, int currentLoc){
 
         //Check to see if second child is smaller
         if ((childLoc + 1) < s->size){
-            if (child.dist > s->heapArr[childLoc + 1].dist){
+            if (child.priority > s->heapArr[childLoc + 1].priority){
                 childLoc += 1;
                 child = s->heapArr[childLoc];
             }
@@ -79,7 +88,7 @@ void percolateDown(queue_t* s, int currentLoc){
         }
 
         //Swap id necessary
-        if (current.dist > child.dist){
+        if (current.priority > child.priority){
             swap(s,currentLoc,childLoc);
             
         }
@@ -91,9 +100,12 @@ void percolateDown(queue_t* s, int currentLoc){
 
 }
 
-void queueInit(queue_t* s, int queueSize){
+void queueInit(queue_t* s, int queueSize,int dataSize, int (*idFunc)(void*)){
     s->heapArr = malloc(sizeof(queueEntry_t) * queueSize);
     s->locArr = malloc(sizeof(int) * queueSize);
+    s->idFunc = idFunc;
+    s->maxIndex = queueSize - 1;
+    s->dataSize = dataSize;
 
     for(int i =0; i < queueSize; i++){
         s->locArr[i] = -1;
@@ -101,39 +113,38 @@ void queueInit(queue_t* s, int queueSize){
     s->size =0;
 }
 
-queueEntry_t queueEntryInit(point_t point, int dist){
+
+queueEntry_t queueEntryInit(void* data,int dataSize, int priority, int (*idfunc)(void*)){
     queueEntry_t toReturn;
+    toReturn.data = malloc(dataSize);
+    memcpy(toReturn.data,data,dataSize);
 
-    toReturn.rowNum = point.rowNum;
-    toReturn.colNum = point.colNum;
-    toReturn.id = (point.rowNum * 80) + point.colNum;
-    toReturn.dist = dist;
+    toReturn.id = idfunc(data);
+    toReturn.priority = priority;
 
     return toReturn;
 }
 
 
-point_t queuePeekMin(queue_t* s){
+void* queuePeekMin(queue_t* s){
     queueEntry_t peeked = s->heapArr[0];
-    point_t toReturn;
-    toReturn.rowNum = peeked.rowNum;
-    toReturn.colNum = peeked.rowNum;
+    void* toReturn = malloc(s->dataSize);
+    memcpy(toReturn,peeked.data,s->dataSize);
 
     return toReturn;
 }
 
 
-point_t queueExtractMin(queue_t* s){
+void* queueExtractMin(queue_t* s){
     //Extracts the minmum value
     queueEntry_t extracted = s->heapArr[0];
     
-    point_t toReturn;
-    toReturn.rowNum = extracted.rowNum;
-    toReturn.colNum = extracted.colNum;
+    void* toReturn = malloc(s->dataSize);
+    memcpy(toReturn,extracted.data,s->dataSize);
 
     //Puts the last item to the front
     swap(s,0,s->size-1);
-    s->locArr[extracted.id - (81 + ((extracted.rowNum -1) * 2))] = -1;
+    s->locArr[s->idFunc(toReturn)] = -1;
     s->size -= 1;
 
     //Restores heap order
@@ -143,42 +154,40 @@ point_t queueExtractMin(queue_t* s){
 }
 
 
-int queueDecreasePriority(queue_t* s,point_t toDecrease, int newPriority){
+int queueDecreasePriority(queue_t* s,void* toDecrease, int newPriority){
 
-    int getAt = s->locArr[((80 * toDecrease.rowNum) + toDecrease.colNum)  - (81 + ((toDecrease.rowNum -1) * 2))];
+    int getAt = s->locArr[s->idFunc(toDecrease)];
 
-    s->heapArr[getAt].dist = newPriority;
+    s->heapArr[getAt].priority = newPriority;
     percolateUp(s,getAt);
 
     return 0;
 }
 
 
-void queueAddWithPriority(queue_t* s, point_t toAdd, int priority){
-    queueEntry_t newEntry = queueEntryInit(toAdd, priority);
+void queueAddWithPriority(queue_t* s, void* toAdd, int priority){
+    queueEntry_t newEntry = queueEntryInit(toAdd, s->dataSize, priority,s->idFunc);
 
     s->heapArr[s->size] =  newEntry;
-    s->locArr[newEntry.id - (81 + ((newEntry.rowNum -1) * 2))] = s->size;
+    s->locArr[s->idFunc(toAdd)] = s->size;
 
     percolateUp(s,s->size);
 
     s->size += 1;
 }
 
-int checkInQueue(queue_t* s, point_t toCheck){
-    int id =  ((toCheck.rowNum * 80) + toCheck.colNum) - (81 + ((toCheck.rowNum -1) * 2));
+int checkInQueue(queue_t* s, void* toCheck){
+    int id = s->idFunc(toCheck);
 
-    if(toCheck.rowNum == 0 || toCheck.rowNum == 20 || toCheck.colNum == 0 || toCheck.colNum == 79){
+    if(id == -1){
         return 0;
     }
-    else if(id < 0 || id > 1481 || s->locArr[id] == -1){
+    else if(id < 0 || id > s->maxIndex || s->locArr[id] == -1){
         return 0;
     }
     else{
         return 1;
     }
-
-
 
 }
 

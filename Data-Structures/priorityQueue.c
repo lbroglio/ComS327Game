@@ -104,7 +104,7 @@ void queueInit(queue_t* s, int queueSize,int dataSize, int (*idFunc)(void*)){
     s->heapArr = malloc(sizeof(queueEntry_t) * queueSize);
     s->locArr = malloc(sizeof(int) * queueSize);
     s->idFunc = idFunc;
-    s->maxIndex = queueSize - 1;
+    s->maxIndex = queueSize - 1 ;
     s->dataSize = dataSize;
 
     for(int i =0; i < queueSize; i++){

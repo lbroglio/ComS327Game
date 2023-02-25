@@ -5,7 +5,7 @@
 #include"../Map/biome.h"
 #include"../Map/mapGeneration.h"
 #include"../Data-Structures/priorityQueue.h"
-#include"character.h"
+#include"gameCharacter.h"
 
 
 /**
@@ -15,7 +15,7 @@
  * @param player The player struct with the PCs location
  * @param dist Array to store the tiles distances in 
  */
-void dijkstraPathfindHiker(mapTile_t map, player_t player,int dist[21][80]){
+void dijkstraPathfindHiker(mapTile_t map, character_t player,int dist[21][80]){
     //Creates the necessary array
     int mapSize = 1482;
     dist[player.rowNum][player.colNum] = 0;
@@ -155,7 +155,7 @@ void dijkstraPathfindHiker(mapTile_t map, player_t player,int dist[21][80]){
  * @param player The player struct with the PCs location
  * @param dist Array to store the tiles distances in 
  */
-void dijkstraPathfindRival(mapTile_t map,  player_t player,int dist[21][80]){
+void dijkstraPathfindRival(mapTile_t map,  character_t player,int dist[21][80]){
 //Creates the necessary array
     int mapSize = 1482;
     dist[player.rowNum][player.colNum] = 0;
@@ -307,6 +307,151 @@ void printDistArr(int dist[21][80]){
     }
 }
 
+/**
+ * @brief Gets all possible moves a character could make and stores them in an array sorted by distance
+ * 
+ * @param toMove The character being moved
+ * @param mapInfo The NPC info for the current map
+ * @param possible_moves The array to store the possible moves in
+ * @return The number of possible moves
+ */
+int getPossibleMoves(character_t toMove, nMapInfo_t mapInfo, point_t* possibleMoves){
+     //Stores the current number of added points
+     int tracker = 0;
 
+    //Loops through all the possible increments that can find the points neighbors
+     for(int i=-1; i < 2; i++){
+        for(int j=-1; j < 2; j++){
+
+            //Skips if both are zero (This is the same location as the character which is being moved)
+            if(i == 0 && j == 0){
+                continue;
+            }
+
+            //Gets the distance of the current neighbor
+            int dist = mapInfo.hikerDist[toMove.rowNum + i][toMove.colNum + j];
+
+            //If the space is reachable (-1 represents terrain which cannot be traversed)
+            if(dist != -1){
+
+                //Creates a point for the current neighbor
+                point_t newPos;
+                newPos.rowNum = toMove.rowNum + i;
+                newPos.colNum = toMove.colNum + j;
+
+                //Adds the new point to the end of the array 
+                possibleMoves[tracker] = newPos;
+
+                //Sets up a tracker varaible to sort the array with 
+                int shift = tracker - 1;
+
+                //Increments number of stores elements by one
+                tracker += 1;
+
+                //Moves the new point down the array unti its in a sorted position. (Functionally this is a single pass of insertion sort)
+                while(shift >= 0){
+                    int prevDist = mapInfo.hikerDist[possibleMoves[shift].rowNum][possibleMoves[shift].colNum];
+                    if(dist < prevDist){
+                        possibleMoves[shift + 1] = possibleMoves[shift];
+                        possibleMoves[shift] = newPos;
+                    }
+                    else{
+                        shift -= 8;
+                    }
+                }
+
+            }
+
+        }
+    }
+    //Returns the number of stored points
+    return tracker;
+}
+
+
+void moveHiker(character_t* toMove, nMapInfo_t* mapInfo){
+    //Gets the squares it could move to ordered by distance
+    point_t possibleMoves[8];
+    int numMoves = getPossibleMoves(*toMove,*mapInfo,possibleMoves);
+    int i;
+    point_t bestMove;
+    bestMove.rowNum = -1;
+    bestMove.colNum = -1;
+
+    for(int i =0; i < numMoves; i++){
+        point_t currBestMove = possibleMoves[i];
+        if(mapInfo->charLocations[currBestMove.rowNum][currBestMove.colNum] != 'X'){
+            bestMove = currBestMove;
+            i += 8;
+        }
+    }
+
+    if(bestMove.rowNum == -1){
+        return;
+    }
+   
+
+   
+}
+
+
+
+
+char moveNPC(queue_t* eventManager,character_t* player, mapTile_t map, nMapInfo_t* mapInfo){
+
+    if(mapInfo->playerLocation.rowNum != player->rowNum || mapInfo->playerLocation.colNum != player->colNum){
+        dijkstraPathfindHiker(map,*(player),mapInfo->hikerDist);
+        dijkstraPathfindRival(map,*(player),mapInfo->rivalDist);
+        mapInfo->playerLocation.rowNum = player->rowNum;
+        mapInfo->playerLocation.colNum = player->colNum;
+    }
+
+    character_t* toMove = malloc(sizeof(toMove)); 
+    memcpy(toMove,queueExtractMin(eventManager),sizeof(toMove));  
+
+    switch (toMove->type)
+    {
+        case '@':
+            //TO BE IMPLEMENTED AS IT IS THIS SHOULD NEVER HAPPEN
+            break;
+        case 'h':
+            //HIKER
+            break;
+        case 'r':
+            //RIVAL
+            break;
+        case 'p':
+            //PACER
+            break;
+        case 'w':
+            //WANDERERS
+            break;
+        case 's':
+            //SENTRIES
+            break;
+        case 'e':
+            //EXPLORERS
+            break;
+         case 'm':
+            //Swimmers
+            break;
+    }
+
+
+
+}
+
+nMapInfo_t npcMapInfoInit(){
+    nMapInfo_t toReturn;
+    toReturn.playerLocation.rowNum = -1;
+    toReturn.playerLocation.colNum = -1;
+
+    //Fills the adjacency array with X markers
+    for(int i =0; i< 21; i++){
+        for(int j =0; j < 80; j++){
+            toReturn.charLocations[i][j] = 'X';
+        }
+    }
+}
 
  

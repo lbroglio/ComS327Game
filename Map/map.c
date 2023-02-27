@@ -98,3 +98,10 @@ void printMap(mapTile_t* map){
 void mapTileDestroy(mapTile_t* map){
     free(map->biomeArr);
 }
+
+point_t pointInit(int row, int col){
+    point_t toReturn;
+    toReturn.rowNum = row;
+    toReturn.colNum = col;
+    return toReturn;
+}

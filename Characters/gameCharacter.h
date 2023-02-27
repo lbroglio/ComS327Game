@@ -4,7 +4,7 @@
 /**
  * @brief Stores information about the a character
  */
-typedef struct gameCharactor{
+typedef struct gameCharacter{
     /** Row this character is in*/
     int rowNum;
     /** Columns this character is in*/
@@ -13,6 +13,10 @@ typedef struct gameCharactor{
     char type;
     /** Unique id used for indexing this character*/
     int id;
+    /** Stores the current direction this chraracter is moving in as a unit vector. Not used by all character types */
+    point_t direction;
+    /** Stores the biome this character spawned in. Set for all only used by Wanderer*/
+    char spawnBiome;
 
 } character_t;
 
@@ -30,7 +34,22 @@ typedef struct npcMapInfo{
     int rivalDist[21][80];
     /** Stores the location of the NPCs on the map X if none is there*/
     char charLocations[21][80];
+    /**Indicator of whether or not the player is by water. 1 = true, 0  = false*/
+    int playerByWater;
 } nMapInfo_t;
+
+
+/**
+ * @brief Performs the next move in the game. - Removes the next character to move from the queue and handles the logic for moving it
+ * 
+ * @param eventManager Pointer to the priority queue which drives the game
+ * @param player Pointer to the struct containing the information about the player
+ * @param map The map tile that the player is currently on
+ * @param mapInfo Pointer to the struct which hold the information about NPC's on this map
+ * @return The type of character that moved
+ */
+*/
+char moveNPC(queue_t* eventManager, character_t* player, mapTile_t map, nMapInfo_t* mapInfo)
 
 /**
  * @brief Creates a new npcMapInfpo struct

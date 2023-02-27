@@ -63,4 +63,13 @@ void printMap(mapTile_t* map);
  */
 void mapTileDestory(mapTile_t* map);
 
+
+/**
+ * @brief Creates a new point struct with the given row and column
+ * 
+ * @param row The row the point is in
+ * @param col The column the point is in
+ * @return The newly created point
+ */
+point_t pointInit(int row, int col);
 #endif

@@ -103,6 +103,7 @@ void dijkstraPathfindHiker(mapTile_t map, character_t player,int dist[21][80]){
             void* neighborV = malloc(sizeof(currNeighbor));
             memcpy(neighborV,&currNeighbor,sizeof(currNeighbor));
 
+            //Make sure the current point is in the queue
             if(checkInQueue(&priQueue,neighborV) == 0){
                  free(neighborV);
                 continue;
@@ -328,8 +329,15 @@ int getPossibleMoves(character_t toMove, nMapInfo_t mapInfo, point_t* possibleMo
                 continue;
             }
 
+            int dist;
             //Gets the distance of the current neighbor
-            int dist = mapInfo.hikerDist[toMove.rowNum + i][toMove.colNum + j];
+            if(toMove.type == 'h'){
+                dist = mapInfo.hikerDist[toMove.rowNum + i][toMove.colNum + j];
+            }
+            else{
+                dist = mapInfo.rivalDist[toMove.rowNum + i][toMove.colNum + j];
+            }
+            
 
             //If the space is reachable (-1 represents terrain which cannot be traversed)
             if(dist != -1){
@@ -368,16 +376,302 @@ int getPossibleMoves(character_t toMove, nMapInfo_t mapInfo, point_t* possibleMo
     return tracker;
 }
 
+/**
+ * @brief Checks that the pacer can continue in its current direction while staying in complaince with its rules. Changes direction if necessary
+ * Returns the next space the pacer wil move into
+ * 
+ * @param toCheck Pointer to the pacer to check
+ * @param map The map which the pacer is on
+ * @param nextSpace The space the pacer is moving unto 
+ * @return The space the pacer should move into 
+ */
+point_t checkDirecPacer(character_t* toCheck,mapTile_t map, nMapInfo_t mapInfo){
+    point_t nextSpace;
+    char* illegalChars = "~\"%% ";
+    //Checks to see if the pacer can legally move forward
+    if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
+        //If the space is illegal turn around
+        toCheck->direction.rowNum *= -1;
+        toCheck->direction.colNum *= -1;
 
-void moveHiker(character_t* toMove, nMapInfo_t* mapInfo){
+        //Checks to make sure the new space isn't occupied by another character 
+        if(mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
+            //Updates nextSpace in case direction changed
+            nextSpace.rowNum = toCheck->rowNum + (toCheck->direction.rowNum);
+            nextSpace.colNum = toCheck->colNum + (toCheck->direction.colNum);
+        }
+        else{
+            //Sets next space to the current space (Character won't move)
+            nextSpace.rowNum = toCheck->rowNum;
+            nextSpace.colNum = toCheck->colNum;
+        }
+
+    }
+    else{
+        //Updates Next Space
+        nextSpace.rowNum = toCheck->rowNum + (toCheck->direction.rowNum);
+        nextSpace.colNum = toCheck->colNum + (toCheck->direction.colNum);
+    }
+}
+
+/**
+ * @brief Checks to see if a wanderer can keep moving in its current direction. If not finds a legal direction for it to move.
+ * 
+ * @param toCheck The wanderer to check the spaces for
+ * @param map The map the wanderer is on
+ * @param mapInfo The NPC info struct for the map
+ * @param moveOptions List of possible moves that can be randomly chosen (Used for recusrive call)
+ * @param numOptions The number of possible moves
+ * @return The next space the wanderer will move into
+ */
+point_t checkDirecWanderer(character_t* toCheck,mapTile_t map,nMapInfo_t mapInfo,point_t moveOptions[], int numOptions){
+    point_t nextSpace;
+
+    //Checks to see if there is only one space left
+    if(numOptions == 1){
+        //If the remaining space is invalid
+        if(map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != toCheck->spawnBiome || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
+            //Sets next space to the current space (Character won't move)
+            nextSpace.rowNum = toCheck->rowNum;
+            nextSpace.colNum = toCheck->colNum;
+        }
+        //If its free
+        else{
+            //Updates Next Space
+            nextSpace.rowNum = toCheck->rowNum + (toCheck->direction.rowNum);
+            nextSpace.colNum = toCheck->colNum + (toCheck->direction.colNum);
+            return nextSpace;
+        }
+    }
+    //If the current space is blocked or illegal
+    else if(map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != toCheck->spawnBiome || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
+        //Randomly chooses a new direction to move in 
+        int moveNum = rand() % numOptions;
+        toCheck->direction = moveOptions[moveNum];
+
+        //Makes a new array to store moves
+        point_t newArr[numOptions -1];
+        int tracker = 0; 
+
+        //Adds all the moves except for the current one to the array
+        for(int i =0; i < numOptions; i ++){
+            if(i != moveNum){
+                newArr[tracker] = moveOptions[i];
+                tracker += 1;
+            }
+        }
+        //Recursively call to verify new move or choose another
+        nextSpace = checkDirecWanderer(toCheck,map,mapInfo,newArr,numOptions - 1);
+    }
+    //If the space is avaiable
+    else{
+        //Updates Next Space
+        nextSpace.rowNum = toCheck->rowNum + (toCheck->direction.rowNum);
+        nextSpace.colNum = toCheck->colNum + (toCheck->direction.colNum);
+    }
+    return nextSpace;
+}
+
+/**
+ * @brief Checks to see if a explorer can keep moving in its current direction. If not finds a legal direction for it to move.
+ * 
+ * @param toCheck The explorer to check the spaces for
+ * @param map The map the explorer is on
+ * @param mapInfo The NPC info struct for the map
+ * @param moveOptions List of possible moves that can be randomly chosen (Used for recusrive call)
+ * @param numOptions The number of possible moves
+ * @return The next space the explorer will move into
+ */
+point_t checkDirecExplorer(character_t* toCheck,mapTile_t map,nMapInfo_t mapInfo,point_t moveOptions[], int numOptions){
+    point_t nextSpace;
+    char* illegalChars = "~\"%% ";
+    //Checks to see if there is only one space left
+    if(numOptions == 1){
+        //If the remaining space is invalid
+        if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
+            //Sets next space to the current space (Character won't move)
+            nextSpace.rowNum = toCheck->rowNum;
+            nextSpace.colNum = toCheck->colNum;
+        }
+        //If its free
+        else{
+            //Updates Next Space
+            nextSpace.rowNum = toCheck->rowNum + (toCheck->direction.rowNum);
+            nextSpace.colNum = toCheck->colNum + (toCheck->direction.colNum);
+            return nextSpace;
+        }
+    }
+    //If the current space is blocked or illegal
+    else if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
+        //Randomly chooses a new direction to move in 
+        int moveNum = rand() % numOptions;
+        toCheck->direction = moveOptions[moveNum];
+
+        //Makes a new array to store moves
+        point_t newArr[numOptions -1];
+        int tracker = 0; 
+
+        //Adds all the moves except for the current one to the array
+        for(int i =0; i < numOptions; i ++){
+            if(i != moveNum){
+                newArr[tracker] = moveOptions[i];
+                tracker += 1;
+            }
+        }
+        //Recursively call to verify new move or choose another
+        nextSpace = checkDirecExplorer(toCheck,map,mapInfo,newArr,numOptions - 1);
+    }
+    //If the space is avaiable
+    else{
+        //Updates Next Space
+        nextSpace.rowNum = toCheck->rowNum + (toCheck->direction.rowNum);
+        nextSpace.colNum = toCheck->colNum + (toCheck->direction.colNum);
+    }
+    return nextSpace;
+}
+
+/**
+ * @brief Checks to see if a wandering swimmer can keep moving in its current direction. If not finds a legal direction for it to move.
+ * 
+ * @param toCheck The swimmer to check the spaces for
+ * @param map The map the swimmer is on
+ * @param mapInfo The NPC info struct for the map
+ * @param moveOptions List of possible moves that can be randomly chosen (Used for recusrive call)
+ * @param numOptions The number of possible moves
+ * @return The next space the swimmer will move into
+ */
+point_t checkDirecSwimmerWander(character_t* toCheck,mapTile_t map,nMapInfo_t mapInfo,point_t moveOptions[], int numOptions){
+    point_t nextSpace;
+    char* illegalChars = "#\"%%.: ";
+    //Checks to see if there is only one space left
+    if(numOptions == 1){
+        //If the remaining space is invalid
+        if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
+            //Sets next space to the current space (Character won't move)
+            nextSpace.rowNum = toCheck->rowNum;
+            nextSpace.colNum = toCheck->colNum;
+        }
+        //If its free
+        else{
+            //Updates Next Space
+            nextSpace.rowNum = toCheck->rowNum + (toCheck->direction.rowNum);
+            nextSpace.colNum = toCheck->colNum + (toCheck->direction.colNum);
+            return nextSpace;
+        }
+    }
+    //If the current space is blocked or illegal
+    else if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
+        //Randomly chooses a new direction to move in 
+        int moveNum = rand() % numOptions;
+        toCheck->direction = moveOptions[moveNum];
+
+        //Makes a new array to store moves
+        point_t newArr[numOptions -1];
+        int tracker = 0; 
+
+        //Adds all the moves except for the current one to the array
+        for(int i =0; i < numOptions; i ++){
+            if(i != moveNum){
+                newArr[tracker] = moveOptions[i];
+                tracker += 1;
+            }
+        }
+        //Recursively call to verify new move or choose another
+        nextSpace = checkDirecSwimmerWander(toCheck,map,mapInfo,newArr,numOptions - 1);
+    }
+    //If the space is avaiable
+    else{
+        //Updates Next Space
+        nextSpace.rowNum = toCheck->rowNum + (toCheck->direction.rowNum);
+        nextSpace.colNum = toCheck->colNum + (toCheck->direction.colNum);
+    }
+    return nextSpace;
+}
+
+/**
+ * @brief Checks to see if a wandering swimmer can keep moving in its current direction. If not finds a legal direction for it to move.
+ * 
+ * @param toCheck The swimmer to check the spaces for
+ * @param map The map the swimmer is on
+ * @param mapInfo The NPC info struct for the map
+ * @return The next space the swimmer will move into
+ */
+point_t checkDirecSwimmerCharge(character_t* toCheck,mapTile_t map,nMapInfo_t mapInfo){
+    point_t nextSpace;
+    char* illegalChars = "#\"%%.: ";
+    toCheck->direction.rowNum = (mapInfo.playerLocation.rowNum - toCheck->rowNum ) / abs(mapInfo.playerLocation.rowNum - toCheck->rowNum );
+    toCheck->direction.colNum = (mapInfo.playerLocation.colNum - toCheck->colNum ) / abs(mapInfo.playerLocation.colNum - toCheck->colNum );
+
+    //If the swimmer can move in the direction of the player
+    if(!(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)])) && mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] == 'X'){
+        //Updates Next Space
+        nextSpace.rowNum = toCheck->rowNum + (toCheck->direction.rowNum);
+        nextSpace.colNum = toCheck->colNum + (toCheck->direction.colNum);
+    }
+    //If it can't
+    else{
+        //Sets next space to the current space (Character won't move)
+        nextSpace.rowNum = toCheck->rowNum;
+        nextSpace.colNum = toCheck->colNum;
+    }
+    return nextSpace;
+}
+
+
+
+
+
+
+/**
+ * @brief Checks that the character can continue in its current direction while staying in complaince with its rules. 
+ * Changes direction if necessary. This function is a wrapper for the individual checks for different character types most of which act recursively (Pacer doesn't)
+ * 
+ * @param toCheck Pointer to the character to check
+ * @param map The map which the character is on
+ * @param nextSpace The space the character is moving unto 
+ */
+point_t checkDirection(character_t* toCheck, mapTile_t map, nMapInfo_t mapInfo){
+   //Stores the possible moves for the characters
+   point_t moveOptions[8] = {pointInit(-1,0),pointInit(-1,1),pointInit(0,1),pointInit(1,1),pointInit(1,0),pointInit(1,-1),pointInit(0,-1),pointInit(-1,-1)};
+   switch (toCheck->type)
+   {
+    case 'p':
+        return checkDirecPacer(toCheck,map,mapInfo);
+        break;
+    case 'w':
+        return checkDirecWanderer(toCheck,map,mapInfo,moveOptions,8);
+        break;
+    case 'e':
+        return checkDirecExplorer(toCheck,map,mapInfo,moveOptions,8);
+        break;
+    case 's':
+        if(mapInfo.playerByWater == 0){
+            return checkDirecSwimmerWander(toCheck,map,mapInfo,moveOptions,8);
+        }
+        else{
+            return checkDirecSwimmerCharge(toCheck,map,mapInfo);
+        }
+        break;
+   }
+}
+
+
+/**
+ * @brief Moves a given hiker or rival character on the map
+ * 
+ * @param toMove Pointer to the hiker to move
+ * @param mapInfo NPC info for the current map tile
+ */
+char movePathfinder(character_t* toMove, mapTile_t map, nMapInfo_t* mapInfo){
     //Gets the squares it could move to ordered by distance
     point_t possibleMoves[8];
     int numMoves = getPossibleMoves(*toMove,*mapInfo,possibleMoves);
-    int i;
+    //Creates a point to store the best move in
     point_t bestMove;
     bestMove.rowNum = -1;
     bestMove.colNum = -1;
 
+    //Gets the move with the least distance that isnt occupied by a character
     for(int i =0; i < numMoves; i++){
         point_t currBestMove = possibleMoves[i];
         if(mapInfo->charLocations[currBestMove.rowNum][currBestMove.colNum] != 'X'){
@@ -386,59 +680,130 @@ void moveHiker(character_t* toMove, nMapInfo_t* mapInfo){
         }
     }
 
+    //Returns if there is no possible move (This should be rare if not impossible)
     if(bestMove.rowNum == -1){
         return;
     }
-   
 
-   
+    //Moves the character inside the character location array
+    mapInfo->charLocations[toMove->rowNum][toMove->colNum] = 'X';
+    mapInfo->charLocations[bestMove.rowNum][bestMove.colNum] = toMove->type;
+
+    //Changes the characters location within its struct
+    toMove->rowNum = bestMove.rowNum; 
+    toMove->colNum = bestMove.colNum;
+
+    return map.mapArr[bestMove.rowNum][bestMove.colNum];    
 }
 
+char moveWayfinder(character_t* toMove, mapTile_t map, nMapInfo_t* mapInfo){
+    //Changes the direction if necessary LUKE CHANGE THIS TO USE A FUNCTION POINTER PASSED IN AFTER DINNER DONT FORGET
+    point_t nextSpace = checkDirection(toMove,map,*mapInfo);
 
+    //Moves the character inside the character location array
+    mapInfo->charLocations[toMove->rowNum][toMove->colNum] = 'X';
+    mapInfo->charLocations[nextSpace.rowNum][nextSpace.colNum] = toMove->type;
 
+    //Changes the characters location within its struct
+    toMove->rowNum = nextSpace.rowNum; 
+    toMove->colNum = nextSpace.colNum;   
 
-char moveNPC(queue_t* eventManager,character_t* player, mapTile_t map, nMapInfo_t* mapInfo){
+    return map.mapArr[nextSpace.rowNum][nextSpace.colNum];
+}
 
+int checkPlayerByWater(character_t player, mapTile_t map){
+    //Checks all adjacent squars
+    if(map.mapArr[player.rowNum][player.colNum] == '~' || map.mapArr[player.rowNum ][player.colNum] == '=' || map.mapArr[player.rowNum - 1][player.colNum] == '~' || map.mapArr[player.rowNum - 1][player.colNum] == '=' || map.mapArr[player.rowNum + 1][player.colNum] == '~' || map.mapArr[player.rowNum + 1][player.colNum] == '=' || map.mapArr[player.rowNum][player.colNum - 1] == '~' || map.mapArr[player.rowNum][player.colNum - 1] == '=' || map.mapArr[player.rowNum ][player.colNum + 1] == '~' || map.mapArr[player.rowNum][player.colNum + 1] == '='){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+
+char moveNPC(queue_t* eventManager, character_t* player, mapTile_t map, nMapInfo_t* mapInfo){
+
+    //If the player has moved
     if(mapInfo->playerLocation.rowNum != player->rowNum || mapInfo->playerLocation.colNum != player->colNum){
+        //Redraw pathfinding maps
         dijkstraPathfindHiker(map,*(player),mapInfo->hikerDist);
         dijkstraPathfindRival(map,*(player),mapInfo->rivalDist);
+
+        //Change last known player location
         mapInfo->playerLocation.rowNum = player->rowNum;
         mapInfo->playerLocation.colNum = player->colNum;
+
+        //Check if the player is adjacent to water
+        mapInfo->playerByWater = checkPlayerByWater(*player,map);
     }
 
-    character_t* toMove = malloc(sizeof(toMove)); 
-    memcpy(toMove,queueExtractMin(eventManager),sizeof(toMove));  
+    //Get the next Character to move from the queue
+    int time;
+    void* temp = (queueExtractMinWithPri(eventManager,time));
+    character_t* toMove = ((character_t*) temp);
 
-    switch (toMove->type)
-    {
-        case '@':
-            //TO BE IMPLEMENTED AS IT IS THIS SHOULD NEVER HAPPEN
-            break;
-        case 'h':
-            //HIKER
-            break;
-        case 'r':
-            //RIVAL
-            break;
-        case 'p':
-            //PACER
-            break;
-        case 'w':
-            //WANDERERS
-            break;
-        case 's':
-            //SENTRIES
-            break;
-        case 'e':
-            //EXPLORERS
-            break;
-         case 'm':
-            //Swimmers
-            break;
+
+    //Perform the move
+    char moveType;
+    if(toMove->type == '@' || toMove->type == 's'){
+        //THIS OPTION CURRENTLY DOES NOTHIING AS THESE CHARACTER TYPES DON'T HAVE ANY MOVES THEY CAN TAKE
+        //They are given mountain move typees as place holders so they move back in the queue
+        moveType = '%';
+    }
+    else if(toMove->type == 'h' || toMove->type == 'r'){
+        moveType = movePathfinder(toMove,map,mapInfo);
+    }
+    else{
+        moveType = moveWayfinder(toMove,map,mapInfo);
     }
 
+    //Set the cost for the move
+    int moveCost;
+    if(moveType == '%'){
+        moveCost = 15;
+    }
+    else if(moveType == '#' || moveType == '='){
+        if(toMove->type == 's'){
+            moveCost = 7;
+        }
+        moveCost = 10;
+    }
+    else if(moveType == 'C' || moveType == 'M'){
+        if(toMove -> type == '@'){
+            moveCost = 10;
+        }
+        else{
+            moveCost = 50;
+        }
+    }
+    else if(moveType == ':'){
+        if(toMove->type == 'h'){
+            moveCost = 15;
+        }
+        else{
+            moveCost = 20;
+        }
+    }
+    else if(moveType == '.'){
+        moveCost = 10;
+    }
+    else if(moveType == '\"'){
+        moveCost = 15;
+    }
+    else if(moveType == '~'){
+        moveCost = 7;
+    }
+    else{
+        moveCost = 10;
+    }
+    
+    //Readd the character to the queue
+    memcpy(temp,toMove,sizeof(toMove));
+    queueAddWithPrioirity(temp,moveCost + time);
 
+    free(temp);
 
+    return toMove->type;
 }
 
 nMapInfo_t npcMapInfoInit(){
@@ -446,12 +811,14 @@ nMapInfo_t npcMapInfoInit(){
     toReturn.playerLocation.rowNum = -1;
     toReturn.playerLocation.colNum = -1;
 
-    //Fills the adjacency array with X markers
+    //Fills the NPC positions array with X markers
     for(int i =0; i< 21; i++){
         for(int j =0; j < 80; j++){
             toReturn.charLocations[i][j] = 'X';
         }
     }
+
+    return toReturn;
 }
 
  

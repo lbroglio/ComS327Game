@@ -155,6 +155,25 @@ void* queueExtractMin(queue_t* s){
     return toReturn;
 }
 
+void* queueExtractMinWithPri(queue_t* s,int* priority){
+    //Extracts the minmum value
+    queueEntry_t extracted = s->heapArr[0];
+    *priority = extracted.priority;
+    
+    void* toReturn = malloc(s->dataSize);
+    memcpy(toReturn,extracted.data,s->dataSize);
+
+    //Puts the last item to the front
+    swap(s,0,s->size-1);
+    s->locArr[s->idFunc(toReturn)] = -1;
+    s->size -= 1;
+
+    //Restores heap order
+    percolateDown(s,0);
+
+    return toReturn;
+}
+
 
 int queueDecreasePriority(queue_t* s,void* toDecrease, int newPriority){
 

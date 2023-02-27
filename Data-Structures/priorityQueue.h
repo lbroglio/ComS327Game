@@ -63,6 +63,15 @@ void* queuePeekMin(queue_t* s);
 void* queueExtractMin(queue_t* s);
 
 /**
+ * @brief Returns the minmum value of the queue and removes it. Also sets its priority to the given interger pointer
+ * 
+ * @param s Pointer to the queue to get minmum from
+ * @param priority The location to store the extracted entries priority
+ * @return The extracted entry
+ */
+void* queueExtractMinWithPri(queue_t* s, int* priority);
+
+/**
  * @brief Decreases the priority of a given entry in the queue
  * 
  * @param s Pointer to the queue to decrease the entry in

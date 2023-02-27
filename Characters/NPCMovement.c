@@ -389,7 +389,7 @@ point_t checkDirecPacer(character_t* toCheck,mapTile_t map, nMapInfo_t mapInfo){
     point_t nextSpace;
     char* illegalChars = "~\"%% ";
     //Checks to see if the pacer can legally move forward
-    if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
+    if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != NULL || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
         //If the space is illegal turn around
         toCheck->direction.rowNum *= -1;
         toCheck->direction.colNum *= -1;
@@ -412,6 +412,7 @@ point_t checkDirecPacer(character_t* toCheck,mapTile_t map, nMapInfo_t mapInfo){
         nextSpace.rowNum = toCheck->rowNum + (toCheck->direction.rowNum);
         nextSpace.colNum = toCheck->colNum + (toCheck->direction.colNum);
     }
+    return nextSpace;
 }
 
 /**
@@ -488,7 +489,7 @@ point_t checkDirecExplorer(character_t* toCheck,mapTile_t map,nMapInfo_t mapInfo
     //Checks to see if there is only one space left
     if(numOptions == 1){
         //If the remaining space is invalid
-        if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
+        if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != NULL || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
             //Sets next space to the current space (Character won't move)
             nextSpace.rowNum = toCheck->rowNum;
             nextSpace.colNum = toCheck->colNum;
@@ -502,7 +503,7 @@ point_t checkDirecExplorer(character_t* toCheck,mapTile_t map,nMapInfo_t mapInfo
         }
     }
     //If the current space is blocked or illegal
-    else if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
+    else if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != NULL|| mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
         //Randomly chooses a new direction to move in 
         int moveNum = rand() % numOptions;
         toCheck->direction = moveOptions[moveNum];
@@ -546,7 +547,7 @@ point_t checkDirecSwimmerWander(character_t* toCheck,mapTile_t map,nMapInfo_t ma
     //Checks to see if there is only one space left
     if(numOptions == 1){
         //If the remaining space is invalid
-        if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
+        if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != NULL|| mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
             //Sets next space to the current space (Character won't move)
             nextSpace.rowNum = toCheck->rowNum;
             nextSpace.colNum = toCheck->colNum;
@@ -560,7 +561,7 @@ point_t checkDirecSwimmerWander(character_t* toCheck,mapTile_t map,nMapInfo_t ma
         }
     }
     //If the current space is blocked or illegal
-    else if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
+    else if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != NULL|| mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != 'X'){
         //Randomly chooses a new direction to move in 
         int moveNum = rand() % numOptions;
         toCheck->direction = moveOptions[moveNum];
@@ -603,7 +604,7 @@ point_t checkDirecSwimmerCharge(character_t* toCheck,mapTile_t map,nMapInfo_t ma
     toCheck->direction.colNum = (mapInfo.playerLocation.colNum - toCheck->colNum ) / abs(mapInfo.playerLocation.colNum - toCheck->colNum );
 
     //If the swimmer can move in the direction of the player
-    if(!(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)])) && mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] == 'X'){
+    if((strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)])) == NULL && mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] == 'X'){
         //Updates Next Space
         nextSpace.rowNum = toCheck->rowNum + (toCheck->direction.rowNum);
         nextSpace.colNum = toCheck->colNum + (toCheck->direction.colNum);
@@ -631,6 +632,11 @@ point_t checkDirecSwimmerCharge(character_t* toCheck,mapTile_t map,nMapInfo_t ma
  * @param nextSpace The space the character is moving unto 
  */
 point_t checkDirection(character_t* toCheck, mapTile_t map, nMapInfo_t mapInfo){
+    point_t defaultReturn;
+    defaultReturn.rowNum = -1;
+
+    defaultReturn.colNum = -1;
+
    //Stores the possible moves for the characters
    point_t moveOptions[8] = {pointInit(-1,0),pointInit(-1,1),pointInit(0,1),pointInit(1,1),pointInit(1,0),pointInit(1,-1),pointInit(0,-1),pointInit(-1,-1)};
    switch (toCheck->type)
@@ -652,6 +658,9 @@ point_t checkDirection(character_t* toCheck, mapTile_t map, nMapInfo_t mapInfo){
             return checkDirecSwimmerCharge(toCheck,map,mapInfo);
         }
         break;
+    default:
+        return defaultReturn;
+        break; 
    }
 }
 
@@ -682,7 +691,7 @@ char movePathfinder(character_t* toMove, mapTile_t map, nMapInfo_t* mapInfo){
 
     //Returns if there is no possible move (This should be rare if not impossible)
     if(bestMove.rowNum == -1){
-        return;
+        return  'x';
     }
 
     //Moves the character inside the character location array
@@ -739,7 +748,7 @@ char moveNPC(queue_t* eventManager, character_t* player, mapTile_t map, nMapInfo
 
     //Get the next Character to move from the queue
     int time;
-    void* temp = (queueExtractMinWithPri(eventManager,time));
+    void* temp = (queueExtractMinWithPri(eventManager,&time));
     character_t* toMove = ((character_t*) temp);
 
 
@@ -798,8 +807,8 @@ char moveNPC(queue_t* eventManager, character_t* player, mapTile_t map, nMapInfo
     }
     
     //Readd the character to the queue
-    memcpy(temp,toMove,sizeof(toMove));
-    queueAddWithPrioirity(temp,moveCost + time);
+    memcpy(temp,toMove,sizeof(character_t));
+    queueAddWithPriority(eventManager, temp,moveCost + time);
 
     free(temp);
 
@@ -819,6 +828,31 @@ nMapInfo_t npcMapInfoInit(){
     }
 
     return toReturn;
+
 }
 
+character_t characterInit(point_t startLoc, char type, int id, char spawnBiome){
+    character_t toReturn;
+
+    toReturn.rowNum = startLoc.rowNum;
+    toReturn.colNum = startLoc.colNum;
+    toReturn.type = type;
+    toReturn.id = id;
+    toReturn.spawnBiome = spawnBiome;
+
+    if(type == 'e' || type == 'w' || type == 's' || type == 'p'){
+        toReturn.direction.rowNum = (rand() % 3) - 1;
+        toReturn.direction.colNum = (rand() % 3) - 1;
+    }  
+    else{
+        toReturn.direction.rowNum = 0;
+        toReturn.direction.colNum = 0;
+    }
+
+    return toReturn;
+}
+
+int getCharacterId(void* toId){
+    return ((character_t*)(toId))->id;
+}
  

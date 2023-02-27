@@ -1,6 +1,9 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
+#include"../Map/map.h"
+#include"../Data-Structures/priorityQueue.h"
+
 /**
  * @brief Stores information about the a character
  */
@@ -48,8 +51,8 @@ typedef struct npcMapInfo{
  * @param mapInfo Pointer to the struct which hold the information about NPC's on this map
  * @return The type of character that moved
  */
-*/
-char moveNPC(queue_t* eventManager, character_t* player, mapTile_t map, nMapInfo_t* mapInfo)
+
+char moveNPC(queue_t* eventManager, character_t* player, mapTile_t map, nMapInfo_t* mapInfo);
 
 /**
  * @brief Creates a new npcMapInfpo struct
@@ -58,6 +61,24 @@ char moveNPC(queue_t* eventManager, character_t* player, mapTile_t map, nMapInfo
  */
 nMapInfo_t npcMapInfoInit();
 
+/**
+ * @brief Creates a new character struct
+ * 
+ * @param startLoc point the character is at
+ * @param type The type of character it is
+ * @param id The id to assign it
+ * @param spawnBiome The biome this character spawns in
+ * @return The newly created character
+ */
+character_t characterInit(point_t startLoc, char type, int id, char spawnBiome);
+
+
+/**
+ * @brief Returns the ID of a given character 
+ * 
+ * @return The ID
+ */
+int getCharacterId(void* toId);
 
 
 

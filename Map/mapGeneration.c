@@ -6,7 +6,33 @@
 #include"map.h"
 #include"../Data-Structures/priorityQueue.h"
 #include"worldGeneration.h"
+#include"../Characters/gameCharacter.h"
 
+
+//Colors
+#define GRN "\x1B[32m"
+#define RED "\x1B[31m"
+#define DRKYLLW "\x1B[38;5;58m"
+#define FRSTGRN "\x1B[38;5;28m"
+#define BLUE "\x1B[34m"
+#define DRKBLUE "\x1B[38;5;17m"
+#define GREY "\x1B[38;5;235m"
+#define DSRTYLLW "\x1B[38;5;220m"
+#define BROWN "\x1B[38;5;94m"
+#define RESET "\x1B[0m"
+
+typedef enum{
+    HIKER,
+    PACER,
+    WANDERER,
+    SENTRY,
+    EXPLORER,
+    SWIMMER,
+    RIVAL
+}characterNames_t;
+
+const char* npcAllowedSpawns[] = {"#=%%\".:CM", "#=CM.:", "#=CM.:", "#=CM.:", "#=%%\".:", "#=CM.:", "=~"};
+const char charOptions[] = {'h','p','w','s','e','m','r'};
 
 
 /**
@@ -862,4 +888,128 @@ mapTile_t createMapTileIndependent(){
 
     return map;
 
+}
+
+character_t placeNPC(int typeIndex ,mapTile_t map, nMapInfo_t* mapInfo, int charNum){
+        point_t spawnPos;
+        character_t toPlace;
+        //Randomly choosed spawn location
+        spawnPos.rowNum = (rand() % 19) + 1;
+        spawnPos.colNum = (rand() % 78) + 1;
+
+        //If spawn position is valid place character and return it 
+        if(strchr(npcAllowedSpawns[typeIndex], map.mapArr[spawnPos.rowNum][spawnPos.colNum]) != NULL && mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum] == 'X'){
+            mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum] = charOptions[typeIndex];
+            toPlace = characterInit(spawnPos,charOptions[typeIndex],charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
+        }
+        //If the postion isnt valid
+        else{
+            int mod = 1;
+
+            while(mod != 0){
+                //Move the spawn postion 
+                spawnPos.colNum += mod;
+                //If the new postion is valid place the character and return it
+                if(strchr(npcAllowedSpawns[typeIndex], map.mapArr[spawnPos.rowNum][spawnPos.colNum]) != NULL && mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum] == 'X'){
+                    mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum] = charOptions[typeIndex];
+                    mod = 0;
+                    toPlace = characterInit(spawnPos,charOptions[typeIndex],charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
+                }
+                //If the position isnt valid and the checker is at the edge of the map
+                else if(spawnPos.colNum == 78 || spawnPos.rowNum == 1){
+                    //If the checker is at the bottom wrap around the to top
+                    if(spawnPos.rowNum == 19){
+                        spawnPos.rowNum = 1;
+                    }
+                    //If it isnt move down one
+                    else{
+                        spawnPos.rowNum += 1;
+                    }
+                    //Reverse the direction
+                    mod *= -1;
+                }
+            }
+        }
+        return toPlace;
+}
+
+nMapInfo_t spawnNPCS(mapTile_t map, int numNPCs, queue_t* eventManager){
+    nMapInfo_t mapInfo = npcMapInfoInit();
+
+    int numOptions;
+
+    if(map.waterRegion == 0){
+        numOptions = 6;
+    }
+    else{
+        numOptions = 5;
+    }
+
+    placeNPC(RIVAL, map,&mapInfo,1);
+    for(int i=0; i < numNPCs - 1; i++){
+        int toAdd;
+        if(i == 0){
+            toAdd = HIKER;
+        }
+        else{
+            toAdd = rand() % numOptions;
+        }
+        character_t cToAdd = placeNPC(toAdd, map,&mapInfo, 2 + i);
+
+        void* addV = malloc(sizeof(character_t));
+        memcpy(addV,&cToAdd,sizeof(character_t));
+        queueAddWithPriority(eventManager,addV,1);
+        free(addV);
+
+    
+    }
+    return mapInfo;
+}
+
+void printMapWithChars(mapTile_t* map, nMapInfo_t mapInfo){
+    for(int i =0; i < 21; i++){
+        for(int j = 0; j < 80;j ++){
+             char toPrint;
+            if(mapInfo.charLocations[i][j] == 'X'){
+                toPrint = map->mapArr[i][j];
+            }
+            else{
+                toPrint = mapInfo.charLocations[i][j];
+            }
+           
+
+            if(toPrint == '.'){
+                printf(GRN "%c " RESET,toPrint);
+            }
+            else if(toPrint == ':'){
+                printf(DRKYLLW "%c " RESET,toPrint);
+            }
+            else if(toPrint == '~'){
+                printf(BLUE "%c " RESET,toPrint);
+            }
+            else if(toPrint == '%'){
+                printf(GREY "%c " RESET,toPrint);
+            }
+            else if(toPrint == '\"'){
+                printf(FRSTGRN "%c " RESET,toPrint);
+            }
+            else if(toPrint == '*'){
+                printf(DSRTYLLW "%c " RESET,toPrint);
+            }
+            else if(toPrint == 'C'){
+                printf(RED "%c " RESET,toPrint);
+            }
+            else if(toPrint == 'M'){
+                printf(DRKBLUE "%c " RESET,toPrint);
+            }
+            else if(toPrint == '='){
+                printf(BROWN "%c " RESET,toPrint);
+            }
+            else{
+                printf("%c ",toPrint);
+            }
+            
+        }
+        printf("\n");
+    }
 }

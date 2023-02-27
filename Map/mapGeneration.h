@@ -3,6 +3,8 @@
 
 #include"map.h"
 #include"worldGeneration.h"
+#include"../Characters/gameCharacter.h"
+
 
 /**
  * @brief Creates a new tile to be placed on the map
@@ -32,5 +34,24 @@ mapTile_t createMapTileIndependent();
  * @return The downshifted ID
  */
 int pointToLocID(void* toConvert);
+
+/**
+ * @brief Spawns a given number of NPCS on the map.
+ * Returns the nMapInfo struct for the tile
+ * 
+ * @param map The map to spawn NPCs on
+ * @param numNPCS The number of NPCs to spawn  + 
+ * 
+ * @return the nMapInfo struct for the tile 
+ */
+nMapInfo_t spawnNPCS(mapTile_t map, int numNPCs);
+
+/**
+ * @brief Prints a map to the console with NPCS and the player character in the correct location
+ * 
+ * @param map The map to print
+ * @param mapInfo The NPC information for the map
+ */
+void printMapWithChars(mapTile_t* map, nMapInfo_t mapInfo);
 
 #endif

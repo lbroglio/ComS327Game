@@ -105,3 +105,4 @@ point_t pointInit(int row, int col){
     toReturn.colNum = col;
     return toReturn;
 }
+

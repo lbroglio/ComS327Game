@@ -1,5 +1,5 @@
 poke327: poke327.o mapGeneration.o map.o priorityQueue.o NPCMovement.o biome.o Characters/gameCharacter.h
-	gcc NPCMovement.o mapGeneration.o map.o biome.o priorityQueue.o -o poke327
+	gcc poke327.o NPCMovement.o mapGeneration.o map.o biome.o priorityQueue.o -o poke327
 
 worldGen: mapGeneration.o biome.o map.o worldGeneration.o priorityQueue.o
 	gcc worldGeneration.o mapGeneration.o biome.o map.o priorityQueue.o -o worldGen

@@ -72,4 +72,9 @@ void mapTileDestory(mapTile_t* map);
  * @return The newly created point
  */
 point_t pointInit(int row, int col);
+
+
+
+
+
 #endif

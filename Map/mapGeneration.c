@@ -31,7 +31,7 @@ typedef enum{
     RIVAL
 }characterNames_t;
 
-const char* npcAllowedSpawns[] = {"#=%%\".:CM", "#=CM.:", "#=CM.:", "#=CM.:", "#=%%\".:", "#=CM.:", "=~"};
+const char* npcAllowedSpawns[] = {"#=%%\".:CM", "#=CM.:", "#=CM.:", "#=CM.:", "#=%%\".:","=~", "#=CM.:"};
 const char charOptions[] = {'h','p','w','s','e','m','r'};
 
 
@@ -945,7 +945,13 @@ nMapInfo_t spawnNPCS(mapTile_t map, int numNPCs, queue_t* eventManager){
         numOptions = 5;
     }
 
-    placeNPC(RIVAL, map,&mapInfo,1);
+    character_t cToAdd = placeNPC(RIVAL, map,&mapInfo,1);
+
+    void* addV = malloc(sizeof(character_t));
+    memcpy(addV,&cToAdd,sizeof(character_t));
+    queueAddWithPriority(eventManager,addV,1);
+    free(addV);
+
     for(int i=0; i < numNPCs - 1; i++){
         int toAdd;
         if(i == 0){
@@ -954,7 +960,7 @@ nMapInfo_t spawnNPCS(mapTile_t map, int numNPCs, queue_t* eventManager){
         else{
             toAdd = rand() % numOptions;
         }
-        character_t cToAdd = placeNPC(toAdd, map,&mapInfo, 2 + i);
+        cToAdd = placeNPC(toAdd, map,&mapInfo, 2 + i);
 
         void* addV = malloc(sizeof(character_t));
         memcpy(addV,&cToAdd,sizeof(character_t));

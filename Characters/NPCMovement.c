@@ -319,13 +319,13 @@ void printDistArr(int dist[21][80]){
 int getPossibleMoves(character_t toMove, nMapInfo_t mapInfo, point_t* possibleMoves){
      //Stores the current number of added points
      int tracker = 0;
-
+     
     //Loops through all the possible increments that can find the points neighbors
      for(int i=-1; i < 2; i++){
         for(int j=-1; j < 2; j++){
 
             //Skips if both are zero (This is the same location as the character which is being moved)
-            if(i == 0 && j == 0){
+            if((i == 0 && j == 0) ||  toMove.rowNum + i == 0 || toMove.rowNum + i == 20 || toMove.colNum + j == 0 || toMove.rowNum + j == 79){
                 continue;
             }
 
@@ -358,10 +358,20 @@ int getPossibleMoves(character_t toMove, nMapInfo_t mapInfo, point_t* possibleMo
 
                 //Moves the new point down the array unti its in a sorted position. (Functionally this is a single pass of insertion sort)
                 while(shift >= 0){
-                    int prevDist = mapInfo.hikerDist[possibleMoves[shift].rowNum][possibleMoves[shift].colNum];
+
+                    int prevDist;
+
+                    if(toMove.type == 'h'){
+                        prevDist = mapInfo.hikerDist[possibleMoves[shift].rowNum][possibleMoves[shift].colNum];
+                    }
+                    else{
+                        prevDist = mapInfo.rivalDist[possibleMoves[shift].rowNum][possibleMoves[shift].colNum];
+                    }
+
                     if(dist < prevDist){
                         possibleMoves[shift + 1] = possibleMoves[shift];
                         possibleMoves[shift] = newPos;
+                        shift -= 1;
                     }
                     else{
                         shift -= 8;
@@ -683,14 +693,16 @@ char movePathfinder(character_t* toMove, mapTile_t map, nMapInfo_t* mapInfo){
     //Gets the move with the least distance that isnt occupied by a character
     for(int i =0; i < numMoves; i++){
         point_t currBestMove = possibleMoves[i];
-        if(mapInfo->charLocations[currBestMove.rowNum][currBestMove.colNum] != 'X'){
-            bestMove = currBestMove;
+        if(mapInfo->charLocations[currBestMove.rowNum][currBestMove.colNum] == 'X'){
+            bestMove.rowNum = currBestMove.rowNum;
+            bestMove.colNum = currBestMove.colNum;
             i += 8;
         }
     }
 
     //Returns if there is no possible move (This should be rare if not impossible)
     if(bestMove.rowNum == -1){
+        printf("HERE");
         return  'x';
     }
 
@@ -807,12 +819,13 @@ char moveNPC(queue_t* eventManager, character_t* player, mapTile_t map, nMapInfo
     }
     
     //Readd the character to the queue
+    char typeToReturn = toMove->type;
     memcpy(temp,toMove,sizeof(character_t));
     queueAddWithPriority(eventManager, temp,moveCost + time);
 
     free(temp);
 
-    return toMove->type;
+    return typeToReturn;
 }
 
 nMapInfo_t npcMapInfoInit(){

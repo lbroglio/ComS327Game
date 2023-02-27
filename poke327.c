@@ -35,18 +35,20 @@ int main(int argc, char* argv[]){
     free(addV);
 
    
-    nMapInfo_t mapInfo = spawnNPCS(map,numNPCs);
+    nMapInfo_t mapInfo = spawnNPCS(map,numNPCs,&eventManager);
+    mapInfo.charLocations[player.rowNum][player.colNum] = '@';
 
-    mapInfo.playerLocation.rowNum = player.rowNum;
-    mapInfo.playerLocation.colNum = player.colNum;
+    mapInfo.playerLocation.rowNum = -1;
+    mapInfo.playerLocation.colNum = -1;
 
     
     while(1 == 1){
         char moved = moveNPC(&eventManager,&player,map,&mapInfo);
 
         if(moved == '@'){
-            usleep(25000);
+            usleep(300000);
             printMapWithChars(&map,mapInfo);
+            printf("\n");
         }
     }
 

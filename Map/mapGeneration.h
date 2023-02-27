@@ -40,11 +40,12 @@ int pointToLocID(void* toConvert);
  * Returns the nMapInfo struct for the tile
  * 
  * @param map The map to spawn NPCs on
- * @param numNPCS The number of NPCs to spawn  + 
+ * @param numNPCS The number of NPCs to spawn
+ * @param eventManager Pointer to the priority queue which drives the game
  * 
  * @return the nMapInfo struct for the tile 
  */
-nMapInfo_t spawnNPCS(mapTile_t map, int numNPCs);
+nMapInfo_t spawnNPCS(mapTile_t map, int numNPCs, queue_t* eventManager);
 
 /**
  * @brief Prints a map to the console with NPCS and the player character in the correct location

@@ -46,7 +46,7 @@ int main(int argc, char* argv[]){
         char moved = moveNPC(&eventManager,&player,map,&mapInfo);
 
         if(moved == '@'){
-            usleep(300000);
+            usleep(280000);
             printMapWithChars(&map,mapInfo);
             printf("\n");
         }

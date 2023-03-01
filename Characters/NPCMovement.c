@@ -495,7 +495,7 @@ point_t checkDirecWanderer(character_t* toCheck,mapTile_t map,nMapInfo_t mapInfo
  */
 point_t checkDirecExplorer(character_t* toCheck,mapTile_t map,nMapInfo_t mapInfo,point_t moveOptions[], int numOptions){
     point_t nextSpace;
-    char* illegalChars = "~\"%% ";
+    char* illegalChars = "~%% ";
     //Checks to see if there is only one space left
     if(numOptions == 1){
         //If the remaining space is invalid
@@ -660,7 +660,7 @@ point_t checkDirection(character_t* toCheck, mapTile_t map, nMapInfo_t mapInfo){
     case 'e':
         return checkDirecExplorer(toCheck,map,mapInfo,moveOptions,8);
         break;
-    case 's':
+    case 'm':
         if(mapInfo.playerByWater == 0){
             return checkDirecSwimmerWander(toCheck,map,mapInfo,moveOptions,8);
         }
@@ -853,7 +853,7 @@ character_t characterInit(point_t startLoc, char type, int id, char spawnBiome){
     toReturn.id = id;
     toReturn.spawnBiome = spawnBiome;
 
-    if(type == 'e' || type == 'w' || type == 's' || type == 'p'){
+    if(type == 'e' || type == 'w' || type == 'm' || type == 'p'){
         toReturn.direction.rowNum = (rand() % 3) - 1;
         toReturn.direction.colNum = (rand() % 3) - 1;
     }  

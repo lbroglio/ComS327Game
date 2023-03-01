@@ -13,9 +13,6 @@ NPCMovement.o: Characters/NPCMovement.c
 worldGeneration.o:  Map/worldGeneration.c Map/worldGeneration.h
 	gcc -Wall -Werror -ggdb  Map/worldGeneration.c -c
 
-mapGeneration.o: Map/mapGeneration.c 
-	gcc -Wall -Werror -ggdb Map/mapGeneration.c -c
-
 biome.o: Map/biome.c Map/biome.h
 	gcc -Wall -Werror -ggdb Map/biome.c -c
 

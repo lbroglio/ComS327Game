@@ -17,19 +17,23 @@ void swap(queue_t* s, int x, int y){
     queueEntry_t xEntry = s->heapArr[x];
     queueEntry_t yEntry = s->heapArr[y];
 
+    /*
     void* xVoid = malloc(sizeof(xEntry));
     void* yVoid = malloc(sizeof(yEntry));
     memcpy(xVoid,xEntry.data,s->dataSize);
     memcpy(yVoid,yEntry.data,s->dataSize);
+    */
 
-    s->locArr[s->idFunc(xVoid)] = y;
-    s->locArr[s->idFunc(yVoid)] = x;
+    s->locArr[s->idFunc(xEntry.data)] = y;
+    s->locArr[s->idFunc(yEntry.data)] = x;
 
     s->heapArr[x] = yEntry;
     s->heapArr[y] = xEntry;    
 
+    /*
     free(xVoid);
     free(yVoid);
+    */
 }
 
 /**

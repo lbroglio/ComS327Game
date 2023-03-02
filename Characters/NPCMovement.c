@@ -553,7 +553,7 @@ point_t checkDirecExplorer(character_t* toCheck,mapTile_t map,nMapInfo_t mapInfo
  */
 point_t checkDirecSwimmerWander(character_t* toCheck,mapTile_t map,nMapInfo_t mapInfo,point_t moveOptions[], int numOptions){
     point_t nextSpace;
-    char* illegalChars = "#\"%%.: ";
+    char* illegalChars = "CM#\"%%.: ";
     //Checks to see if there is only one space left
     if(numOptions == 1){
         //If the remaining space is invalid

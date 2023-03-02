@@ -1,4 +1,0 @@
-This program uses dyksras algorithm creates a map which can be used to help NPCs navgiate to the player.
-The program create a 2D array to store the distance of every square from the player so NPCS can follow the best path to them.
-
-THe program has three seperate outputs. The first is the randomly generated map with the player (Who always spawns above a pokemart) is placed on it. After that it prints the distance maps for the hiker and the rival (In that order). Each square of the map shows the last two digits of its distance from the player.

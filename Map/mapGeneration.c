@@ -21,6 +21,16 @@
 #define BROWN "\x1B[38;5;94m"
 #define RESET "\x1B[0m"
 
+/**
+ * @brief ENUM for names of characters
+ * HIKER
+ * PACER
+ * WANDERER
+ * SENTRY 
+ * EXPLORER
+ * SWIMMER
+ * RIVAL
+ */
 typedef enum{
     HIKER,
     PACER,
@@ -890,6 +900,175 @@ mapTile_t createMapTileIndependent(){
 
 }
 
+/**
+ * @brief Creates an array with the correct balance of trainers for the given map tile.
+ * IE makes it so they will have the correct chances of randomly being chosen
+ * 
+ * @param arr The array to add the characters to
+ * @param map The map to set the ratios based off of
+ */
+void genCharChooseArr(characterNames_t charPickArr[], mapTile_t map, int hasSwimmer){
+    for(int i=0; i < 100; i ++){
+        //Evenly distribute (With more interesting types slightly higher weighted if its uneven) for grasslands biomes
+        if(map.mapType == '.'){
+            //With swimmer
+            if(hasSwimmer == 1){
+                if(i < 18){
+                    charPickArr[i] = PACER;
+                }
+                else if(i < 34){
+                    charPickArr[i] = HIKER;
+                }
+                else if(i < 51){
+                    charPickArr[i] = WANDERER;
+                }
+                else if(i < 67){
+                    charPickArr[i] = SENTRY;
+                }
+                else if(i < 84){
+                    charPickArr[i] = EXPLORER;
+                }
+                else{
+                    charPickArr[i] = SWIMMER;
+                }
+            }
+            //No swimmer
+            else{
+                if(i < 20){
+                    charPickArr[i] = HIKER;
+                }
+                else if(i < 40){
+                    charPickArr[i] = PACER;
+                }
+                else if(i < 60){
+                    charPickArr[i] = WANDERER;
+                }
+                else if(i < 80){
+                    charPickArr[i] = SENTRY;
+                }
+                else{
+                    charPickArr[i] = EXPLORER;
+                }
+            }
+        }
+        //Forest biomes should be 30% explorers
+        else if(map.mapType == '\"'){
+            //With swimmer
+            if(hasSwimmer == 1){
+                if(i < 30){
+                    charPickArr[i] = EXPLORER;
+                }
+                else if(i < 44){
+                    charPickArr[i] = PACER;
+                }
+                else if(i < 58){
+                    charPickArr[i] = WANDERER;
+                }
+                else if(i < 72){
+                    charPickArr[i] = SENTRY;
+                }
+                else if(i < 86){
+                    charPickArr[i] = HIKER;
+                }
+                else{
+                    charPickArr[i] = SWIMMER;
+                }
+            }
+            //No swimmer
+            else{
+                if(i < 30){
+                    charPickArr[i] = EXPLORER;
+                }
+                else if(i < 47){
+                    charPickArr[i] = PACER;
+                }
+                else if(i < 64){
+                    charPickArr[i] = WANDERER;
+                }
+                else if(i < 71){
+                    charPickArr[i] = SENTRY;
+                }
+                else{
+                    charPickArr[i] = HIKER;
+                }
+            }
+        }
+        //Mountains biomes should be 30% hikers
+        else if(map.mapType == '%'){
+            //With Swimmer
+            if(hasSwimmer ==  1){
+                if(i < 30){
+                    charPickArr[i] = HIKER;
+                }
+                else if(i < 44){
+                    charPickArr[i] = PACER;
+                }
+                else if(i < 58){
+                    charPickArr[i] = WANDERER;
+                }
+                else if(i < 72){
+                    charPickArr[i] = SENTRY;
+                }
+                else if(i < 86){
+                    charPickArr[i] = EXPLORER;
+                }
+                else{
+                    charPickArr[i] = SWIMMER;
+                }
+            }
+            //No swimmer
+            else{
+                if(i < 30){
+                    charPickArr[i] = HIKER;
+                }
+                else if(i < 47){
+                    charPickArr[i] = PACER;
+                }
+                else if(i < 64){
+                    charPickArr[i] = WANDERER;
+                }
+                else if(i < 71){
+                    charPickArr[i] = SENTRY;
+                }
+                else{
+                    charPickArr[i] = EXPLORER;
+                }
+            }
+            
+        }
+        //Water biomes should be 50% swimmers
+        else if(map.mapType == '~'){
+            if(i < 50){
+                charPickArr[i] = SWIMMER;
+            }
+            else if(i < 60){
+                charPickArr[i] = PACER;
+            }
+            else if(i < 70){
+                charPickArr[i] = WANDERER;
+            }
+            else if(i < 80){
+                charPickArr[i] = SENTRY;
+            }
+            else if(i < 90){
+                charPickArr[i] = EXPLORER;
+            }
+            else{
+                charPickArr[i] = HIKER;
+            }
+        }
+    }
+}
+
+/**
+ * @brief Places an NPC on the map
+ * 
+ * @param typeIndex The index corresponding to the type  of NPC
+ * @param map The map to place the NPCs on
+ * @param mapInfo The Info array for the NPCS on  this map
+ * @param charNum The number of character they are (How many other chracters have been added)
+ * @return The newly placed character
+ */
 character_t placeNPC(int typeIndex ,mapTile_t map, nMapInfo_t* mapInfo, int charNum){
         point_t spawnPos;
         character_t toPlace;
@@ -934,34 +1113,48 @@ character_t placeNPC(int typeIndex ,mapTile_t map, nMapInfo_t* mapInfo, int char
 }
 
 nMapInfo_t spawnNPCS(mapTile_t map, int numNPCs, queue_t* eventManager){
+    //Create the NPC info for this map tile
     nMapInfo_t mapInfo = npcMapInfoInit();
 
-    int numOptions;
+    //Set whether or not there are swimmers
+    int hasSwimmer;
 
     if(map.waterRegion == 0){
-        numOptions = 6;
+        hasSwimmer = 1;
     }
     else{
-        numOptions = 5;
+        hasSwimmer = 0;
     }
 
+    //Add a rival
     character_t cToAdd = placeNPC(RIVAL, map,&mapInfo,1);
 
+    //Add the rival to the event manager
     void* addV = malloc(sizeof(character_t));
     memcpy(addV,&cToAdd,sizeof(character_t));
     queueAddWithPriority(eventManager,addV,1);
     free(addV);
 
+    //Create an array with the correct ratios for trainers based off the map type
+    characterNames_t charPickArr[100];
+    genCharChooseArr(charPickArr,map, hasSwimmer);
+
+    //For the number of NPCS - the rival
     for(int i=0; i < numNPCs - 1; i++){
-        int toAdd;
+        characterNames_t toAdd;
+        //First NPC is always Hiker  
         if(i == 0){
             toAdd = HIKER;
         }
+        //Otherwsie choose randomly
         else{
-            toAdd = rand() % numOptions;
+            int toAddSelector = rand() % 100;
+            toAdd = charPickArr[toAddSelector];
         }
+        //Places NPC on the map
         cToAdd = placeNPC(toAdd, map,&mapInfo, 2 + i);
 
+        //Puts NPC into event manager
         void* addV = malloc(sizeof(character_t));
         memcpy(addV,&cToAdd,sizeof(character_t));
         queueAddWithPriority(eventManager,addV,1);

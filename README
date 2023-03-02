@@ -1,0 +1,35 @@
+This program adds moving NPCs to the game
+
+To Use
+./poke327 - randomly select number of trainers
+./poke327 num - Set number of trainers
+
+
+There are seven types of NPCs 
+
+Hiker - Traverses any terrain except water. Moves using Dykstra's algorithm to find the shortest path to the player. 
+
+Pacer - Traverse grasslands, roads, and buildings. Moves straight forward until it finds illegal terrain then turns around.
+
+Wanderer - Traverses grasslands, roads, and buildings. Moves randomly but won't leave its spawn biome. (Only spawns in grasslands)
+
+Sentry - Don't move
+
+Explorer - Can traverse grasslands, roads, buildings, and forests. Move randomly
+
+Swimmer- Can only traverse water and bridges. Only spawns in water biomes (Wont spawn in rivers)
+
+Rival- Can traverse grasslands, roads, and buildings. Moves using Dykstra's algorithm to find the shortest path to the player.
+
+
+Map type dictates amount of each trainer.
+
+Grasslands are evenly distributed 
+
+Forests favor explorers 
+
+Mountains favor hikers 
+
+Lakes heavily favor swimmers
+
+

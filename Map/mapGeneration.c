@@ -41,7 +41,7 @@ typedef enum{
     RIVAL
 }characterNames_t;
 
-const char* npcAllowedSpawns[] = {"#=%%\".:CM", "CM.:", "CM.:", ".:", "#=.:\"","=~", "#=CM.:"};
+const char* npcAllowedSpawns[] = {"#=%%\".:CM", "CM.:", ".:", "\".:", "#=.:\"","=~", "#=CM.:"};
 const char charOptions[] = {'h','p','w','s','e','m','r'};
 
 

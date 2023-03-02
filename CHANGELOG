@@ -1,3 +1,63 @@
+commit fedde556fa8afaa555bf370e5682aa96697a4c3f
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Mar 1 18:08:10 2023 -0600
+
+    Changed spawn logic to be dynamic by biomes and some bug fixes
+
+commit 0e79d2773d4897ac7872d816af481ccf4d58a854
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Mar 1 11:19:46 2023 -0600
+
+    Bug fixes - Includes changing how the swap function accesses data (Removed some unecessary allocation)
+
+commit ae08e928da0e1ff98a5551c03f3bdcf30c5ba8b4
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Mon Feb 27 16:51:28 2023 -0600
+
+    Bug fixes. Enemy pathfinding is probably 75% done
+
+commit 31cdab8e34e6858bfdc8b29cf878994e1e8ff4ae
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Mon Feb 27 14:15:30 2023 -0600
+
+    Bug fixes
+
+commit e4b442c62626d855739985e054fc41660c8fcf83
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Sun Feb 26 18:17:01 2023 -0600
+
+    I have finished the moving logic but it is untested. Included tweaks to map and the priorioty queue
+
+commit 5e58c257a3f98b4bfc8f3fcae0bcd45295d98266
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Sat Feb 25 16:32:47 2023 -0600
+
+    Started on movement functions which includes building data type for characters and to store npc information for a map tile
+
+commit 8472402adcf938c3abea2dedfc0d865347c45143
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Feb 22 16:11:27 2023 -0600
+
+    Folder and file name changes. Created poke327.c to act as main file
+
+commit 665f0faa83f7a8976432d9212248a52cb29d0bb1
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Tue Feb 21 16:31:21 2023 -0600
+
+    Moved NPC Read me
+
+commit 836290a27bb3f898f2fcb99bdf921f64530b52cb
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Tue Feb 21 16:30:17 2023 -0600
+
+    Changed queue to be generic instyead of only for map points
+
+commit efb1177abfb317790a138e2a4127c29b2664e07b
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Feb 15 19:08:47 2023 -0600
+
+    Updated changelog
+
 commit 659152324f2ce5397db22eb5ed7ec78bda1ec146
 Author: lbroglio <lbroglio@iastate.edu>
 Date:   Wed Feb 15 19:08:13 2023 -0600

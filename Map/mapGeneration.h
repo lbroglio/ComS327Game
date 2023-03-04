@@ -47,12 +47,5 @@ int pointToLocID(void* toConvert);
  */
 nMapInfo_t spawnNPCS(mapTile_t map, int numNPCs, queue_t* eventManager);
 
-/**
- * @brief Prints a map to the console with NPCS and the player character in the correct location
- * 
- * @param map The map to print
- * @param mapInfo The NPC information for the map
- */
-void printMapWithChars(mapTile_t* map, nMapInfo_t mapInfo);
 
 #endif

@@ -1,8 +1,11 @@
-poke327: poke327.o mapGeneration.o map.o priorityQueue.o NPCMovement.o biome.o Characters/gameCharacter.h
-	gcc poke327.o NPCMovement.o mapGeneration.o map.o biome.o priorityQueue.o -o poke327
+poke327: poke327.o mapGeneration.o map.o priorityQueue.o NPCMovement.o biome.o Characters/gameCharacter.h screen.o
+	gcc poke327.o NPCMovement.o mapGeneration.o map.o biome.o priorityQueue.o screen.o -lcurses -o poke327
 
 worldGen: mapGeneration.o biome.o map.o worldGeneration.o priorityQueue.o
 	gcc worldGeneration.o mapGeneration.o biome.o map.o priorityQueue.o -o worldGen
+
+screen.o: Screen/screen.c Screen/screen.h
+	gcc -Wall -Werror -ggdb  Screen/screen.c -c
 
 poke327.o: poke327.c
 	gcc -Wall -Werror -ggdb  poke327.c -c

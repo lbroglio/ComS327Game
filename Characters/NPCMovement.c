@@ -718,7 +718,6 @@ char movePathfinder(character_t* toMove, mapTile_t map, nMapInfo_t* mapInfo){
 }
 
 char moveWayfinder(character_t* toMove, mapTile_t map, nMapInfo_t* mapInfo){
-    //Changes the direction if necessary LUKE CHANGE THIS TO USE A FUNCTION POINTER PASSED IN AFTER DINNER DONT FORGET
     point_t nextSpace = checkDirection(toMove,map,*mapInfo);
 
     //Moves the character inside the character location array
@@ -770,6 +769,11 @@ char moveNPC(queue_t* eventManager, character_t* player, mapTile_t map, nMapInfo
         //THIS OPTION CURRENTLY DOES NOTHIING AS THESE CHARACTER TYPES DON'T HAVE ANY MOVES THEY CAN TAKE
         //They are given mountain move typees as place holders so they move back in the queue
         moveType = '%';
+        /*
+        printMapWithChars(&map,*mapInfo);
+        printf("\n");
+        */
+
     }
     else if(toMove->type == 'h' || toMove->type == 'r'){
         moveType = movePathfinder(toMove,map,mapInfo);
@@ -824,7 +828,7 @@ char moveNPC(queue_t* eventManager, character_t* player, mapTile_t map, nMapInfo
     queueAddWithPriority(eventManager, temp,moveCost + time);
 
     free(temp);
-
+    
     return typeToReturn;
 }
 

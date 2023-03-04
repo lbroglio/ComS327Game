@@ -50,6 +50,7 @@ typedef struct mapPoint{
 mapTile_t mapTileInit(char type, int topEnt, int bottomEnt, int leftEnt, int rightEnt);
 
 /**
+ * THIS IS DEPRECATED. IT'S NOT FIXED FOR CURSORS AND IT WON'T PRINT NPCs OR THE PLAYER
  * @brief Prints out a map to the console
  * 
  * @param map The map to print

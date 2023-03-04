@@ -1,7 +1,9 @@
 #include<stdio.h>
 #include<time.h>
-#include <unistd.h>
+#include<unistd.h>
 #include<string.h>
+#include<curses.h>
+#include"./Screen/screen.h"
 #include"./Map/map.h"
 #include"./Map/biome.h"
 #include"./Map/mapGeneration.h"
@@ -12,6 +14,7 @@
 int main(int argc, char* argv[]){
     srand(time(NULL));
     int numNPCs;
+    terminalInit();
 
     if(argc == 2){
         numNPCs = atoi(argv[1]);
@@ -41,14 +44,13 @@ int main(int argc, char* argv[]){
     mapInfo.playerLocation.rowNum = -1;
     mapInfo.playerLocation.colNum = -1;
 
-    
     while(1 == 1){
         char moved = moveNPC(&eventManager,&player,map,&mapInfo);
 
         if(moved == '@'){
             usleep(280000);
             printMapWithChars(&map,mapInfo);
-            printf("\n");
+            printw("\n");
         }
     }
 

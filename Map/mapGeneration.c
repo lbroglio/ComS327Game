@@ -9,18 +9,6 @@
 #include"../Characters/gameCharacter.h"
 
 
-//Colors
-#define GRN "\x1B[32m"
-#define RED "\x1B[31m"
-#define DRKYLLW "\x1B[38;5;58m"
-#define FRSTGRN "\x1B[38;5;28m"
-#define BLUE "\x1B[34m"
-#define DRKBLUE "\x1B[38;5;17m"
-#define GREY "\x1B[38;5;235m"
-#define DSRTYLLW "\x1B[38;5;220m"
-#define BROWN "\x1B[38;5;94m"
-#define RESET "\x1B[0m"
-
 /**
  * @brief ENUM for names of characters
  * HIKER
@@ -1165,50 +1153,3 @@ nMapInfo_t spawnNPCS(mapTile_t map, int numNPCs, queue_t* eventManager){
     return mapInfo;
 }
 
-void printMapWithChars(mapTile_t* map, nMapInfo_t mapInfo){
-    for(int i =0; i < 21; i++){
-        for(int j = 0; j < 80;j ++){
-             char toPrint;
-            if(mapInfo.charLocations[i][j] == 'X'){
-                toPrint = map->mapArr[i][j];
-            }
-            else{
-                toPrint = mapInfo.charLocations[i][j];
-            }
-           
-
-            if(toPrint == '.'){
-                printf(GRN "%c " RESET,toPrint);
-            }
-            else if(toPrint == ':'){
-                printf(DRKYLLW "%c " RESET,toPrint);
-            }
-            else if(toPrint == '~'){
-                printf(BLUE "%c " RESET,toPrint);
-            }
-            else if(toPrint == '%'){
-                printf(GREY "%c " RESET,toPrint);
-            }
-            else if(toPrint == '\"'){
-                printf(FRSTGRN "%c " RESET,toPrint);
-            }
-            else if(toPrint == '*'){
-                printf(DSRTYLLW "%c " RESET,toPrint);
-            }
-            else if(toPrint == 'C'){
-                printf(RED "%c " RESET,toPrint);
-            }
-            else if(toPrint == 'M'){
-                printf(DRKBLUE "%c " RESET,toPrint);
-            }
-            else if(toPrint == '='){
-                printf(BROWN "%c " RESET,toPrint);
-            }
-            else{
-                printf("%c ",toPrint);
-            }
-            
-        }
-        printf("\n");
-    }
-}

@@ -45,14 +45,15 @@ typedef struct npcMapInfo{
 /**
  * @brief Performs the next move in the game. - Removes the next character to move from the queue and handles the logic for moving it
  * 
- * @param eventManager Pointer to the priority queue which drives the game
+ * @param toMove Pointer to the character to move 
+ * @param time The time of the current move
  * @param player Pointer to the struct containing the information about the player
  * @param map The map tile that the player is currently on
  * @param mapInfo Pointer to the struct which hold the information about NPC's on this map
- * @return The type of character that moved
+ * @return The cost of the move the npc made
  */
 
-char moveNPC(queue_t* eventManager, character_t* player, mapTile_t map, nMapInfo_t* mapInfo);
+int moveNPC(character_t* toMove, int time, character_t* player, mapTile_t map, nMapInfo_t* mapInfo);
 
 /**
  * @brief Creates a new npcMapInfpo struct

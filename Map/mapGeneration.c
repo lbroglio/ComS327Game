@@ -19,7 +19,7 @@
  * SWIMMER
  * RIVAL
  */
-typedef enum{
+typedef enum characterNames{
     HIKER,
     PACER,
     WANDERER,

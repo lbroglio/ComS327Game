@@ -29,7 +29,7 @@ typedef struct mapTile{
 }mapTile_t;
 
 /**
- * @brief Stores a point on the map
+ * @brief Stores a point on the map. Also used as unit vectors sometimes
  * 
  */
 typedef struct mapPoint{

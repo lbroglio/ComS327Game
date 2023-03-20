@@ -741,7 +741,7 @@ int checkPlayerByWater(character_t player, mapTile_t map){
     }
 }
 
-char moveNPC(queue_t* eventManager, character_t* player, mapTile_t map, nMapInfo_t* mapInfo){
+int moveNPC(character_t* toMove, int time, character_t* player, mapTile_t map, nMapInfo_t* mapInfo){
 
     //If the player has moved
     if(mapInfo->playerLocation.rowNum != player->rowNum || mapInfo->playerLocation.colNum != player->colNum){
@@ -757,23 +757,12 @@ char moveNPC(queue_t* eventManager, character_t* player, mapTile_t map, nMapInfo
         mapInfo->playerByWater = checkPlayerByWater(*player,map);
     }
 
-    //Get the next Character to move from the queue
-    int time;
-    void* temp = (queueExtractMinWithPri(eventManager,&time));
-    character_t* toMove = ((character_t*) temp);
-
-
     //Perform the move
     char moveType;
-    if(toMove->type == '@' || toMove->type == 's'){
+    if(toMove->type == 's'){
         //THIS OPTION CURRENTLY DOES NOTHIING AS THESE CHARACTER TYPES DON'T HAVE ANY MOVES THEY CAN TAKE
-        //They are given mountain move typees as place holders so they move back in the queue
+        //They are given mountain move types as place holders so they move back in the queue
         moveType = '%';
-        /*
-        printMapWithChars(&map,*mapInfo);
-        printf("\n");
-        */
-
     }
     else if(toMove->type == 'h' || toMove->type == 'r'){
         moveType = movePathfinder(toMove,map,mapInfo);
@@ -822,14 +811,7 @@ char moveNPC(queue_t* eventManager, character_t* player, mapTile_t map, nMapInfo
         moveCost = 10;
     }
     
-    //Readd the character to the queue
-    char typeToReturn = toMove->type;
-    memcpy(temp,toMove,sizeof(character_t));
-    queueAddWithPriority(eventManager, temp,moveCost + time);
-
-    free(temp);
-    
-    return typeToReturn;
+    return moveCost;
 }
 
 nMapInfo_t npcMapInfoInit(){

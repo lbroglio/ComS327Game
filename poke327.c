@@ -43,15 +43,29 @@ int main(int argc, char* argv[]){
 
     mapInfo.playerLocation.rowNum = -1;
     mapInfo.playerLocation.colNum = -1;
+    int exitCom = 0;
 
-    while(1 == 1){
-        char moved = moveNPC(&eventManager,&player,map,&mapInfo);
+    while(exitCom == 0){
+        //Remove the NPC which moves this turn from the queue
+        int time; 
+        void* temp = (queueExtractMinWithPri(&eventManager,&time));
+        character_t* toMove = ((character_t*) temp); 
 
-        if(moved == '@'){
-            usleep(280000);
-            printMapWithChars(&map,mapInfo);
-            printw("\n");
+        if(toMove->type == '@'){
+            //Player Movement
         }
+        else{
+            
+        }
+        int moveCost = moveNPC(toMove,time,&player,map,&mapInfo);
+
+
+        //Readd the character to the queue
+        memcpy(temp,toMove,sizeof(character_t));
+        queueAddWithPriority(&eventManager, temp,moveCost + time);
+        free(temp);
+
+
     }
 
 

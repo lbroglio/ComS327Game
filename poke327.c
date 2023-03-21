@@ -50,14 +50,14 @@ int main(int argc, char* argv[]){
         int time; 
         void* temp = (queueExtractMinWithPri(&eventManager,&time));
         character_t* toMove = ((character_t*) temp); 
+        int moveCost;
 
         if(toMove->type == '@'){
             //Player Movement
         }
         else{
-            
+            moveCost = moveNPC(toMove,time,&player,map,&mapInfo);
         }
-        int moveCost = moveNPC(toMove,time,&player,map,&mapInfo);
 
 
         //Readd the character to the queue

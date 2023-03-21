@@ -16,7 +16,7 @@ typedef struct gameCharacter{
     char type;
     /** Unique id used for indexing this character*/
     int id;
-    /** Stores the current direction this chraracter is moving in as a unit vector. Not used by all character types */
+    /** Stores the current direction this character is moving in as a unit vector. Not used by all character types */
     point_t direction;
     /** Stores the biome this character spawned in. Set for all only used by Wanderer*/
     char spawnBiome;
@@ -39,11 +39,14 @@ typedef struct npcMapInfo{
     char charLocations[21][80];
     /**Indicator of whether or not the player is by water. 1 = true, 0  = false*/
     int playerByWater;
+    /**Stores the number of NPCs on this map*/
+    int numNPCs;
+
 } nMapInfo_t;
 
 
 /**
- * @brief Performs the next move in the game. - Removes the next character to move from the queue and handles the logic for moving it
+ * @brief Performs the next move in the game. - Takes the given character and handles the logic for moving it
  * 
  * @param toMove Pointer to the character to move 
  * @param time The time of the current move
@@ -58,9 +61,10 @@ int moveNPC(character_t* toMove, int time, character_t* player, mapTile_t map, n
 /**
  * @brief Creates a new npcMapInfpo struct
  * 
+ * @param numNPCs The number of NPCs on this map
  * @return The created struct
  */
-nMapInfo_t npcMapInfoInit();
+nMapInfo_t npcMapInfoInit(int numNPCs);
 
 /**
  * @brief Creates a new character struct
@@ -80,7 +84,6 @@ character_t characterInit(point_t startLoc, char type, int id, char spawnBiome);
  * @return The ID
  */
 int getCharacterId(void* toId);
-
 
 
 

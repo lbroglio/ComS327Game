@@ -814,8 +814,13 @@ int moveNPC(character_t* toMove, int time, character_t* player, mapTile_t map, n
     return moveCost;
 }
 
-nMapInfo_t npcMapInfoInit(){
+nMapInfo_t npcMapInfoInit(int numNPCs){
     nMapInfo_t toReturn;
+    
+    //Sets the number of NPCs
+    toReturn.numNPCs = numNPCs;
+    
+    //Sets the player location as an unreachable tile so it will be updated when the game starts running
     toReturn.playerLocation.rowNum = -1;
     toReturn.playerLocation.colNum = -1;
 
@@ -854,4 +859,4 @@ character_t characterInit(point_t startLoc, char type, int id, char spawnBiome){
 int getCharacterId(void* toId){
     return ((character_t*)(toId))->id;
 }
- 
+

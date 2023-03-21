@@ -1102,7 +1102,7 @@ character_t placeNPC(int typeIndex ,mapTile_t map, nMapInfo_t* mapInfo, int char
 
 nMapInfo_t spawnNPCS(mapTile_t map, int numNPCs, queue_t* eventManager){
     //Create the NPC info for this map tile
-    nMapInfo_t mapInfo = npcMapInfoInit();
+    nMapInfo_t mapInfo = npcMapInfoInit(numNPCs);
 
     //Set whether or not there are swimmers
     int hasSwimmer;

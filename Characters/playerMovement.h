@@ -8,5 +8,6 @@ typedef enum playerMoves{
     DOWN_LEFT,
     LEFT,
     REST,
+    ENTER_BUILDING,
     QUIT
 }playerMoves_t;

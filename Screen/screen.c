@@ -42,7 +42,13 @@ void terminalInit(){
 
 
 void printMapWithChars(mapTile_t* map, nMapInfo_t mapInfo){
+    //Clear the screen
     clear();
+
+    //Move cursor to the location to print the map
+    move(1,0);
+
+    //Print the map
     for(int i =0; i < 21; i++){
         for(int j = 0; j < 80;j ++){
              char toPrint;

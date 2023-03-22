@@ -7,6 +7,7 @@
 #include"../Data-Structures/priorityQueue.h"
 #include"../Battles/battles.h"
 #include"gameCharacter.h"
+#include"../Screen/screen.h"
 
 
 /**
@@ -756,6 +757,7 @@ char movePathfinder(character_t* toMove, mapTile_t map, nMapInfo_t* mapInfo){
         }
         //Checks if the square is occupied by the player
         else if(mapInfo->charLocations[currBestMove.rowNum][currBestMove.colNum].type == '@'){
+            printMapWithChars(&map,*mapInfo);
             trainerBattle(*toMove,mapInfo);
             //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
             //Returns the current space
@@ -789,6 +791,7 @@ char moveWayfinder(character_t* toMove, mapTile_t map, nMapInfo_t* mapInfo){
 
     //If a trainer battle was signaled
     if(nextSpace.rowNum == -2){
+        printMapWithChars(&map,*mapInfo); 
         trainerBattle(*toMove,mapInfo);
         //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
         //Returns the current space
@@ -828,7 +831,7 @@ int moveNPC(character_t* toMove, int time, character_t* player, mapTile_t map, n
     }
     //If the player has moved
     if(mapInfo->playerLocation.rowNum != player->rowNum || mapInfo->playerLocation.colNum != player->colNum){ 
-        printf("HERE");
+        //printf("HERE");
         //Redraw pathfinding maps
         dijkstraPathfindHiker(map,*(player),mapInfo->hikerDist);
         dijkstraPathfindRival(map,*(player),mapInfo->rivalDist);

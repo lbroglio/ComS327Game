@@ -232,6 +232,10 @@ void inBuilding(){
         action =  getch();
     }
 
+    //Clear Message
+    move(0,0);
+    clrtoeol();
+
 }
 
 
@@ -271,7 +275,7 @@ void listTrainers(nMapInfo_t mapInfo){
         //Clears any text currently displayed at the top
         move(0,0);
         clrtoeol();
-        for(int i = pageTracker; i < mapInfo.numNPCs || i < (pageTracker + 4); i++){
+        for(int i = pageTracker; i < mapInfo.numNPCs && i < (pageTracker + 4); i++){
             character_t currChar = NPCList[i];
 
 
@@ -295,7 +299,7 @@ void listTrainers(nMapInfo_t mapInfo){
                 horiDiff *= -1;
             }
 
-            printw("%c: %d %s %d %s",currChar.type,vertDiff,vertStr,horiDiff,horiStr);
+            printw("%c: %d %s %d %s ",currChar.type,vertDiff,vertStr,horiDiff,horiStr);
         }
     
         //Wait for player input
@@ -312,6 +316,10 @@ void listTrainers(nMapInfo_t mapInfo){
         }
     
     }
+
+    //Clear Message
+    move(0,0);
+    clrtoeol();
   
 
 }

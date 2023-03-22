@@ -57,10 +57,15 @@ int main(int argc, char* argv[]){
             //Player Movement
             printMapWithChars(&map, mapInfo);
             moveCost = playerTurn(toMove,map,&mapInfo);
+            player = *toMove;
         }
         else{
             moveCost = moveNPC(toMove,time,&player,map,&mapInfo);
         }
+        if(moveCost == -1){
+            exitCom = 1;
+        }
+
 
         if(moveCost != -2){
             //Readd the character to the queue
@@ -72,6 +77,8 @@ int main(int argc, char* argv[]){
 
     }
     npcMapInfoDestroy(mapInfo);
+    endwin();
+
 
 
 }

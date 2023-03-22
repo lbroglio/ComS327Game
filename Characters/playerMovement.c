@@ -82,7 +82,7 @@ int movePlayer(playerMoves_t move, character_t* player, mapTile_t map,nMapInfo_t
 
     //If theres a trainer at the location to move to
     if(mapInfo->charLocations[newPos.rowNum][newPos.colNum].type != 'X'){
-        if(checkTrainerDefeated(mapInfo->charLocations[newPos.rowNum][newPos.colNum].id,*mapInfo)){
+        if(checkTrainerDefeated(mapInfo->charLocations[newPos.rowNum][newPos.colNum].id,*mapInfo) ==  0){
              trainerBattle(mapInfo->charLocations[newPos.rowNum][newPos.colNum],mapInfo);
         }
         return costOfPlayerMove(map.mapArr[newPos.rowNum][newPos.colNum]);

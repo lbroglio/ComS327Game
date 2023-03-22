@@ -755,7 +755,7 @@ char movePathfinder(character_t* toMove, mapTile_t map, nMapInfo_t* mapInfo){
             i += 8;
         }
         //Checks if the square is occupied by the player
-        else if(mapInfo->charLocations[toMove->rowNum + (toMove->direction.rowNum)][toMove->colNum + (toMove->direction.colNum)].type == '@'){
+        else if(mapInfo->charLocations[currBestMove.rowNum][currBestMove.colNum].type == '@'){
             trainerBattle(*toMove,mapInfo);
             //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
             //Returns the current space
@@ -827,7 +827,8 @@ int moveNPC(character_t* toMove, int time, character_t* player, mapTile_t map, n
         return -2;
     }
     //If the player has moved
-    if(mapInfo->playerLocation.rowNum != player->rowNum || mapInfo->playerLocation.colNum != player->colNum){
+    if(mapInfo->playerLocation.rowNum != player->rowNum || mapInfo->playerLocation.colNum != player->colNum){ 
+        printf("HERE");
         //Redraw pathfinding maps
         dijkstraPathfindHiker(map,*(player),mapInfo->hikerDist);
         dijkstraPathfindRival(map,*(player),mapInfo->rivalDist);

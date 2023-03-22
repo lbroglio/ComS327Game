@@ -20,8 +20,6 @@ typedef struct gameCharacter{
     point_t direction;
     /** Stores the biome this character spawned in. Set for all only used by Wanderer*/
     char spawnBiome;
-
-
 } character_t;
 
 
@@ -42,6 +40,10 @@ typedef struct npcMapInfo{
     int playerByWater;
     /**Stores the number of NPCs on this map*/
     int numNPCs;
+    /**Stores the ids of trainers who have been defeated*/
+    int* defTrainers;
+    /**Stores the number of defeated trainer*/
+    int numDef;
 
 } nMapInfo_t;
 
@@ -78,6 +80,12 @@ nMapInfo_t npcMapInfoInit(int numNPCs);
  */
 character_t characterInit(point_t startLoc, char type, int id, char spawnBiome);
 
+/**
+ * @brief Destoys the given nMapInfo struct and frees its allocated memory
+ * 
+ * @param toDestroy The struct to destroy
+ */
+void npcMapInfoDestroy(nMapInfo_t toDestroy);
 
 /**
  * @brief Returns the ID of a given character 
@@ -92,5 +100,16 @@ int getCharacterId(void* toId);
  * @return the 'Empty' character
  */
 character_t getEmptyCharacter();
+
+
+/**
+ * @brief Checks to see if the trainer with the given ID has been defeated
+ * 
+ * @param id The id of the trainer to check
+ * @param mapInfo The info struct for the current map
+ * 
+ * @return 0 if the trainer is not defeated. 1 if it is
+ */
+int checkTrainerDefeated(int id,nMapInfo_t mapInfo);
 
 #endif

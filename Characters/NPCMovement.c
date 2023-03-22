@@ -5,6 +5,7 @@
 #include"../Map/biome.h"
 #include"../Map/mapGeneration.h"
 #include"../Data-Structures/priorityQueue.h"
+#include"../Battles/battles.h"
 #include"gameCharacter.h"
 
 
@@ -316,7 +317,7 @@ void printDistArr(int dist[21][80]){
  * @param possible_moves The array to store the possible moves in
  * @return The number of possible moves
  */
-int -getPossibleMoves(character_t toMove, nMapInfo_t mapInfo, point_t* possibleMoves){
+int getPossibleMoves(character_t toMove, nMapInfo_t mapInfo, point_t* possibleMoves){
      //Stores the current number of added points
      int tracker = 0;
      
@@ -403,11 +404,10 @@ point_t checkDirecPacer(character_t* toCheck,mapTile_t map, nMapInfo_t mapInfo){
     if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != NULL || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type != 'X'){
         //Checks to see if the next space holds the player
         if(mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type == '@'){
-            trainerBattle();
             //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
-            //Sets next space to the current space (Character won't move)
-            nextSpace.rowNum = toCheck->rowNum;
-            nextSpace.colNum = toCheck->colNum;
+            //Sets the next space to an impossible space as a flag for the trainer battle
+            nextSpace.rowNum = -2;
+            nextSpace.colNum = -2;
         }
         else{
             //If the space is illegal turn around
@@ -422,11 +422,10 @@ point_t checkDirecPacer(character_t* toCheck,mapTile_t map, nMapInfo_t mapInfo){
             }
             //If the next space is occupied by the player
             else if(mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type == '@'){
-                trainerBattle();
                 //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
-                //Sets next space to the current space (Character won't move)
-                nextSpace.rowNum = toCheck->rowNum;
-                nextSpace.colNum = toCheck->colNum;
+                //Sets the next space to an impossible space as a flag for the trainer battle
+                nextSpace.rowNum = -2;
+                nextSpace.colNum = -2;
             }
             else{
                 //Sets next space to the current space (Character won't move)
@@ -467,11 +466,10 @@ point_t checkDirecWanderer(character_t* toCheck,mapTile_t map,nMapInfo_t mapInfo
         }
         //Checks if the square is occupied by the player
         else if(mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type == '@'){
-            trainerBattle();
             //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
-            //Sets next space to the current space (Character won't move)
-            nextSpace.rowNum = toCheck->rowNum;
-            nextSpace.colNum = toCheck->colNum;            
+            //Sets the next space to an impossible space as a flag for the trainer battle
+            nextSpace.rowNum = -2;
+            nextSpace.colNum = -2;         
         }
         //If its free
         else{
@@ -483,11 +481,10 @@ point_t checkDirecWanderer(character_t* toCheck,mapTile_t map,nMapInfo_t mapInfo
     }
     //Checks if the square is occupied by the player
     else if(mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type == '@'){
-        trainerBattle();
         //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
-        //Sets next space to the current space (Character won't move)
-        nextSpace.rowNum = toCheck->rowNum;
-        nextSpace.colNum = toCheck->colNum;            
+        //Sets the next space to an impossible space as a flag for the trainer battle
+        nextSpace.rowNum = -2;
+        nextSpace.colNum = -2;          
     }
     //If the current space is blocked or illegal
     else if(map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)] != toCheck->spawnBiome || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type != 'X'){
@@ -542,11 +539,10 @@ point_t checkDirecExplorer(character_t* toCheck,mapTile_t map,nMapInfo_t mapInfo
         }
         //Checks if the square is occupied by the player
         else if(mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type == '@'){
-            trainerBattle();
             //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
-            //Sets next space to the current space (Character won't move)
-            nextSpace.rowNum = toCheck->rowNum;
-            nextSpace.colNum = toCheck->colNum;            
+            //Sets the next space to an impossible space as a flag for the trainer battle
+            nextSpace.rowNum = -2;
+            nextSpace.colNum = -2;         
         }
         //If its free
         else{
@@ -558,11 +554,10 @@ point_t checkDirecExplorer(character_t* toCheck,mapTile_t map,nMapInfo_t mapInfo
     }
     //Checks if the square is occupied by the player
     else if(mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type == '@'){
-        trainerBattle();
         //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
-        //Sets next space to the current space (Character won't move)
-        nextSpace.rowNum = toCheck->rowNum;
-        nextSpace.colNum = toCheck->colNum;            
+        //Sets the next space to an impossible space as a flag for the trainer battle
+        nextSpace.rowNum = -2;
+        nextSpace.colNum = -2;          
     }
     //If the current space is blocked or illegal
     else if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != NULL|| mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type != 'X'){
@@ -675,11 +670,10 @@ point_t checkDirecSwimmerCharge(character_t* toCheck,mapTile_t map,nMapInfo_t ma
     }
     //Checks if the square is occupied by the player
     else if(mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type == '@'){
-        trainerBattle();
         //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
-        //Sets next space to the current space (Character won't move)
-        nextSpace.rowNum = toCheck->rowNum;
-        nextSpace.colNum = toCheck->colNum;            
+        //Sets the next space to an impossible space as a flag for the trainer battle
+        nextSpace.rowNum = -2;
+        nextSpace.colNum = -2;           
     }
     //If it can't
     else{
@@ -761,10 +755,10 @@ char movePathfinder(character_t* toMove, mapTile_t map, nMapInfo_t* mapInfo){
             i += 8;
         }
         //Checks if the square is occupied by the player
-        else if(mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type == '@'){
-            trainerBattle();
+        else if(mapInfo->charLocations[toMove->rowNum + (toMove->direction.rowNum)][toMove->colNum + (toMove->direction.colNum)].type == '@'){
+            trainerBattle(*toMove,mapInfo);
             //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
-            //Returns
+            //Returns the current space
             return map.mapArr[toMove->rowNum][toMove->colNum];        
     }
     }
@@ -793,7 +787,13 @@ char movePathfinder(character_t* toMove, mapTile_t map, nMapInfo_t* mapInfo){
 char moveWayfinder(character_t* toMove, mapTile_t map, nMapInfo_t* mapInfo){
     point_t nextSpace = checkDirection(toMove,map,*mapInfo);
 
-
+    //If a trainer battle was signaled
+    if(nextSpace.rowNum == -2){
+        trainerBattle(*toMove,mapInfo);
+        //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
+        //Returns the current space
+        return map.mapArr[toMove->rowNum][toMove->colNum];      
+    }
     //Hold player location
     point_t temp = pointInit(toMove->rowNum,toMove->colNum);
 
@@ -821,7 +821,11 @@ int checkPlayerByWater(character_t player, mapTile_t map){
 }
 
 int moveNPC(character_t* toMove, int time, character_t* player, mapTile_t map, nMapInfo_t* mapInfo){
-
+    //Checks if this npc has been defeated
+    if(checkTrainerDefeated(toMove->id,*mapInfo) == 1){
+        //Return a defeated flag
+        return -2;
+    }
     //If the player has moved
     if(mapInfo->playerLocation.rowNum != player->rowNum || mapInfo->playerLocation.colNum != player->colNum){
         //Redraw pathfinding maps
@@ -899,6 +903,12 @@ nMapInfo_t npcMapInfoInit(int numNPCs){
     //Sets the number of NPCs
     toReturn.numNPCs = numNPCs;
     
+    //Sets up defeated trainers array 
+    toReturn.defTrainers = malloc(sizeof(int) * numNPCs);
+
+    //Initalized numDef
+    toReturn.numDef = 0;
+
     //Sets the player location as an unreachable tile so it will be updated when the game starts running
     toReturn.playerLocation.rowNum = -1;
     toReturn.playerLocation.colNum = -1;
@@ -912,6 +922,10 @@ nMapInfo_t npcMapInfoInit(int numNPCs){
 
     return toReturn;
 
+}
+
+void npcMapInfoDestroy(nMapInfo_t toDestroy){
+    free(toDestroy.defTrainers);
 }
 
 character_t characterInit(point_t startLoc, char type, int id, char spawnBiome){
@@ -953,4 +967,13 @@ character_t getEmptyCharacter(){
     toReturn.spawnBiome = 'X';
 
     return toReturn;
+}
+
+int checkTrainerDefeated(int id,nMapInfo_t mapInfo){
+    for(int i =0; i < mapInfo.numDef; i++){
+        if(mapInfo.defTrainers[i] == id){
+            return 1;
+        }
+    }
+    return 0;
 }

@@ -1,6 +1,11 @@
 #include<curses.h>
+#include"../Characters/gameCharacter.h"
 
-void trainerBattle(){
+void trainerBattle(character_t enemyTrainer,nMapInfo_t* mapInfo){
+    //Defeat Trainer
+    mapInfo->defTrainers[mapInfo->numDef] = enemyTrainer.id;
+    mapInfo->numDef += 1;
+
     //Display Message
     move(0,0);
     clrtoeol();

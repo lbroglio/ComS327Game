@@ -52,11 +52,11 @@ void printMapWithChars(mapTile_t* map, nMapInfo_t mapInfo){
     for(int i =0; i < 21; i++){
         for(int j = 0; j < 80;j ++){
              char toPrint;
-            if(mapInfo.charLocations[i][j] == 'X'){
+            if(mapInfo.charLocations[i][j].type == 'X'){
                 toPrint = map->mapArr[i][j];
             }
             else{
-                toPrint = mapInfo.charLocations[i][j];
+                toPrint = mapInfo.charLocations[i][j].type;
             }
            
 

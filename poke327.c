@@ -9,6 +9,7 @@
 #include"./Map/mapGeneration.h"
 #include"./Data-Structures/priorityQueue.h"
 #include"./Characters/gameCharacter.h"
+#include"./Characters/playerMovement.h"
 
 
 int main(int argc, char* argv[]){
@@ -39,7 +40,7 @@ int main(int argc, char* argv[]){
 
    
     nMapInfo_t mapInfo = spawnNPCS(map,numNPCs,&eventManager);
-    mapInfo.charLocations[player.rowNum][player.colNum] = '@';
+    mapInfo.charLocations[player.rowNum][player.colNum] = player;
 
     mapInfo.playerLocation.rowNum = -1;
     mapInfo.playerLocation.colNum = -1;
@@ -54,19 +55,23 @@ int main(int argc, char* argv[]){
 
         if(toMove->type == '@'){
             //Player Movement
+            printMapWithChars(&map, mapInfo);
+            moveCost = playerTurn(toMove,map,&mapInfo);
         }
         else{
             moveCost = moveNPC(toMove,time,&player,map,&mapInfo);
         }
 
-
-        //Readd the character to the queue
-        memcpy(temp,toMove,sizeof(character_t));
-        queueAddWithPriority(&eventManager, temp,moveCost + time);
-        free(temp);
+        if(moveCost != -2){
+            //Readd the character to the queue
+            memcpy(temp,toMove,sizeof(character_t));
+            queueAddWithPriority(&eventManager, temp,moveCost + time);
+            free(temp);
+        }
 
 
     }
+    npcMapInfoDestroy(mapInfo);
 
 
 }

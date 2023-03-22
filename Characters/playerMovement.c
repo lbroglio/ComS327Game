@@ -1,8 +1,17 @@
 #include<curses.h>
+#include<string.h>
 #include "playerMovement.h"
 #include "gameCharacter.h"
 #include "../Map/map.h"
 #include "../Battles/battles.h"
+
+//Function Prototypes
+playerMoves_t getInput(nMapInfo_t mapInfo);
+int costOfPlayerMove(char moveType);
+int movePlayer(playerMoves_t move, character_t* player, mapTile_t map,nMapInfo_t* mapInfo);
+void displayPlayerMoveError(char moveType);
+void listTrainers(nMapInfo_t mapInfo);
+void inBuilding();
 
 int playerTurn(character_t* player, mapTile_t map,nMapInfo_t* mapInfo){
     
@@ -24,10 +33,17 @@ int playerTurn(character_t* player, mapTile_t map,nMapInfo_t* mapInfo){
             }
         }
     }
-
-
 }
 
+/**
+ * @brief Moves the player character on the map based on user input
+ * 
+ * @param move The move to make
+ * @param player The player struct
+ * @param map The map to move on
+ * @param mapInfo The maps corresponding info struct
+ * @return The cost of the move
+ */
 int movePlayer(playerMoves_t move, character_t* player, mapTile_t map,nMapInfo_t* mapInfo){
     point_t newPos;
 
@@ -57,14 +73,24 @@ int movePlayer(playerMoves_t move, character_t* player, mapTile_t map,nMapInfo_t
     case LEFT:
         newPos = pointInit(player->rowNum,player->colNum -1);
         break;
+    default:
     }
+
+
     
+    char* illegalChars = "%%\"~";
+
+    //If theres a trainer at the location to move to
     if(mapInfo->charLocations[newPos.rowNum][newPos.colNum].type != 'X'){
-        trainerBattle();
+        if(checkTrainerDefeated(mapInfo->charLocations[newPos.rowNum][newPos.colNum].id,*mapInfo)){
+             trainerBattle(mapInfo->charLocations[newPos.rowNum][newPos.colNum],mapInfo);
+        }
         return costOfPlayerMove(map.mapArr[newPos.rowNum][newPos.colNum]);
     }
-    else if(map.mapArr[newPos.rowNum][newPos.colNum]){
-        
+    //If the move is illegal
+    else if(strchr(illegalChars,map.mapArr[newPos.rowNum][newPos.colNum]) != NULL){
+        displayPlayerMoveError(map.mapArr[newPos.rowNum][newPos.colNum]);
+        return -1;
     }
 
     //Hold player location
@@ -76,9 +102,9 @@ int movePlayer(playerMoves_t move, character_t* player, mapTile_t map,nMapInfo_t
 
     //Moves the player inside the character location array
     mapInfo->charLocations[temp.rowNum][temp.colNum] = getEmptyCharacter();
-    mapInfo->charLocations[newPos.rowNum][newPos.colNum] = player;
+    mapInfo->charLocations[newPos.rowNum][newPos.colNum] = *player;
 
-
+    return costOfPlayerMove(map.mapArr[newPos.rowNum][newPos.colNum]);
 }
 
 /**
@@ -186,6 +212,8 @@ playerMoves_t getInput(nMapInfo_t mapInfo){
             break;
         }
     }
+
+    return chosenMove;
 }
 
 /**
@@ -222,12 +250,12 @@ void listTrainers(nMapInfo_t mapInfo){
     //Gets location of all trainers from the location array add them to the list 
     for(int i=0; i < 21; i++){
         for(int j = 0; j < 80; j++){
-            if(mapInfo.charLocations[i][j] != 'X'){
+            if(mapInfo.charLocations[i][j].type != 'X'){
                 point_t temp;
                 temp.rowNum = i;
                 temp.colNum = j;
 
-                NPCList[placeTracker] = characterInit(temp,mapInfo.charLocations[i][j],0,'.');
+                NPCList[placeTracker] = characterInit(temp,mapInfo.charLocations[i][j].type,0,'.');
 
                 placeTracker++;
             }
@@ -245,7 +273,6 @@ void listTrainers(nMapInfo_t mapInfo){
         clrtoeol();
         for(int i = pageTracker; i < mapInfo.numNPCs || i < (pageTracker + 4); i++){
             character_t currChar = NPCList[i];
-            char* locStr = locToPlayerStr(mapInfo.playerLocation, currChar);
 
 
             //Set up relative location
@@ -278,7 +305,7 @@ void listTrainers(nMapInfo_t mapInfo){
             pageTracker -= 4;
         }
         else if(action == 'B'){
-            pageTracker += 4
+            pageTracker += 4;
         }
         else if(action == 27){
             escPressed = 1;
@@ -287,4 +314,29 @@ void listTrainers(nMapInfo_t mapInfo){
     }
   
 
+}
+
+/**
+ * @brief Displays an error when the player tries to make an illegal move
+ * 
+ * @param move The square the player tried to move into
+ */
+void displayPlayerMoveError(char moveType){
+    char* moveStr;
+
+    if(moveType == '%'){
+        moveStr = "Mountain";
+    }
+    else if(moveType == '\"'){
+         moveStr = "Forest";
+    }
+    else if(moveType == '~'){
+        moveStr = "Water";
+    }
+
+    //Display Message
+    move(0,0);
+    clrtoeol();
+
+    printw("You cannot move into a %s tile. Make a different move",moveStr);
 }

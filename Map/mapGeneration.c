@@ -1065,9 +1065,10 @@ character_t placeNPC(int typeIndex ,mapTile_t map, nMapInfo_t* mapInfo, int char
         spawnPos.colNum = (rand() % 78) + 1;
 
         //If spawn position is valid place character and return it 
-        if(strchr(npcAllowedSpawns[typeIndex], map.mapArr[spawnPos.rowNum][spawnPos.colNum]) != NULL && mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum] == 'X'){
-            mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum] = charOptions[typeIndex];
+        if(strchr(npcAllowedSpawns[typeIndex], map.mapArr[spawnPos.rowNum][spawnPos.colNum]) != NULL && mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum].type == 'X'){
             toPlace = characterInit(spawnPos,charOptions[typeIndex],charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
+            mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum] = toPlace;
+            
         }
         //If the postion isnt valid
         else{
@@ -1077,10 +1078,11 @@ character_t placeNPC(int typeIndex ,mapTile_t map, nMapInfo_t* mapInfo, int char
                 //Move the spawn postion 
                 spawnPos.colNum += mod;
                 //If the new postion is valid place the character and return it
-                if(strchr(npcAllowedSpawns[typeIndex], map.mapArr[spawnPos.rowNum][spawnPos.colNum]) != NULL && mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum] == 'X'){
-                    mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum] = charOptions[typeIndex];
-                    mod = 0;
+                if(strchr(npcAllowedSpawns[typeIndex], map.mapArr[spawnPos.rowNum][spawnPos.colNum]) != NULL && mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum].type == 'X'){
                     toPlace = characterInit(spawnPos,charOptions[typeIndex],charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
+                    mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum] = toPlace;
+                    mod = 0;
+                    
                 }
                 //If the position isnt valid and the checker is at the edge of the map
                 else if(spawnPos.colNum == 78 || spawnPos.rowNum == 1){

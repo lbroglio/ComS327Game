@@ -1,3 +1,6 @@
+#ifndef PLAYERM_H
+#define PLAYERM_H
+
 typedef enum playerMoves{
     UP_LEFT,
     UP,
@@ -11,3 +14,5 @@ typedef enum playerMoves{
     ENTER_BUILDING,
     QUIT
 }playerMoves_t;
+
+#endif

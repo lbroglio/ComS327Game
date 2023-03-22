@@ -1,27 +1,108 @@
 #include<curses.h>
 #include "playerMovement.h"
 #include "gameCharacter.h"
+#include "../Map/map.h"
+#include "../Battles/battles.h"
 
-
-int playerTurn(character_t* player, nMapInfo_t mapInfo){
-    playerMoves_t move = getInput(mapInfo);
-
-    if(move == QUIT){
-
+int playerTurn(character_t* player, mapTile_t map,nMapInfo_t* mapInfo){
+    
+    while(1 == 1){
+        playerMoves_t move = getInput(*mapInfo);
+        if(move == QUIT){
+            return -1;
+        }
+        else if(move == REST){ 
+            return costOfPlayerMove(map.mapArr[mapInfo->playerLocation.rowNum][mapInfo->playerLocation.colNum]);
+        }   
+        else if(move == ENTER_BUILDING){
+            return 10;
+        }
+        else{
+            int cost = movePlayer(move,player,map,mapInfo);
+            if(cost != -1){
+                return cost;
+            }
+        }
     }
-    else if(move == REST){
 
+
+}
+
+int movePlayer(playerMoves_t move, character_t* player, mapTile_t map,nMapInfo_t* mapInfo){
+    point_t newPos;
+
+    switch (move)
+    {
+    case UP_LEFT:
+        newPos = pointInit(player->rowNum -1,player->colNum -1);
+        break;
+    case UP:
+        newPos = pointInit(player->rowNum -1,player->colNum);
+        break;
+    case UP_RIGHT:
+        newPos = pointInit(player->rowNum -1,player->colNum +1);
+        break;
+    case RIGHT:
+        newPos = pointInit(player->rowNum,player->colNum +1);
+        break;
+    case DOWN_RIGHT:
+        newPos = pointInit(player->rowNum +1,player->colNum +1);
+        break;
+    case DOWN:
+        newPos = pointInit(player->rowNum +1,player->colNum);
+        break;
+    case DOWN_LEFT:
+        newPos = pointInit(player->rowNum +1,player->colNum -1);
+        break;
+    case LEFT:
+        newPos = pointInit(player->rowNum,player->colNum -1);
+        break;
     }
-    else if(move == ENTER_BUILDING){
+    
+    if(mapInfo->charLocations[newPos.rowNum][newPos.colNum].type != 'X'){
+        trainerBattle();
+        return costOfPlayerMove(map.mapArr[newPos.rowNum][newPos.colNum]);
+    }
+    else if(map.mapArr[newPos.rowNum][newPos.colNum]){
+        
+    }
 
+    //Hold player location
+    point_t temp = pointInit(player->rowNum,player->colNum);
+
+    //Changes the player's location within its struct
+    player->rowNum = newPos.rowNum; 
+    player->colNum = newPos.colNum;
+
+    //Moves the player inside the character location array
+    mapInfo->charLocations[temp.rowNum][temp.colNum] = getEmptyCharacter();
+    mapInfo->charLocations[newPos.rowNum][newPos.colNum] = player;
+
+
+}
+
+/**
+ * @brief Calculates cost of a move by the player
+ * 
+ * @param moveType The type of move
+ * @return The cost of the move
+ */
+int costOfPlayerMove(char moveType){
+    if(moveType == ':'){
+        return 20;
     }
     else{
-        
+        return 10;
     }
 
 }
 
-
+/**
+ * @brief Hanldes taking in player input. Interfaces for the trainer list and buildings are run from here. Returns the type of the move the player made
+ * 
+ * @param mapInfo The info struct for the current map tile
+ * @return Type of move made
+ */
 playerMoves_t getInput(nMapInfo_t mapInfo){
 
     int inputEnded = 0;
@@ -107,12 +188,16 @@ playerMoves_t getInput(nMapInfo_t mapInfo){
     }
 }
 
+/**
+ * @brief Handles the play actions when inside a building
+ * 
+ */
 void inBuilding(){
     //Display Message
     move(0,0);
     clrtoeol();
 
-    printw("Welcome Inside. Press < to exit")
+    printw("Welcome Inside. Press < to exit");
     char action;
 
     while(action != '<'){
@@ -124,7 +209,11 @@ void inBuilding(){
 
 
 
-
+/**
+ * @brief Displays a navigatable list of trainers
+ * 
+ * @param mapInfo Info struct for the current map tile
+ */
 void listTrainers(nMapInfo_t mapInfo){
     //Make a list to the trainers in
     character_t NPCList[mapInfo.numNPCs];
@@ -185,13 +274,13 @@ void listTrainers(nMapInfo_t mapInfo){
         //Wait for player input
         char action = getch();
 
-        if(action == 'A' && (pageTrakcer - 4) >= 0){
+        if(action == 'A' && (pageTracker - 4) >= 0){
             pageTracker -= 4;
         }
         else if(action == 'B'){
-            pageTrakcer += 4
+            pageTracker += 4
         }
-        else if(action == '27'){
+        else if(action == 27){
             escPressed = 1;
         }
     

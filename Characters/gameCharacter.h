@@ -21,6 +21,7 @@ typedef struct gameCharacter{
     /** Stores the biome this character spawned in. Set for all only used by Wanderer*/
     char spawnBiome;
 
+
 } character_t;
 
 
@@ -36,7 +37,7 @@ typedef struct npcMapInfo{
     /** Stores the results of the rival's pathfinding algorithm*/
     int rivalDist[21][80];
     /** Stores the location of the NPCs on the map X if none is there*/
-    char charLocations[21][80];
+    character_t charLocations[21][80];
     /**Indicator of whether or not the player is by water. 1 = true, 0  = false*/
     int playerByWater;
     /**Stores the number of NPCs on this map*/
@@ -85,6 +86,11 @@ character_t characterInit(point_t startLoc, char type, int id, char spawnBiome);
  */
 int getCharacterId(void* toId);
 
-
+/**
+ * @brief Returns the 'Empty' character
+ * 
+ * @return the 'Empty' character
+ */
+character_t getEmptyCharacter();
 
 #endif

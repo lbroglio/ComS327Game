@@ -20,6 +20,7 @@ void terminalInit(){
     curs_set(0);
     keypad(stdscr,TRUE);
     start_color();
+    
 
     //BASE EIGHT COLORS
     init_pair(COLOR_RED, COLOR_RED, COLOR_BLACK);
@@ -38,6 +39,9 @@ void terminalInit(){
     init_pair(COLOR_DESSERT, COLOR_DESSERT, COLOR_BLACK);
     init_pair(COLOR_PATH, COLOR_PATH, COLOR_BLACK);
     init_pair(COLOR_BRIDGE, COLOR_BRIDGE, COLOR_BLACK);
+
+    //Set default print color
+    attron(COLOR_PAIR(COLOR_WHITE));
 }
 
 
@@ -107,6 +111,7 @@ void printMapWithChars(mapTile_t* map, nMapInfo_t mapInfo){
             }
             
         }
+        attron(COLOR_PAIR(COLOR_WHITE));
         printw("\n");
     }
     refresh();

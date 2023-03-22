@@ -35,4 +35,4 @@ map.o:  Map/map.c  Map/map.h
 	gcc -Wall -Werror -ggdb  Map/map.c -c -o ./bin/map.o
 
 clean:
-	rm poke327 worldGen mapGeneration.o biome.o map.o worldGeneration.o priorityQueue.o NPCMovement.o poke327.o
+	rm -r poke327 bin/*

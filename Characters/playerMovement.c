@@ -24,7 +24,16 @@ int playerTurn(character_t* player, mapTile_t map,nMapInfo_t* mapInfo){
             return costOfPlayerMove(map.mapArr[mapInfo->playerLocation.rowNum][mapInfo->playerLocation.colNum]);
         }   
         else if(move == ENTER_BUILDING){
-            return 10;
+            if(map.mapArr[mapInfo->playerLocation.rowNum][mapInfo->playerLocation.colNum] == 'M' || map.mapArr[mapInfo->playerLocation.rowNum][mapInfo->playerLocation.colNum] == 'C'){
+                inBuilding();
+                return 10;
+            }
+           else{
+               //Display Error Message
+                move(0,0);
+                clrtoeol();
+                printw("You cannot enter as you aren't at a building");
+           }
         }
         else{
             int cost = movePlayer(move,player,map,mapInfo);
@@ -196,7 +205,6 @@ playerMoves_t getInput(nMapInfo_t mapInfo){
             break;
         //Enter Building
         case '>':
-            inBuilding();
             chosenMove = ENTER_BUILDING;
             inputEnded = 1;
             break;
@@ -278,6 +286,9 @@ void listTrainers(nMapInfo_t mapInfo){
         for(int i = pageTracker; i < mapInfo.numNPCs && i < (pageTracker + 4); i++){
             character_t currChar = NPCList[i];
 
+            if(currChar.type == '@'){
+                continue;
+            }
 
             //Set up relative location
             //Gets the location difference for each direction
@@ -295,7 +306,7 @@ void listTrainers(nMapInfo_t mapInfo){
             }
 
             if(horiDiff < 0){
-                vertStr = "East";
+                horiStr = "East";
                 horiDiff *= -1;
             }
 
@@ -303,12 +314,12 @@ void listTrainers(nMapInfo_t mapInfo){
         }
     
         //Wait for player input
-        char action = getch();
+        int action = getch();
 
-        if(action == 'A' && (pageTracker - 4) >= 0){
+        if(action == KEY_UP && (pageTracker - 4) >= 0){
             pageTracker -= 4;
         }
-        else if(action == 'B'){
+        else if(action == KEY_DOWN && (pageTracker + 4) < mapInfo.numNPCs){
             pageTracker += 4;
         }
         else if(action == 27){

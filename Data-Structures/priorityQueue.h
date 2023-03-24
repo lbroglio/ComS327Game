@@ -3,115 +3,148 @@
 
 #include"../Map/map.h"
 
+
+/**
+ * @brief Interface for items that possess an ID function. Used by the queue
+ * 
+ */
+class IDable{
+    public:
+        virtual int getID(); 
+        //virtual IDable* clone() = 0;
+};
+
+
 /**
  * @brief Stores an entry in a priority queue representing a spot on the board
  * 
  */
-typedef struct queueEntry{
-    void* data;
+struct queueEntry{
+    IDable data;
     int  priority;
     int id;
-
-}queueEntry_t;
-
-/**
- * @brief Struct representing a priority queue backed by a min heap
- * 
- */
-typedef struct queue{
-    queueEntry_t* heapArr; 
-    int* locArr;
-    int maxIndex;
-    int size;
-    int dataSize;
-    int (*idFunc)(void*);
-
-}queue_t;
+    /**
+     * @brief Constructor for a Queue Entry
+     * 
+     * @param data Pointer to the data to create an entry for. The data will be copied
+     * @param priority The starting priority for this entry
+     * 
+     * @return The created entry 
+     */
+    queueEntry(IDable data, int priority);
+};
 
 
 /**
- * @brief Creates a new queue at the given memory address
+ * @brief Class representing a priority queue backed by a min heap
  * 
- * @param s The memory address of the struct
- * @param queueSize The number of maximum entries for the queue
  */
-void queueInit(queue_t* s, int queueSize,int dataSize, int (*idFunc)(void*));
+class Queue{
+    public:
+        /**
+         * @brief Constructor for a queue object
+         * 
+         * @param size The number of maximum entries for the queue
+         */
+        Queue(int size);
 
-/**
- * @brief Createa a new queue entry
- * 
- * @param data The data to create an entry for
- * @param dist The starting distance from the source
- * @return The created entry 
- */
-queueEntry_t queueEntryInit(void* data,int dataSize, int priority, int (*idfunc)(void*));
+        /**
+         * @brief Destroy the Queue object
+         * 
+         */
+        ~Queue();
 
-/**
- * @brief Returns the minmum value of the queue without removing it
- * 
- * @param s Pointer to the queue to get minmum from
- * @return The extracted entry
- */
-void* queuePeekMin(queue_t* s);
+        /**
+         * @brief Returns the minmum value of the queue without removing it
+         * 
+         * @param s Pointer to the queue to get minmum from
+         * @return The extracted entry
+         */
+        IDable peekMin(){return (heapArr[0].data);}
 
-/**
- * @brief Returns the minmum value of the queue and removes it 
- * 
- * @param s Pointer to the queue to get minmum from
- * @return The extracted entry
- */
-void* queueExtractMin(queue_t* s);
+        /**
+         * @brief Returns the minmum value of the queue and removes it 
+         * 
+         * @return The extracted entry
+         */
+        IDable Queue::extractMin();
 
-/**
- * @brief Returns the minmum value of the queue and removes it. Also sets its priority to the given interger pointer
- * 
- * @param s Pointer to the queue to get minmum from
- * @param priority The location to store the extracted entries priority
- * @return The extracted entry
- */
-void* queueExtractMinWithPri(queue_t* s, int* priority);
+        /**
+         * @brief Returns the minmum value of the queue and removes it. Also sets its priority to the given integer pointer
+         * 
+         * @param priority The location to store the extracted entries priority
+         * @return The extracted entry
+         */
+        IDable extractMinWithPri(int* priority);
 
-/**
- * @brief Decreases the priority of a given entry in the queue
- * 
- * @param s Pointer to the queue to decrease the entry in
- * @param toDecrease The entry to decrease
- * @param newPriority The number to change the priority to 
- * @return 0 on sucess other on fail
- */
-int queueDecreasePriority(queue_t* s,void* toDecrease, int newPriority);
+        /**
+         * @brief Decreases the priority of a given entry in the queue
+         * 
+         * @param toDecrease The entry to decrease
+         * @param newPriority The number to change the priority to 
+         * @return 0 on sucess other on fail
+         */
+        int Queue::decreasePriority(IDable toDecrease, int newPriority);
 
-/**
- * @brief Adds a new entry to the queue 
- * 
- * @param s The queue to add to 
- * @param toAdd The entry to add to the queue
- * @param priority The priority of this entry
- */
-void queueAddWithPriority(queue_t* s, void* toAdd, int priority);
+        /**
+         * @brief Adds a new entry to the queue 
+         * 
+         * @param toAdd The entry to add to the queue
+         * @param priority The priority of this entry
+         */
+        void Queue::addWithPriority(IDable toAdd, int priority);
 
-/**
- * @brief Checks to see if a given data is currently in the queue
- * 
- * @param s - The queue to check for the data
- * @param toCheck The data to check
- * @return 1 if it is in the queue. 0 if it isnt
- */
-int checkInQueue(queue_t* s, void* toCheck);
-/**
- * @brief Gets the size of the queue
- * 
- * @param s Pointer to the queue to get the size of
- * @return The size of the queue
- */
-int queueSize(queue_t* s);
+        /**
+         * @brief Checks to see if a given data is currently in the queue
+         * 
+         * @param toCheck The data to check
+         * @return 1 if it is in the queue. 0 if it isnt
+         */
+        int checkInQueue(IDable toCheck);
+        /**
+         * @brief Gets the size of the queue
+         * 
+         * @return The size of the queue
+         */
+        int getSize(){return this->size;};
 
-/**
- * @brief Destroys a queue freeing the memory in it
- * 
- * @param s The queue to destroy
- */
-void queueDestroy(queue_t* s);
+    private:
+        /**The array of entries representing conisting of the heap which backs the queue*/
+        queueEntry* heapArr; 
+        /**Array which stores the location of everything in the queue by ID*/
+        int* locArr;
+        /**The maximum possible index in the location array*/
+        int maxIndex;
+        /**The number of entries in this queue */
+        int size;
+    
+    /**
+     * @brief Swaps the entries at two locations within the heap
+     * 
+     * @param s Pointer to the queue holding the heap to swap the nodes in
+     * @param x The location of the first entry
+     * @param y The location of the second entry
+     */
+    friend void swap(Queue* s, int x, int y);
+    /**
+     * @brief Moves an entry up to restore the heap order property
+     * 
+     * @param s Pointer to the heap to operate in
+     * @param currentLoc The location of entry to start with
+     */
+    friend void percolateUp(Queue* s, int currentLoc);
+    /**
+     * @brief Moves an entry down to restore the heap order property
+     * 
+     * @param s Pointer to the queue with the heap to operate in
+     * @param currentLoc The location of entry to start with
+     */
+    friend void percolateDown(Queue* s, int currentLoc);
+    
+    //int dataSize;
+    //int (*idFunc)(void*);
+
+};
 
 
 

@@ -4,35 +4,35 @@ poke327: poke327.o mapGeneration.o map.o priorityQueue.o NPCMovement.o biome.o C
 worldGen: mapGeneration.o biome.o map.o worldGeneration.o priorityQueue.o
 	gcc worldGeneration.o mapGeneration.o biome.o map.o priorityQueue.o -o worldGen
 
-battles.o: Battles/battles.c Battles/battles.h
-	gcc -Wall -Werror -ggdb  Battles/battles.c -c -o ./bin/battles.o
+battles.o: Battles/battles.cpp Battles/battles.h
+	gcc -Wall -Werror -ggdb  Battles/battles.cpp -c -o ./bin/battles.o
 
-playerMovement.o: Characters/playerMovement.c Characters/playerMovement.h
-	gcc -Wall -Werror -ggdb  Characters/playerMovement.c -c -o ./bin/playerMovement.o
+playerMovement.o: Characters/playerMovement.cpp Characters/playerMovement.h
+	gcc -Wall -Werror -ggdb  Characters/playerMovement.cpp -c -o ./bin/playerMovement.o
 
-screen.o: Screen/screen.c Screen/screen.h
-	gcc -Wall -Werror -ggdb  Screen/screen.c -c -o ./bin/screen.o
+screen.o: Screen/screen.cpp Screen/screen.h
+	gcc -Wall -Werror -ggdb  Screen/screen.cpp -c -o ./bin/screen.o
 
-poke327.o: poke327.c
-	gcc -Wall -Werror -ggdb  poke327.c -c -o ./bin/poke327.o
+poke327.o: poke327.cpp
+	gcc -Wall -Werror -ggdb  poke327.cpp -c -o ./bin/poke327.o
 
-NPCMovement.o: Characters/NPCMovement.c
-	gcc -Wall -Werror -ggdb  Characters/NPCMovement.c -c -o ./bin/NPCMovement.o
+NPCMovement.o: Characters/NPCMovement.cpp
+	gcc -Wall -Werror -ggdb  Characters/NPCMovement.cpp -c -o ./bin/NPCMovement.o
 
-worldGeneration.o:  Map/worldGeneration.c Map/worldGeneration.h
-	gcc -Wall -Werror -ggdb  Map/worldGeneration.c -c -o ./bin/worldGeneration.o
+worldGeneration.o:  Map/worldGeneration.cpp Map/worldGeneration.h
+	gcc -Wall -Werror -ggdb  Map/worldGeneration.cpp -c -o ./bin/worldGeneration.o
 
-biome.o: Map/biome.c Map/biome.h
-	gcc -Wall -Werror -ggdb Map/biome.c -c -o ./bin/biome.o
+biome.o: Map/biome.cpp Map/biome.h
+	gcc -Wall -Werror -ggdb Map/biome.cpp -c -o ./bin/biome.o
 
-mapGeneration.o:  Map/mapGeneration.c  Map/mapGeneration.h
-	gcc -Wall -Werror -ggdb  Map/mapGeneration.c -c -o ./bin/mapGeneration.o
+mapGeneration.o:  Map/mapGeneration.cpp  Map/mapGeneration.h
+	gcc -Wall -Werror -ggdb  Map/mapGeneration.cpp -c -o ./bin/mapGeneration.o
 
-priorityQueue.o:  Data-Structures/priorityQueue.c  Data-Structures/priorityQueue.h
-	gcc -Wall -Werror -ggdb  Data-Structures/priorityQueue.c -c -o ./bin/priorityQueue.o
+priorityQueue.o:  Data-Structures/priorityQueue.cpp  Data-Structures/priorityQueue.h
+	gcc -Wall -Werror -ggdb  Data-Structures/priorityQueue.cpp -c -o ./bin/priorityQueue.o
 
-map.o:  Map/map.c  Map/map.h
-	gcc -Wall -Werror -ggdb  Map/map.c -c -o ./bin/map.o
+map.o:  Map/map.cpp  Map/map.h
+	gcc -Wall -Werror -ggdb  Map/map.cpp -c -o ./bin/map.o
 
 clean:
 	rm -r poke327 bin/*

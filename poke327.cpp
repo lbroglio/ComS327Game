@@ -23,20 +23,16 @@ int main(int argc, char* argv[]){
     else{
         numNPCs = (rand() %  4) + 9;
     }
-    queue_t eventManager;
-    queueInit(&eventManager,numNPCs + 1, sizeof(character_t),getCharacterId);
+    Queue eventManager = Queue(numNPCs + 1);
 
     mapTile_t map = createMapTileIndependent();
 
-    point_t  playerSpawn;
+    Point playerSpawn;
     playerSpawn.colNum = ((map.biomeArr) + 1)->cenColNum;
     playerSpawn.rowNum = ((map.biomeArr) + 1)->cenRowNum -1;
 
-    character_t player = characterInit(playerSpawn,'@',0,'#');
-    void* addV = malloc(sizeof(character_t));
-    memcpy(addV,&player,sizeof(character_t));
-    queueAddWithPriority(&eventManager,addV,1);
-    free(addV);
+    GameCharacter player = characterInit(playerSpawn,'@',0,'#');
+    priQueue.addWithPriority(player,1);
 
    
     nMapInfo_t mapInfo = spawnNPCS(map,numNPCs,&eventManager);
@@ -49,8 +45,8 @@ int main(int argc, char* argv[]){
     while(exitCom == 0){
         //Remove the NPC which moves this turn from the queue
         int time; 
-        void* temp = (queueExtractMinWithPri(&eventManager,&time));
-        character_t* toMove = ((character_t*) temp); 
+        IDable temp = (eventManager.extractMinWithPri(&time));
+        GameCharacter toMove = dynamic_cast<GameCharacter&>(temp);
         int moveCost;
 
         if(toMove->type == '@'){
@@ -69,16 +65,12 @@ int main(int argc, char* argv[]){
 
         if(moveCost != -2){
             //Readd the character to the queue
-            memcpy(temp,toMove,sizeof(character_t));
-            queueAddWithPriority(&eventManager, temp,moveCost + time);
-            free(temp);
+            eventManager.addWithPriority(toMove,moveCost + time);
         }
 
 
     }
-    npcMapInfoDestroy(mapInfo);
+    //npcMapInfoDestroy(mapInfo);
     endwin();
-
-
 
 }

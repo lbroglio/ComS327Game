@@ -90,10 +90,7 @@ void placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
     }
     
     //Creates an array to store the biomes in
-    map->biomeArr = malloc(sizeof(biome_t) * (*biomeCount));
-
-    //Creates a temporary biome holder
-    biome_t temp;
+    map->biomeArr = (Biome*)malloc(sizeof(Biome) * (*biomeCount));
 
     //Chooses the ratio of short grass to tall grass biomes
     int numSG = (rand() % 3) + 2;
@@ -131,8 +128,8 @@ void placeBiomesGrassLands(mapTile_t* map,int* biomeCount){
             
         }
 
-        //Creates a biome to place
-        temp = biomeInit(typeHolder,17,2,75,2);
+        //Creates a temporary biome holder
+        Biome temp = Biome(typeHolder,17,2,75,2);
         
         //Puts the biome into the arrays
         map->mapArr[temp.cenRowNum][temp.cenColNum] = temp.type;
@@ -171,10 +168,10 @@ void placeBiomesSpecial(mapTile_t* map,int* biomeCount){
     }
     
     //Creates an array to store the biomes in
-    map->biomeArr = malloc(sizeof(biome_t) * (*biomeCount));
+    map->biomeArr = malloc(sizeof(Biome) * (*biomeCount));
 
     //Creates a temporary biome holder
-    biome_t temp;
+    Biome temp;
 
 
 
@@ -214,7 +211,7 @@ void placeBiomesSpecial(mapTile_t* map,int* biomeCount){
         }
 
         //Creates a biome to place
-        temp = biomeInit(typeHolder,17,2,75,2);
+        temp = Biome(typeHolder,17,2,75,2);
 
         //Puts the biome into the arrays
         map->mapArr[temp.cenRowNum][temp.cenColNum] = temp.type;
@@ -232,7 +229,7 @@ void placeBiomesSpecial(mapTile_t* map,int* biomeCount){
  * @param biome The information on the biome to expand
  * @param tilePlaced A tracker of if a tile was placed this expansion
  */
-void expandBiome(mapTile_t* map,biome_t biome,int* tilePlaced){
+void expandBiome(mapTile_t* map,Biome biome,int* tilePlaced){
     //Sets the cursors to be the right of the region
     int rowNum = biome.cenRowNum ;
     int colNum = biome.cenColNum + biome.radius;
@@ -400,62 +397,6 @@ void placeBuildings(mapTile_t* map){
 }
 
 /**
- * @brief Converts a given point to its integer id
- * 
- * @param toConvert The point to convert
- * @return The ID 
- */
-int convertPoint(point_t toConvert){
-   return (toConvert.rowNum * 80) + toConvert.colNum;
-}
-
-/**
- * @brief Converts a given ID to its corresponding point
- * 
- * @param toConvert The ID to convert
- * @return The point 
- */
-point_t convertID(int toConvert){
-    point_t converted;
-    converted.rowNum = toConvert / 80;
-    converted.colNum = toConvert % 80;
-
-   return converted;
-}
-
-/**
- * @brief Downshifts an ID to convert it to the number of space it is without the border. 
- * This value serves as its index in the arrays used in pathfinding
- * 
- * @param id The id to downshift
- * @return The downshifted id
- */
-int indexID(int id){
-    int rowNum =  id / 80;
-    return id - (81 + ((rowNum -1) * 2));
-}
-
-
-/**
- * @brief Converts a point to an ID and then downshifts it to be used as its location in arrays.
- * Invalid points return -1
- * 
- * @param toConvert The point to get the ID for
- * @return The downshifted ID
- */
-int pointToLocID(void* toConvert){
-    point_t point = *((point_t*) toConvert);
-    
-    if(point.rowNum == 0 || point.rowNum == 20 || point.colNum == 0 || point.colNum == 79){
-        return -1;
-    }
-
-    int id = convertPoint(point);
-    return indexID(id);
-}
-
-
-/**
  * @brief Uses dijkstra's algorithm to generate an array which stores the shortest path for a road to take by holding the
  * predecessor of each point in the array
  * 
@@ -463,15 +404,14 @@ int pointToLocID(void* toConvert){
  * @param startLoc The starting location to use as the source in  dijkstra's algorithm
  * @param prev The array to store the predecessors in
  */
-void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
+void dijkstraPathfindRoad(mapTile_t map, Point startLoc,int* prev){
     int mapSize = 1482;
     int dist[mapSize];
-    dist[indexID(convertPoint(startLoc))] = 0;
+    dist[startLoc.getID()] = 0;
     
-    queue_t priQueue;
-    queueInit(&priQueue,mapSize,sizeof(point_t), pointToLocID);
+    Queue priQueue = Queue(mapSize);
 
-    point_t temp;
+    Point temp;
     int  id;
 
     for(int i=1; i< 20; i++){
@@ -479,32 +419,28 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
  
             temp.rowNum = i;
             temp.colNum = j;
-            id = convertPoint(temp);
+            id = temp.getID();
 
             if(i != startLoc.rowNum || j != startLoc.colNum){
-                dist[indexID(id)] =  __INT_MAX__ - 500000;
-                prev[indexID(id)] = -1;
+                dist[id] =  __INT_MAX__ - 500000;
+                prev[id] = -1;
             }
             if(map.mapArr[i][j] != 'C' && map.mapArr[i][j] != 'M'){
-                void* tempV = malloc(sizeof(temp));
-                memcpy(tempV,&temp,sizeof(temp));
 
-                queueAddWithPriority(&priQueue,tempV,dist[indexID(id)]);
+                priQueue.addWithPriority(temp,dist[id]);
 
-                free(tempV);
             }
             
         }
     }
 
-    int size = queueSize(&priQueue);
+    int size = priQueue.getSize();
     
     while (size > 0){
-        void* currEntryV = (queueExtractMin(&priQueue));
-        point_t currEntry = *((point_t*) currEntryV);
-        free(currEntryV);
+        IDable temp = (priQueue.extractMin());
+        Point& currEntry = dynamic_cast<Point&>(temp);
 
-        int currID = convertPoint(currEntry);
+        int currID = currEntry.getID();
 
         point_t currNeighbor;
 
@@ -531,16 +467,12 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
 
             currNeighbor.rowNum = currEntry.rowNum + rowMod;      
             currNeighbor.colNum = currEntry.colNum +  colMod;
-            void* neighborV = malloc(sizeof(currNeighbor));
-            memcpy(neighborV,&currNeighbor,sizeof(currNeighbor));
 
-            if(checkInQueue(&priQueue,neighborV) == 0){
-                free(neighborV);
+            if(priQueue.checkInQueue(currNeighbor) == 0){
                 continue;
             }
-            free(neighborV);
 
-            int neighborID = convertPoint(currNeighbor);
+            int neighborID = currNeighbor.getID();
 
 
 
@@ -557,27 +489,22 @@ void dijkstraPathfindRoad(mapTile_t map, point_t startLoc,int* prev){
                 currMod = 2;
             }
             
-            int altDist = dist[indexID(currID)] + currMod;
+            int altDist = dist[currID] + currMod;
             
-            if (altDist < dist[indexID(neighborID)]){
-                dist[indexID(neighborID) ] = altDist;
-                prev[indexID(neighborID)] = currID; 
-                
-                 void* neighborV = malloc(sizeof(currNeighbor));
-                 memcpy(neighborV,&currNeighbor,sizeof(currNeighbor));
+            if (altDist < dist[neighborID]){
+                dist[neighborID] = altDist;
+                prev[neighborID] = currID; 
 
-                queueDecreasePriority(&priQueue,neighborV, altDist);
-
-                free(neighborV);
+                queueDecreasePriority(currNeighbor, altDist);
 
             }
         }
       
                 
 
-    size = queueSize(&priQueue);
+    size = priQueue.getSize();
     }
-    queueDestroy(&priQueue);             
+    //queueDestroy(&priQueue);             
 } 
 
 
@@ -1057,9 +984,9 @@ void genCharChooseArr(characterNames_t charPickArr[], mapTile_t map, int hasSwim
  * @param charNum The number of character they are (How many other chracters have been added)
  * @return The newly placed character
  */
-character_t placeNPC(int typeIndex ,mapTile_t map, nMapInfo_t* mapInfo, int charNum){
+GameCharacter placeNPC(int typeIndex ,mapTile_t map, nMapInfo_t* mapInfo, int charNum){
         point_t spawnPos;
-        character_t toPlace;
+        GameCharacter toPlace;
         //Randomly choosed spawn location
         spawnPos.rowNum = (rand() % 19) + 1;
         spawnPos.colNum = (rand() % 78) + 1;
@@ -1117,13 +1044,10 @@ nMapInfo_t spawnNPCS(mapTile_t map, int numNPCs, queue_t* eventManager){
     }
 
     //Add a rival
-    character_t cToAdd = placeNPC(RIVAL, map,&mapInfo,1);
+    GameCharacter cToAdd = placeNPC(RIVAL, map,&mapInfo,1);
 
     //Add the rival to the event manager
-    void* addV = malloc(sizeof(character_t));
-    memcpy(addV,&cToAdd,sizeof(character_t));
-    queueAddWithPriority(eventManager,addV,1);
-    free(addV);
+    eventManger.addWithPriority(cToAdd,1);
 
     //Create an array with the correct ratios for trainers based off the map type
     characterNames_t charPickArr[100];
@@ -1145,12 +1069,8 @@ nMapInfo_t spawnNPCS(mapTile_t map, int numNPCs, queue_t* eventManager){
         cToAdd = placeNPC(toAdd, map,&mapInfo, 2 + i);
 
         //Puts NPC into event manager
-        void* addV = malloc(sizeof(character_t));
-        memcpy(addV,&cToAdd,sizeof(character_t));
-        queueAddWithPriority(eventManager,addV,1);
-        free(addV);
+        eventManger.addWithPriority(cToAdd,1);
 
-    
     }
     return mapInfo;
 }

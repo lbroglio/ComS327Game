@@ -1,16 +1,14 @@
 #include<stdio.h>
 #include"biome.h"
 
-biome_t biomeInit(char type, int rowRange, int rowMin, int colRange, int colMin){
-    biome_t toReturn;
+Biome::Biome(char type, int rowRange, int rowMin, int colRange, int colMin){
     
-    toReturn.type = type;
-    toReturn.cenRowNum = (rand() % rowRange) + rowMin;
-    toReturn.cenColNum = (rand() % colRange) + colMin;
+    this->type = type;
+    this->cenRowNum = (rand() % rowRange) + rowMin;
+    this->cenColNum = (rand() % colRange) + colMin;
 
-    toReturn.radius = 0;
+    this->radius = 0;
 
-    return toReturn;
 
 }
 

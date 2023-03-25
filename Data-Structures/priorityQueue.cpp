@@ -5,8 +5,8 @@
 
 
 void swap(Queue* s, int x, int y){
-    queueEntry xEntry = s->heapArr[x];
-    queueEntry yEntry = s->heapArr[y];
+    QueueEntry xEntry = s->heapArr[x];
+    QueueEntry yEntry = s->heapArr[y];
 
     /*
     void* xVoid = malloc(sizeof(xEntry));
@@ -32,8 +32,8 @@ void percolateUp(Queue* s, int currentLoc){
     int parentLoc = (currentLoc - 1) / 2;
 
     //Gets entries for the current node and its parent
-    queueEntry current = s->heapArr[currentLoc];
-    queueEntry parent = s->heapArr[parentLoc];
+    QueueEntry current = s->heapArr[currentLoc];
+    QueueEntry parent = s->heapArr[parentLoc];
 
 
     while (currentLoc > 0 &&  current.priority < parent.priority) {  
@@ -56,12 +56,12 @@ void percolateDown(Queue* s, int currentLoc){
     int childLoc = (2 * currentLoc) + 1;
 
     //Gets the entry at the current location
-    queueEntry current = s->heapArr[currentLoc];
+    QueueEntry current = s->heapArr[currentLoc];
 
     //While inside the array
     while (childLoc < s->size){
         //Get entry at the first child's location
-        queueEntry child = s->heapArr[childLoc];
+        QueueEntry child = s->heapArr[childLoc];
 
         //Check to see if second child is smaller
         if ((childLoc + 1) < s->size){
@@ -86,7 +86,7 @@ void percolateDown(Queue* s, int currentLoc){
 }
 
 Queue::Queue(int size){
-    heapArr = (queueEntry*)malloc(sizeof(queueEntry) * size);
+    heapArr = (QueueEntry*)malloc(sizeof(QueueEntry) * size);
     locArr = (int*)malloc(sizeof(int) * size);
     maxIndex = size - 1 ;
 
@@ -100,7 +100,7 @@ Queue::Queue(int size){
 }
 
 
-queueEntry::queueEntry(IDable data, int priority){
+QueueEntry::QueueEntry(IDable data, int priority){
     this->data = data;
     this->id = data.getID();
     this->priority = priority;
@@ -109,7 +109,7 @@ queueEntry::queueEntry(IDable data, int priority){
 
 IDable Queue::extractMin(){
     //Extracts the minmum value
-    queueEntry extracted = heapArr[0];
+    QueueEntry extracted = heapArr[0];
     
     IDable toReturn = extracted.data;
 
@@ -126,7 +126,7 @@ IDable Queue::extractMin(){
 
 IDable Queue::extractMinWithPri(int* priority){
     //Extracts the minmum value
-    queueEntry extracted = heapArr[0];
+    QueueEntry extracted = heapArr[0];
     *priority = extracted.priority;
     
     IDable toReturn = extracted.data;
@@ -155,7 +155,7 @@ int Queue::decreasePriority(IDable toDecrease, int newPriority){
 
 
 void Queue::addWithPriority(IDable toAdd, int priority){
-    queueEntry newEntry = queueEntry(toAdd, priority);
+    QueueEntry newEntry = QueueEntry(toAdd, priority);
 
     heapArr[size] =  newEntry;
     locArr[toAdd.getID()] = size;

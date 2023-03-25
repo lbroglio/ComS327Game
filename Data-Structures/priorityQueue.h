@@ -19,7 +19,7 @@ class IDable{
  * @brief Stores an entry in a priority queue representing a spot on the board
  * 
  */
-struct queueEntry{
+struct QueueEntry{
     IDable data;
     int  priority;
     int id;
@@ -31,7 +31,7 @@ struct queueEntry{
      * 
      * @return The created entry 
      */
-    queueEntry(IDable data, int priority);
+    QueueEntry(IDable data, int priority);
 };
 
 
@@ -67,7 +67,7 @@ class Queue{
          * 
          * @return The extracted entry
          */
-        IDable Queue::extractMin();
+        IDable extractMin();
 
         /**
          * @brief Returns the minmum value of the queue and removes it. Also sets its priority to the given integer pointer
@@ -84,7 +84,7 @@ class Queue{
          * @param newPriority The number to change the priority to 
          * @return 0 on sucess other on fail
          */
-        int Queue::decreasePriority(IDable toDecrease, int newPriority);
+        int decreasePriority(IDable toDecrease, int newPriority);
 
         /**
          * @brief Adds a new entry to the queue 
@@ -92,7 +92,7 @@ class Queue{
          * @param toAdd The entry to add to the queue
          * @param priority The priority of this entry
          */
-        void Queue::addWithPriority(IDable toAdd, int priority);
+        void addWithPriority(IDable toAdd, int priority);
 
         /**
          * @brief Checks to see if a given data is currently in the queue
@@ -110,7 +110,7 @@ class Queue{
 
     private:
         /**The array of entries representing conisting of the heap which backs the queue*/
-        queueEntry* heapArr; 
+        QueueEntry* heapArr; 
         /**Array which stores the location of everything in the queue by ID*/
         int* locArr;
         /**The maximum possible index in the location array*/

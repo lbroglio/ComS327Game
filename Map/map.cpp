@@ -99,10 +99,29 @@ void mapTileDestroy(mapTile_t* map){
     free(map->biomeArr);
 }
 
-point_t pointInit(int row, int col){
-    point_t toReturn;
-    toReturn.rowNum = row;
-    toReturn.colNum = col;
-    return toReturn;
+Point::Point(int row, int col){
+    this->rowNum = row;
+    this->colNum = col;
+}
+
+int Point::getID(){
+    if(rowNum == 0 ||rowNum == 20 || colNum == 0 ||colNum == 79){
+        return -1;
+    }
+
+    int id = convertPoint();
+
+    //Reindex the ID
+    int rowNum =  id / 80;
+    return id - (81 + ((rowNum -1) * 2));
+}
+
+
+Point convertID(int toConvert){
+    Point converted;
+    converted.rowNum = toConvert / 80;
+    converted.colNum = toConvert % 80;
+
+   return converted;
 }
 

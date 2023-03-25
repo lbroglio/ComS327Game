@@ -2,6 +2,7 @@
 #define MAP_H
 
 #include"biome.h"
+#include"../Data-Structures/priorityQueue.h"
 
 /**
  * @brief Holds the map tile.
@@ -11,7 +12,7 @@ typedef struct mapTile{
     /**2D array of chars that holds the map*/
     char mapArr[21][80];
     /**Array which stores the biome structs in this map*/
-    biome_t* biomeArr;
+    Biome* biomeArr;
     /**Stores the symbol of the dominant biome of this map*/
     char mapType;
     /**Determines how mountains are on this map. 0 means a normal biome, 1 means a range, 2 means no mountains*/
@@ -32,10 +33,41 @@ typedef struct mapTile{
  * @brief Stores a point on the map. Also used as unit vectors sometimes
  * 
  */
-typedef struct mapPoint{
+struct Point : IDable{
     int rowNum;
     int colNum;
-} point_t;
+    /**
+     * @brief Converts a point to an ID and then downshifts it to be used as its location in arrays.
+     * Invalid points return -1
+     * 
+     * @param toConvert The point to get the ID for
+     * @return The downshifted ID
+     */
+    int getID();
+
+    /**
+     * @brief Creates a new point struct with the given row and column
+     * 
+     * @param row The row the point is in
+     * @param col The column the point is in
+     * @return The newly created point
+     */
+    Point(int row, int col);
+    /**
+     * @brief Construct a new Point object
+     * Default Constructor
+     */
+    Point();
+
+    private:
+        /**
+         * @brief Converts a given point to its integer id
+         * 
+         * @param toConvert The point to convert
+         * @return The ID 
+         */
+        int convertPoint(){ return (rowNum * 80) + colNum;}
+};
 
 /**
  * @brief Creates a new map tile
@@ -66,16 +98,12 @@ void mapTileDestory(mapTile_t* map);
 
 
 /**
- * @brief Creates a new point struct with the given row and column
+ * @brief Converts a given ID to its corresponding point
  * 
- * @param row The row the point is in
- * @param col The column the point is in
- * @return The newly created point
+ * @param toConvert The ID to convert
+ * @return The point 
  */
-point_t pointInit(int row, int col);
-
-
-
+Point convertID(int toConvert);
 
 
 #endif

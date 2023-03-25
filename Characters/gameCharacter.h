@@ -7,7 +7,7 @@
 /**
  * @brief Stores information about the a character
  */
-typedef struct gameCharacter{
+struct GameCharacter : IDable{
     /** Row this character is in*/
     int rowNum;
     /** Columns this character is in*/
@@ -17,25 +17,47 @@ typedef struct gameCharacter{
     /** Unique id used for indexing this character*/
     int id;
     /** Stores the current direction this character is moving in as a unit vector. Not used by all character types */
-    point_t direction;
+    Point direction;
     /** Stores the biome this character spawned in. Set for all only used by Wanderer*/
     char spawnBiome;
-} character_t;
+    /**
+     * @brief Creates a new character struct
+     * 
+     * @param startLoc point the character is at
+     * @param type The type of character it is
+     * @param id The id to assign it
+     * @param spawnBiome The biome this character spawns in
+     */
+    GameCharacter(Point startLoc, char type, int id, char spawnBiome);
+    /**
+     * @brief Default Construcotr - returns the 'Empty' character
+     * 
+     * 
+     */
+    GameCharacter();
+
+    /**
+     * @brief Returns the ID of a given character 
+     * 
+     * @return The ID
+     */
+    int getID(){return id;};
+};
 
 
 /**
  * @brief Stores information about a map tile used by npcs
  * 
  */
-typedef struct npcMapInfo{
+struct NPCMapInfo{
     /** Point on map representing last know location of the player on this map*/
-    point_t playerLocation;
+    Point playerLocation;
     /** Stores the results of the hiker's pathfinding algorithm*/
     int hikerDist[21][80];
     /** Stores the results of the rival's pathfinding algorithm*/
     int rivalDist[21][80];
     /** Stores the location of the NPCs on the map X if none is there*/
-    character_t charLocations[21][80];
+    GameCharacter charLocations[21][80];
     /**Indicator of whether or not the player is by water. 1 = true, 0  = false*/
     int playerByWater;
     /**Stores the number of NPCs on this map*/
@@ -45,7 +67,21 @@ typedef struct npcMapInfo{
     /**Stores the number of defeated trainer*/
     int numDef;
 
-} nMapInfo_t;
+    /**
+     * @brief Creates a new npcMapInfpo struct
+     * 
+     * @param numNPCs The number of NPCs on this map
+     * @return The created struct
+     */
+    NPCMapInfo(int numNPCs);
+
+    /**
+     * @brief Destoys the given nMapInfo struct and frees its allocated memory
+     * 
+     */
+    ~NPCMapInfo();
+
+};
 
 
 /**
@@ -59,47 +95,7 @@ typedef struct npcMapInfo{
  * @return The cost of the move the npc made
  */
 
-int moveNPC(character_t* toMove, int time, character_t* player, mapTile_t map, nMapInfo_t* mapInfo);
-
-/**
- * @brief Creates a new npcMapInfpo struct
- * 
- * @param numNPCs The number of NPCs on this map
- * @return The created struct
- */
-nMapInfo_t npcMapInfoInit(int numNPCs);
-
-/**
- * @brief Creates a new character struct
- * 
- * @param startLoc point the character is at
- * @param type The type of character it is
- * @param id The id to assign it
- * @param spawnBiome The biome this character spawns in
- * @return The newly created character
- */
-character_t characterInit(point_t startLoc, char type, int id, char spawnBiome);
-
-/**
- * @brief Destoys the given nMapInfo struct and frees its allocated memory
- * 
- * @param toDestroy The struct to destroy
- */
-void npcMapInfoDestroy(nMapInfo_t toDestroy);
-
-/**
- * @brief Returns the ID of a given character 
- * 
- * @return The ID
- */
-int getCharacterId(void* toId);
-
-/**
- * @brief Returns the 'Empty' character
- * 
- * @return the 'Empty' character
- */
-character_t getEmptyCharacter();
+int moveNPC(GameCharacter* toMove, int time, GameCharacter* player, mapTile_t map, NPCMapInfo* mapInfo);
 
 
 /**
@@ -110,6 +106,6 @@ character_t getEmptyCharacter();
  * 
  * @return 0 if the trainer is not defeated. 1 if it is
  */
-int checkTrainerDefeated(int id,nMapInfo_t mapInfo);
+int checkTrainerDefeated(int id,NPCMapInfo mapInfo);
 
 #endif

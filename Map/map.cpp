@@ -125,3 +125,7 @@ Point convertID(int toConvert){
    return converted;
 }
 
+Point::Point(){
+    this->rowNum = 0;
+    this->colNum = 0;
+}

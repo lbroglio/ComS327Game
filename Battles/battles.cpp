@@ -1,7 +1,7 @@
 #include<curses.h>
 #include"../Characters/gameCharacter.h"
 
-void trainerBattle(character_t enemyTrainer,nMapInfo_t* mapInfo){
+void trainerBattle(GameCharacter enemyTrainer,NPCMapInfo* mapInfo){
     //Defeat Trainer
     mapInfo->defTrainers[mapInfo->numDef] = enemyTrainer.id;
     mapInfo->numDef += 1;

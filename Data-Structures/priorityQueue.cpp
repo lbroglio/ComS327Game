@@ -100,18 +100,23 @@ Queue::Queue(int size){
 }
 
 
-QueueEntry::QueueEntry(IDable data, int priority){
-    this->data = data;
+QueueEntry::QueueEntry(IDable* data, int priority){
+    this->data = (IDable*) malloc(sizeof(IDable)); 
+    this->data = *data;
     this->id = data.getID();
     this->priority = priority;
 
 }
 
-IDable Queue::extractMin(){
+QueueEntry::~QueueEntry(){
+    free(this->data);
+}
+
+IDable* Queue::extractMin(){
     //Extracts the minmum value
     QueueEntry extracted = heapArr[0];
     
-    IDable toReturn = extracted.data;
+    IDable* toReturn = extracted.data;
 
     //Puts the last item to the front
     swap(this,0,size-1);
@@ -124,12 +129,12 @@ IDable Queue::extractMin(){
     return toReturn;
 }
 
-IDable Queue::extractMinWithPri(int* priority){
+IDable* Queue::extractMinWithPri(int* priority){
     //Extracts the minmum value
     QueueEntry extracted = heapArr[0];
     *priority = extracted.priority;
     
-    IDable toReturn = extracted.data;
+    IDable* toReturn = extracted.data;
 
     //Puts the last item to the front
     swap(this,0,size-1);
@@ -154,7 +159,7 @@ int Queue::decreasePriority(IDable toDecrease, int newPriority){
 }
 
 
-void Queue::addWithPriority(IDable toAdd, int priority){
+void Queue::addWithPriority(IDable* toAdd, int priority){
     QueueEntry newEntry = QueueEntry(toAdd, priority);
 
     heapArr[size] =  newEntry;
@@ -181,6 +186,10 @@ int Queue::checkInQueue(IDable toCheck){
 }
 
 Queue::~Queue(){
+    for(int i =0; i < this.size; i++){
+        QueueEntry* temp = heapArr[i];
+        temp->!~QueueEntry();
+    }
     free(heapArr);
     free(locArr);
     size = 0;

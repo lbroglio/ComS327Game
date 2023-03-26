@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<time.h>
-#include<string.h>
+#include<cstring>
+#include<string>
 #include"../Map/map.h"
 #include"../Map/biome.h"
 #include"../Map/mapGeneration.h"
@@ -365,10 +366,10 @@ int getPossibleMoves(GameCharacter toMove, NPCMapInfo mapInfo, Point* possibleMo
  */
 Point checkDirecPacer(GameCharacter* toCheck,mapTile_t map, NPCMapInfo mapInfo){
     Point nextSpace;
-    char* illegalChars = "~\"%% ";
+    std::string illegalChars = "~\"%% ";
 
     //Checks to see if the pacer can legally move forward
-    if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != NULL || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type != 'X'){
+    if(illegalChars.find(map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != std::string::npos || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type != 'X'){
         //Checks to see if the next space holds the player
         if(mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type == '@'){
             //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
@@ -495,11 +496,11 @@ Point checkDirecWanderer(GameCharacter* toCheck,mapTile_t map,NPCMapInfo mapInfo
  */
 Point checkDirecExplorer(GameCharacter* toCheck,mapTile_t map,NPCMapInfo mapInfo,Point moveOptions[], int numOptions){
     Point nextSpace;
-    char* illegalChars = "~%% ";
+    std::string illegalChars = "~%% ";
     //Checks to see if there is only one space left
     if(numOptions == 1){
         //If the remaining space is invalid
-        if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != NULL || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type != 'X'){
+        if(illegalChars.find(map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != std::string::npos || mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type != 'X'){
             //Sets next space to the current space (Character won't move)
             nextSpace.rowNum = toCheck->rowNum;
             nextSpace.colNum = toCheck->colNum;
@@ -527,7 +528,7 @@ Point checkDirecExplorer(GameCharacter* toCheck,mapTile_t map,NPCMapInfo mapInfo
         nextSpace.colNum = -2;          
     }
     //If the current space is blocked or illegal
-    else if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != NULL|| mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type != 'X'){
+    else if(illegalChars.find(map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != std::string::npos|| mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type != 'X'){
 
         
         //Randomly chooses a new direction to move in 
@@ -569,11 +570,11 @@ Point checkDirecExplorer(GameCharacter* toCheck,mapTile_t map,NPCMapInfo mapInfo
  */
 Point checkDirecSwimmerWander(GameCharacter* toCheck,mapTile_t map,NPCMapInfo mapInfo,Point moveOptions[], int numOptions){
     Point nextSpace;
-    char* illegalChars = "CM#\"%%.: ";
+    std::string illegalChars = "CM#\"%%.: ";
     //Checks to see if there is only one space left
     if(numOptions == 1){
         //If the remaining space is invalid
-        if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != NULL|| mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type != 'X'){
+        if(illegalChars.find(map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != std::string::npos|| mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type != 'X'){
             //Sets next space to the current space (Character won't move)
             nextSpace.rowNum = toCheck->rowNum;
             nextSpace.colNum = toCheck->colNum;
@@ -587,7 +588,7 @@ Point checkDirecSwimmerWander(GameCharacter* toCheck,mapTile_t map,NPCMapInfo ma
         }
     }
     //If the current space is blocked or illegal
-    else if(strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != NULL|| mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type != 'X'){
+    else if(illegalChars.find(map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) != std::string::npos|| mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type != 'X'){
         //Randomly chooses a new direction to move in 
         int moveNum = rand() % numOptions;
         toCheck->direction = moveOptions[moveNum];
@@ -625,12 +626,12 @@ Point checkDirecSwimmerWander(GameCharacter* toCheck,mapTile_t map,NPCMapInfo ma
  */
 Point checkDirecSwimmerCharge(GameCharacter* toCheck,mapTile_t map,NPCMapInfo mapInfo){
     Point nextSpace;
-    char* illegalChars = "#\"%%.: ";
+    std::string illegalChars = "#\"%%.: ";
     toCheck->direction.rowNum = (mapInfo.playerLocation.rowNum - toCheck->rowNum ) / abs(mapInfo.playerLocation.rowNum - toCheck->rowNum );
     toCheck->direction.colNum = (mapInfo.playerLocation.colNum - toCheck->colNum ) / abs(mapInfo.playerLocation.colNum - toCheck->colNum );
 
     //If the swimmer can move in the direction of the player
-    if((strchr(illegalChars,map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)])) == NULL && mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type == 'X'){
+    if(illegalChars.find(map.mapArr[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)]) == std::string::npos && mapInfo.charLocations[toCheck->rowNum + (toCheck->direction.rowNum)][toCheck->colNum + (toCheck->direction.colNum)].type == 'X'){
         //Updates Next Space
         nextSpace.rowNum = toCheck->rowNum + (toCheck->direction.rowNum);
         nextSpace.colNum = toCheck->colNum + (toCheck->direction.colNum);

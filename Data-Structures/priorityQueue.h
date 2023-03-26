@@ -1,16 +1,13 @@
 #ifndef PRI_QUEUE_H
 #define PRI_QUEUE_H
 
-#include"../Map/map.h"
-
-
 /**
  * @brief Interface for items that possess an ID function. Used by the queue
  * 
  */
 class IDable{
     public:
-        virtual int getID(); 
+        virtual int getID() = 0; 
         //virtual IDable* clone() = 0;
 };
 
@@ -20,7 +17,7 @@ class IDable{
  * 
  */
 struct QueueEntry{
-    IDable data;
+    IDable* data;
     int  priority;
     int id;
     /**
@@ -31,7 +28,12 @@ struct QueueEntry{
      * 
      * @return The created entry 
      */
-    QueueEntry(IDable data, int priority);
+    QueueEntry(IDable* data, int priority);
+    /**
+     * @brief Destroy the Queue Entry object
+     * 
+     */
+    ~QueueEntry();
 };
 
 
@@ -60,14 +62,14 @@ class Queue{
          * @param s Pointer to the queue to get minmum from
          * @return The extracted entry
          */
-        IDable peekMin(){return (heapArr[0].data);}
+        IDable* peekMin(){return (heapArr[0].data);}
 
         /**
          * @brief Returns the minmum value of the queue and removes it 
          * 
          * @return The extracted entry
          */
-        IDable extractMin();
+        IDable* extractMin();
 
         /**
          * @brief Returns the minmum value of the queue and removes it. Also sets its priority to the given integer pointer
@@ -75,7 +77,7 @@ class Queue{
          * @param priority The location to store the extracted entries priority
          * @return The extracted entry
          */
-        IDable extractMinWithPri(int* priority);
+        IDable* extractMinWithPri(int* priority);
 
         /**
          * @brief Decreases the priority of a given entry in the queue
@@ -92,7 +94,7 @@ class Queue{
          * @param toAdd The entry to add to the queue
          * @param priority The priority of this entry
          */
-        void addWithPriority(IDable toAdd, int priority);
+        void addWithPriority(IDable* toAdd, int priority);
 
         /**
          * @brief Checks to see if a given data is currently in the queue

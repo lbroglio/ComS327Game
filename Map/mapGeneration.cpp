@@ -168,11 +168,7 @@ void placeBiomesSpecial(mapTile_t* map,int* biomeCount){
     }
     
     //Creates an array to store the biomes in
-    map->biomeArr = malloc(sizeof(Biome) * (*biomeCount));
-
-    //Creates a temporary biome holder
-    Biome temp;
-
+    map->biomeArr = (Biome*)malloc(sizeof(Biome) * (*biomeCount));
 
 
    /*
@@ -211,7 +207,7 @@ void placeBiomesSpecial(mapTile_t* map,int* biomeCount){
         }
 
         //Creates a biome to place
-        temp = Biome(typeHolder,17,2,75,2);
+        Biome temp = Biome(typeHolder,17,2,75,2);
 
         //Puts the biome into the arrays
         map->mapArr[temp.cenRowNum][temp.cenColNum] = temp.type;
@@ -427,7 +423,7 @@ void dijkstraPathfindRoad(mapTile_t map, Point startLoc,int* prev){
             }
             if(map.mapArr[i][j] != 'C' && map.mapArr[i][j] != 'M'){
 
-                priQueue.addWithPriority(temp,dist[id]);
+                priQueue.addWithPriority(&temp,dist[id]);
 
             }
             
@@ -437,12 +433,12 @@ void dijkstraPathfindRoad(mapTile_t map, Point startLoc,int* prev){
     int size = priQueue.getSize();
     
     while (size > 0){
-        IDable temp = (priQueue.extractMin());
+        IDable& temp = priQueue.extractMin();
         Point& currEntry = dynamic_cast<Point&>(temp);
 
         int currID = currEntry.getID();
 
-        point_t currNeighbor;
+        Point currNeighbor;
 
 
 
@@ -495,7 +491,7 @@ void dijkstraPathfindRoad(mapTile_t map, Point startLoc,int* prev){
                 dist[neighborID] = altDist;
                 prev[neighborID] = currID; 
 
-                queueDecreasePriority(currNeighbor, altDist);
+                priQueue.decreasePriority(currNeighbor, altDist);
 
             }
         }
@@ -515,20 +511,20 @@ void dijkstraPathfindRoad(mapTile_t map, Point startLoc,int* prev){
  * @param startLoc The starting location to draw the road from.
  * @param targetLoc The end point to draw the road to
  */
-void drawRoad(mapTile_t* map,point_t startLoc, point_t targetLoc){
+void drawRoad(mapTile_t* map,Point startLoc, Point targetLoc){
     
     int prevArr[1482];
 
-    dijkstraPathfindRoad(*map,startLoc,prevArr);
+    dijkstraPathfindRoad(*map, startLoc,prevArr);
     
-    int startID = convertPoint(startLoc);
-    int currID  = convertPoint(targetLoc);
+    int startID = startLoc.getID();
+    int currID  = targetLoc.getID();
     //int nextID = convertPoint(targetLoc);
     int trigger = 1;
 
     while(trigger != 0){
 
-        point_t currPoint = convertID(currID);
+        Point currPoint = convertID(currID);
         if(map->mapArr[currPoint.rowNum][currPoint.colNum] == '~' || map->mapArr[currPoint.rowNum][currPoint.colNum] == '='){
             map->mapArr[currPoint.rowNum][currPoint.colNum] = '=';
         }
@@ -537,7 +533,7 @@ void drawRoad(mapTile_t* map,point_t startLoc, point_t targetLoc){
         }
 
         if(currID != startID){
-            currID = prevArr[indexID(currID)];
+            currID = prevArr[currID];
         }
         else{
             trigger =0;
@@ -556,10 +552,10 @@ void drawRoad(mapTile_t* map,point_t startLoc, point_t targetLoc){
  */
 void addRoadSystem(mapTile_t* map){
     //Intialzied points to hold location
-    point_t leftEnt;
-    point_t rightEnt;
-    point_t  startPoint;
-    point_t  endPoint;
+    Point leftEnt;
+    Point rightEnt;
+    Point startPoint;
+    Point endPoint;
 
     if(map->leftEntLoc != -1){
         leftEnt.rowNum = map->leftEntLoc;
@@ -984,8 +980,8 @@ void genCharChooseArr(characterNames_t charPickArr[], mapTile_t map, int hasSwim
  * @param charNum The number of character they are (How many other chracters have been added)
  * @return The newly placed character
  */
-GameCharacter placeNPC(int typeIndex ,mapTile_t map, nMapInfo_t* mapInfo, int charNum){
-        point_t spawnPos;
+GameCharacter placeNPC(int typeIndex ,mapTile_t map, NPCMapInfo* mapInfo, int charNum){
+        Point spawnPos;
         GameCharacter toPlace;
         //Randomly choosed spawn location
         spawnPos.rowNum = (rand() % 19) + 1;
@@ -993,7 +989,7 @@ GameCharacter placeNPC(int typeIndex ,mapTile_t map, nMapInfo_t* mapInfo, int ch
 
         //If spawn position is valid place character and return it 
         if(strchr(npcAllowedSpawns[typeIndex], map.mapArr[spawnPos.rowNum][spawnPos.colNum]) != NULL && mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum].type == 'X'){
-            toPlace = characterInit(spawnPos,charOptions[typeIndex],charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
+            toPlace = GameCharacter(spawnPos,charOptions[typeIndex],charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
             mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum] = toPlace;
             
         }
@@ -1006,7 +1002,7 @@ GameCharacter placeNPC(int typeIndex ,mapTile_t map, nMapInfo_t* mapInfo, int ch
                 spawnPos.colNum += mod;
                 //If the new postion is valid place the character and return it
                 if(strchr(npcAllowedSpawns[typeIndex], map.mapArr[spawnPos.rowNum][spawnPos.colNum]) != NULL && mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum].type == 'X'){
-                    toPlace = characterInit(spawnPos,charOptions[typeIndex],charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
+                    toPlace = GameCharacter(spawnPos,charOptions[typeIndex],charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
                     mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum] = toPlace;
                     mod = 0;
                     
@@ -1029,9 +1025,9 @@ GameCharacter placeNPC(int typeIndex ,mapTile_t map, nMapInfo_t* mapInfo, int ch
         return toPlace;
 }
 
-nMapInfo_t spawnNPCS(mapTile_t map, int numNPCs, queue_t* eventManager){
+NPCMapInfo spawnNPCS(mapTile_t map, int numNPCs, Queue* eventManager){
     //Create the NPC info for this map tile
-    nMapInfo_t mapInfo = npcMapInfoInit(numNPCs);
+    NPCMapInfo mapInfo = NPCMapInfo(numNPCs);
 
     //Set whether or not there are swimmers
     int hasSwimmer;
@@ -1047,7 +1043,7 @@ nMapInfo_t spawnNPCS(mapTile_t map, int numNPCs, queue_t* eventManager){
     GameCharacter cToAdd = placeNPC(RIVAL, map,&mapInfo,1);
 
     //Add the rival to the event manager
-    eventManger.addWithPriority(cToAdd,1);
+    eventManager->addWithPriority(cToAdd,1);
 
     //Create an array with the correct ratios for trainers based off the map type
     characterNames_t charPickArr[100];
@@ -1069,7 +1065,7 @@ nMapInfo_t spawnNPCS(mapTile_t map, int numNPCs, queue_t* eventManager){
         cToAdd = placeNPC(toAdd, map,&mapInfo, 2 + i);
 
         //Puts NPC into event manager
-        eventManger.addWithPriority(cToAdd,1);
+       eventManager->addWithPriority(cToAdd,1);
 
     }
     return mapInfo;

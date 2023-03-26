@@ -45,7 +45,7 @@ void terminalInit(){
 }
 
 
-void printMapWithChars(mapTile_t* map, nMapInfo_t mapInfo){
+void printMapWithChars(mapTile_t* map, NPCMapInfo  mapInfo){
     //Clear the screen
     clear();
 

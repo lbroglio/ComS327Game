@@ -33,7 +33,7 @@ typedef struct mapTile{
  * @brief Stores a point on the map. Also used as unit vectors sometimes
  * 
  */
-struct Point : IDable{
+struct Point : public IDable{
     int rowNum;
     int colNum;
     /**

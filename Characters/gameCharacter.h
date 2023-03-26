@@ -7,7 +7,7 @@
 /**
  * @brief Stores information about the a character
  */
-struct GameCharacter : IDable{
+struct GameCharacter : public IDable{
     /** Row this character is in*/
     int rowNum;
     /** Columns this character is in*/

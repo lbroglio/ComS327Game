@@ -8,6 +8,6 @@
  * Battles are a placeholder right now
  * 
  */
-void trainerBattle(character_t enemyTrainer,nMapInfo_t* mapInfo);
+void trainerBattle(GameCharacter enemyTrainer,NPCMapInfo* mapInfo);
 
 #endif

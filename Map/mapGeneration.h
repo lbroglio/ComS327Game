@@ -45,7 +45,7 @@ int pointToLocID(void* toConvert);
  * 
  * @return the nMapInfo struct for the tile 
  */
-nMapInfo_t spawnNPCS(mapTile_t map, int numNPCs, queue_t* eventManager);
+NPCMapInfo spawnNPCS(mapTile_t map, int numNPCs, Queue* eventManager);
 
 
 #endif

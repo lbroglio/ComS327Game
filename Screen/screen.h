@@ -17,4 +17,4 @@ void terminalInit();
  * @param map The map to print
  * @param mapInfo The NPC information for the map
  */
-void printMapWithChars(mapTile_t* map, nMapInfo_t mapInfo);
+void printMapWithChars(mapTile_t* map, NPCMapInfo mapInfo);

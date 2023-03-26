@@ -26,6 +26,6 @@ typedef enum playerMoves{
  * @param mapInfo Info struct for the map
  * @return The cost of the palyer's move
  */
-int playerTurn(character_t* player, mapTile_t map,nMapInfo_t* mapInfo);
+int playerTurn(GameCharacter* player, mapTile_t map,NPCMapInfo* mapInfo);
 
 #endif

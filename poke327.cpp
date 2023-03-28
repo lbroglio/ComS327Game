@@ -3,6 +3,8 @@
 #include<unistd.h>
 #include<string.h>
 #include<curses.h>
+#include<iostream>
+#include <fstream>
 #include"./Screen/screen.h"
 #include"./Map/map.h"
 #include"./Map/biome.h"
@@ -17,6 +19,8 @@ int main(int argc, char* argv[]){
     int numNPCs;
     terminalInit();
 
+
+
     if(argc == 2){
         numNPCs = atoi(argv[1]);
     }
@@ -25,16 +29,28 @@ int main(int argc, char* argv[]){
     }
     Queue eventManager = Queue(numNPCs + 1);
 
+    std::ofstream myfile;
+    myfile.open ("example.txt");
+    myfile << "Reached\n";
+    myfile.close();
+
     mapTile_t map = createMapTileIndependent();
+
+
+
 
     Point playerSpawn;
     playerSpawn.colNum = ((map.biomeArr) + 1)->cenColNum;
     playerSpawn.rowNum = ((map.biomeArr) + 1)->cenRowNum -1;
 
+
+
+
     GameCharacter player = GameCharacter(playerSpawn,'@',0,'#');
     eventManager.addWithPriority(&player,1);
 
-   
+
+
     NPCMapInfo mapInfo = spawnNPCS(map,numNPCs,&eventManager);
     mapInfo.charLocations[player.rowNum][player.colNum] = player;
 
@@ -42,12 +58,12 @@ int main(int argc, char* argv[]){
     mapInfo.playerLocation.colNum = -1;
     int exitCom = 0;
 
+
     while(exitCom == 0){
         //Remove the NPC which moves this turn from the queue
         int time; 
         IDable* temp = (eventManager.extractMinWithPri(&time));
-        GameCharacter toMove = dynamic_cast<GameCharacter&>(*temp);
-        free(temp);
+        GameCharacter& toMove = dynamic_cast<GameCharacter&>(*temp);
 
         int moveCost;
 
@@ -70,7 +86,7 @@ int main(int argc, char* argv[]){
             eventManager.addWithPriority(&toMove,moveCost + time);
         }
 
-
+        delete temp;
     }
     //npcMapInfoDestroy(mapInfo);
     endwin();

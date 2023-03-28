@@ -37,6 +37,14 @@ struct GameCharacter : public IDable{
     GameCharacter();
 
     /**
+     * @brief Creates a copy of this Character
+     * Include memory allocation returned to the user 
+     * 
+     * @return A pointer to the created copy
+     */
+    GameCharacter* clone();
+
+    /**
      * @brief Returns the ID of a given character 
      * 
      * @return The ID
@@ -79,7 +87,7 @@ struct NPCMapInfo{
      * @brief Destoys the given nMapInfo struct and frees its allocated memory
      * 
      */
-    ~NPCMapInfo();
+    //~NPCMapInfo();
 
 };
 

@@ -40,7 +40,7 @@ void dijkstraPathfindHiker(mapTile_t map, GameCharacter player,int dist[21][80])
             }
             if(map.mapArr[i][j] != '~'){
                 
-                priQueue.addWithPriority(temp,dist[i][j]);
+                priQueue.addWithPriority(&temp,dist[i][j]);
                 
             }
             else{
@@ -53,8 +53,10 @@ void dijkstraPathfindHiker(mapTile_t map, GameCharacter player,int dist[21][80])
     int size = priQueue.getSize();
     
     while (size > 0){
-        IDable temp = priQueue.extractMin();
-        Point& currEntry = dynamic_cast<Point&>(temp);
+        IDable* temp = priQueue.extractMin();
+        Point* currEntry = dynamic_cast<Point*>(temp);
+        
+
         Point currNeighbor;
 
 
@@ -94,11 +96,11 @@ void dijkstraPathfindHiker(mapTile_t map, GameCharacter player,int dist[21][80])
 
 
 
-            currNeighbor.rowNum = currEntry.rowNum + rowMod;      
-            currNeighbor.colNum = currEntry.colNum +  colMod;
+            currNeighbor.rowNum = currEntry->rowNum + rowMod;      
+            currNeighbor.colNum = currEntry->colNum +  colMod;
 
             //Make sure the current point is in the queue
-            if(priQueue.checkInQueue(currNeighbor) == 0){
+            if(priQueue.checkInQueue(&currNeighbor) == 0){
                 continue;
             }
 
@@ -117,18 +119,19 @@ void dijkstraPathfindHiker(mapTile_t map, GameCharacter player,int dist[21][80])
             }
             
             //Change  its distance if its left
-            int altDist = dist[currEntry.rowNum][currEntry.colNum] + currMod;
+            int altDist = dist[currEntry->rowNum][currEntry->colNum] + currMod;
             
             if (altDist < dist[currNeighbor.rowNum][currNeighbor.colNum]){
                 dist[currNeighbor.rowNum][currNeighbor.colNum] = altDist; 
 
-                priQueue.decreasePriority(currNeighbor, altDist);
+                priQueue.decreasePriority(&currNeighbor, altDist);
             }
         }
       
                 
 
     size = priQueue.getSize();
+    delete currEntry;
     }
     //delete priQueue;             
 } 
@@ -163,7 +166,7 @@ void dijkstraPathfindRival(mapTile_t map,  GameCharacter player,int dist[21][80]
             }
             if(map.mapArr[i][j] != '~' && map.mapArr[i][j] != '%' && map.mapArr[i][j] != '\"'){
 
-                priQueue.addWithPriority(temp,dist[i][j]);
+                priQueue.addWithPriority(&temp,dist[i][j]);
 
             }
             else{
@@ -176,8 +179,8 @@ void dijkstraPathfindRival(mapTile_t map,  GameCharacter player,int dist[21][80]
     int size = priQueue.getSize();
     
     while (size > 0){
-        IDable temp = priQueue.extractMin();
-        Point& currEntry = dynamic_cast<Point&>(temp);
+        IDable* temp = priQueue.extractMin();
+        Point* currEntry = dynamic_cast<Point*>(temp);
 
         Point currNeighbor;
 
@@ -218,10 +221,10 @@ void dijkstraPathfindRival(mapTile_t map,  GameCharacter player,int dist[21][80]
 
 
 
-            currNeighbor.rowNum = currEntry.rowNum + rowMod;      
-            currNeighbor.colNum = currEntry.colNum +  colMod;
+            currNeighbor.rowNum = currEntry->rowNum + rowMod;      
+            currNeighbor.colNum = currEntry->colNum +  colMod;
 
-            if(priQueue.checkInQueue(currNeighbor) == 0){
+            if(priQueue.checkInQueue(&currNeighbor) == 0){
                 continue;
             }
 
@@ -241,18 +244,19 @@ void dijkstraPathfindRival(mapTile_t map,  GameCharacter player,int dist[21][80]
             }
             
             //Change  its distance if its left
-            int altDist = dist[currEntry.rowNum][currEntry.colNum] + currMod;
+            int altDist = dist[currEntry->rowNum][currEntry->colNum] + currMod;
             
             if (altDist < dist[currNeighbor.rowNum][currNeighbor.colNum]){
                 dist[currNeighbor.rowNum][currNeighbor.colNum] = altDist; 
 
-                priQueue.decreasePriority(currNeighbor, altDist);
+                priQueue.decreasePriority(&currNeighbor, altDist);
             }
         }
       
                 
 
     size = priQueue.getSize();
+    delete currEntry;
     }
     //queueDestroy(&priQueue);                     
 } 
@@ -891,9 +895,11 @@ NPCMapInfo::NPCMapInfo(int numNPCs){
     }
 }
 
+/*
 NPCMapInfo::~NPCMapInfo(){
     free(defTrainers);
 }
+*/
 
 GameCharacter::GameCharacter(Point startLoc, char type, int id, char spawnBiome){
 
@@ -936,4 +942,10 @@ int checkTrainerDefeated(int id,NPCMapInfo mapInfo){
         }
     }
     return 0;
+}
+
+
+GameCharacter* GameCharacter::clone(){
+    GameCharacter* temp = new GameCharacter(Point(this->rowNum,this->colNum),this->type,this->id,this->spawnBiome);
+    return temp;
 }

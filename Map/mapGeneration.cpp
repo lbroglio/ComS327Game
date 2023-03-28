@@ -407,15 +407,15 @@ void dijkstraPathfindRoad(mapTile_t map, Point startLoc,int* prev){
     
     Queue priQueue = Queue(mapSize);
 
-    Point temp;
+    Point tempPoint;
     int  id;
 
     for(int i=1; i< 20; i++){
         for(int j=1; j< 79; j++){
  
-            temp.rowNum = i;
-            temp.colNum = j;
-            id = temp.getID();
+            tempPoint.rowNum = i;
+            tempPoint.colNum = j;
+            id = tempPoint.getID();
 
             if(i != startLoc.rowNum || j != startLoc.colNum){
                 dist[id] =  __INT_MAX__ - 500000;
@@ -423,7 +423,7 @@ void dijkstraPathfindRoad(mapTile_t map, Point startLoc,int* prev){
             }
             if(map.mapArr[i][j] != 'C' && map.mapArr[i][j] != 'M'){
 
-                priQueue.addWithPriority(&temp,dist[id]);
+                priQueue.addWithPriority(&tempPoint,dist[id]);
 
             }
             
@@ -433,10 +433,11 @@ void dijkstraPathfindRoad(mapTile_t map, Point startLoc,int* prev){
     int size = priQueue.getSize();
     
     while (size > 0){
-        IDable& temp = priQueue.extractMin();
-        Point& currEntry = dynamic_cast<Point&>(temp);
+        IDable* tempIDable = priQueue.extractMin();
+        Point* currEntry = dynamic_cast<Point*>(tempIDable);
 
-        int currID = currEntry.getID();
+        int currID = currEntry->getID();
+        int entryID = currEntry->convertPoint();
 
         Point currNeighbor;
 
@@ -461,10 +462,10 @@ void dijkstraPathfindRoad(mapTile_t map, Point startLoc,int* prev){
 
 
 
-            currNeighbor.rowNum = currEntry.rowNum + rowMod;      
-            currNeighbor.colNum = currEntry.colNum +  colMod;
+            currNeighbor.rowNum = (currEntry->rowNum) + rowMod;      
+            currNeighbor.colNum = (currEntry->colNum) +  colMod;
 
-            if(priQueue.checkInQueue(currNeighbor) == 0){
+            if(priQueue.checkInQueue(&currNeighbor) == 0){
                 continue;
             }
 
@@ -489,9 +490,9 @@ void dijkstraPathfindRoad(mapTile_t map, Point startLoc,int* prev){
             
             if (altDist < dist[neighborID]){
                 dist[neighborID] = altDist;
-                prev[neighborID] = currID; 
+                prev[neighborID] = entryID; 
 
-                priQueue.decreasePriority(currNeighbor, altDist);
+                priQueue.decreasePriority(&currNeighbor, altDist);
 
             }
         }
@@ -499,7 +500,10 @@ void dijkstraPathfindRoad(mapTile_t map, Point startLoc,int* prev){
                 
 
     size = priQueue.getSize();
+    delete currEntry;
+    //free(tempIDable);
     }
+    
     //queueDestroy(&priQueue);             
 } 
 
@@ -517,8 +521,8 @@ void drawRoad(mapTile_t* map,Point startLoc, Point targetLoc){
 
     dijkstraPathfindRoad(*map, startLoc,prevArr);
     
-    int startID = startLoc.getID();
-    int currID  = targetLoc.getID();
+    int startID = startLoc.convertPoint();
+    int currID  = targetLoc.convertPoint();
     //int nextID = convertPoint(targetLoc);
     int trigger = 1;
 
@@ -533,7 +537,7 @@ void drawRoad(mapTile_t* map,Point startLoc, Point targetLoc){
         }
 
         if(currID != startID){
-            currID = prevArr[currID];
+            currID = prevArr[currPoint.getID()];
         }
         else{
             trigger =0;
@@ -1043,7 +1047,7 @@ NPCMapInfo spawnNPCS(mapTile_t map, int numNPCs, Queue* eventManager){
     GameCharacter cToAdd = placeNPC(RIVAL, map,&mapInfo,1);
 
     //Add the rival to the event manager
-    eventManager->addWithPriority(cToAdd,1);
+    eventManager->addWithPriority(&cToAdd,1);
 
     //Create an array with the correct ratios for trainers based off the map type
     characterNames_t charPickArr[100];
@@ -1065,7 +1069,7 @@ NPCMapInfo spawnNPCS(mapTile_t map, int numNPCs, Queue* eventManager){
         cToAdd = placeNPC(toAdd, map,&mapInfo, 2 + i);
 
         //Puts NPC into event manager
-       eventManager->addWithPriority(cToAdd,1);
+       eventManager->addWithPriority(&cToAdd,1);
 
     }
     return mapInfo;

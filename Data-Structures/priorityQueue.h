@@ -3,12 +3,15 @@
 
 /**
  * @brief Interface for items that possess an ID function. Used by the queue
- * 
  */
 class IDable{
     public:
+        /** Gets the ID of the IDable object*/
         virtual int getID() = 0; 
-        //virtual IDable* clone() = 0;
+        /**Creates a clone of the IDable object*/
+        virtual IDable* clone() = 0;
+        /**Virtual destructor for IDable*/
+        virtual ~IDable();
 };
 
 
@@ -17,8 +20,11 @@ class IDable{
  * 
  */
 struct QueueEntry{
+    /**Data stored in this entry*/
     IDable* data;
+    /**The priority this entry is at*/
     int  priority;
+    /**The id of the data in this entry*/
     int id;
     /**
      * @brief Constructor for a Queue Entry
@@ -29,11 +35,12 @@ struct QueueEntry{
      * @return The created entry 
      */
     QueueEntry(IDable* data, int priority);
-    /**
-     * @brief Destroy the Queue Entry object
-     * 
-     */
-    ~QueueEntry();
+    //ADD DOC
+    //QueueEntry();
+
+    //Saved just in case
+    //~QueueEntry(){}
+    //QueueEntry operator=(const QueueEntry &p);
 };
 
 
@@ -86,7 +93,7 @@ class Queue{
          * @param newPriority The number to change the priority to 
          * @return 0 on sucess other on fail
          */
-        int decreasePriority(IDable toDecrease, int newPriority);
+        int decreasePriority(IDable* toDecrease, int newPriority);
 
         /**
          * @brief Adds a new entry to the queue 
@@ -102,7 +109,7 @@ class Queue{
          * @param toCheck The data to check
          * @return 1 if it is in the queue. 0 if it isnt
          */
-        int checkInQueue(IDable toCheck);
+        int checkInQueue(IDable* toCheck);
         /**
          * @brief Gets the size of the queue
          * 

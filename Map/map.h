@@ -34,7 +34,9 @@ typedef struct mapTile{
  * 
  */
 struct Point : public IDable{
+    /**The row this point is in*/
     int rowNum;
+    /**The column this point is in*/
     int colNum;
     /**
      * @brief Converts a point to an ID and then downshifts it to be used as its location in arrays.
@@ -45,6 +47,13 @@ struct Point : public IDable{
      */
     int getID();
 
+    /**
+     * @brief Creates a copy of the point object.
+     * Includes memory allocation returned to the user
+     * 
+     * @return A pointer to the created copy
+     */
+    Point* clone();
     /**
      * @brief Creates a new point struct with the given row and column
      * 
@@ -58,16 +67,19 @@ struct Point : public IDable{
      * Default Constructor
      */
     Point();
-
-    private:
-        /**
-         * @brief Converts a given point to its integer id
-         * 
-         * @param toConvert The point to convert
-         * @return The ID 
-         */
-        int convertPoint(){ return (rowNum * 80) + colNum;}
+    
+    /**
+    * @brief Converts a given point to its NONDOWNSHIFTEDinteger id
+    * 
+    * @param toConvert The point to convert
+    * @return The ID 
+    */
+    int convertPoint(){ return (rowNum * 80) + colNum;}
 };
+ 
+//std::ostream &operator<<(std::ostream &o,  const Point &p);
+
+
 
 /**
  * @brief Creates a new map tile

@@ -112,8 +112,8 @@ int Point::getID(){
     int id = convertPoint();
 
     //Reindex the ID
-    int rowNum =  id / 80;
-    return id - (81 + ((rowNum -1) * 2));
+    int rowLoc =  id / 80;
+    return id - (81 + ((rowLoc -1) * 2));
 }
 
 
@@ -129,3 +129,17 @@ Point::Point(){
     this->rowNum = 0;
     this->colNum = 0;
 }
+
+
+Point* Point::clone(){
+    //Can't use malloc here. Use new and delete to run constructors and destructors
+    Point* temp = new Point(this->rowNum,this->colNum);
+    return temp;
+}
+
+/*
+std::ostream &operator<<(std::ostream &o,  const Point &p){
+    o << "Point(" << p.rowNum << "," << p.colNum << ")";
+    return o;
+}
+*/

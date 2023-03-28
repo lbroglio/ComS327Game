@@ -328,6 +328,7 @@ void listTrainers(NPCMapInfo mapInfo){
         else if(action == 27){
             escPressed = 1;
         }
+
     
     }
 
@@ -360,5 +361,5 @@ void displayPlayerMoveError(char moveType){
     move(0,0);
     clrtoeol();
 
-    printw("You cannot move into a %s tile. Make a different move",moveStr);
+    printw("You cannot move into a %s tile. Make a different move",moveStr.c_str());
 }

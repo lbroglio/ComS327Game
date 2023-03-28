@@ -1,5 +1,6 @@
-#include<stdlib.h>
+#include<iostream>
 #include<string.h>
+#include<stdio.h>
 #include"priorityQueue.h"
 #include"../Map/map.h"
 
@@ -15,8 +16,8 @@ void swap(Queue* s, int x, int y){
     memcpy(yVoid,yEntry.data,s->dataSize);
     */
 
-    s->locArr[xEntry.data.getID()] = y;
-    s->locArr[yEntry.data.getID()] = x;
+    s->locArr[xEntry.id] = y;
+    s->locArr[yEntry.id] = x;
 
     s->heapArr[x] = yEntry;
     s->heapArr[y] = xEntry;    
@@ -101,16 +102,18 @@ Queue::Queue(int size){
 
 
 QueueEntry::QueueEntry(IDable* data, int priority){
-    this->data = (IDable*) malloc(sizeof(IDable)); 
-    this->data = *data;
-    this->id = data.getID();
+    //this->data = (IDable*) malloc(sizeof(*data)); 
+    this->data = data->clone();
+    this->id = data->getID();
     this->priority = priority;
 
 }
 
+/*
 QueueEntry::~QueueEntry(){
     free(this->data);
 }
+*/
 
 IDable* Queue::extractMin(){
     //Extracts the minmum value
@@ -120,7 +123,7 @@ IDable* Queue::extractMin(){
 
     //Puts the last item to the front
     swap(this,0,size-1);
-    locArr[toReturn.getID()] = -1;
+    locArr[extracted.id] = -1;
     size -= 1;
 
     //Restores heap order
@@ -138,7 +141,7 @@ IDable* Queue::extractMinWithPri(int* priority){
 
     //Puts the last item to the front
     swap(this,0,size-1);
-    locArr[toReturn.getID()] = -1;
+    locArr[extracted.id] = -1;
     size -= 1;
 
     //Restores heap order
@@ -148,9 +151,9 @@ IDable* Queue::extractMinWithPri(int* priority){
 }
 
 
-int Queue::decreasePriority(IDable toDecrease, int newPriority){
+int Queue::decreasePriority(IDable* toDecrease, int newPriority){
 
-    int getAt = locArr[toDecrease.getID()];
+    int getAt = locArr[toDecrease->getID()];
 
     heapArr[getAt].priority = newPriority;
     percolateUp(this,getAt);
@@ -163,15 +166,15 @@ void Queue::addWithPriority(IDable* toAdd, int priority){
     QueueEntry newEntry = QueueEntry(toAdd, priority);
 
     heapArr[size] =  newEntry;
-    locArr[toAdd.getID()] = size;
+    locArr[toAdd->getID()] = size;
 
     percolateUp(this,size);
 
     size += 1;
 }
 
-int Queue::checkInQueue(IDable toCheck){
-    int id = toCheck.getID();
+int Queue::checkInQueue(IDable* toCheck){
+    int id = toCheck->getID();
 
     if(id == -1){
         return 0;
@@ -186,13 +189,24 @@ int Queue::checkInQueue(IDable toCheck){
 }
 
 Queue::~Queue(){
-    for(int i =0; i < this.size; i++){
-        QueueEntry* temp = heapArr[i];
-        temp->!~QueueEntry();
+    for(int i =0; i < size; i++){
+        QueueEntry temp = heapArr[i];
+        delete temp.data;
+        
     }
     free(heapArr);
     free(locArr);
     size = 0;
 }
 
+
+/*
+ QueueEntry QueueEntry::operator=(const QueueEntry &p){
+    QueueEntry temp = QueueEntry(p.data, p.priority);
+
+    return temp;
+    
+ }
+ */
+IDable::~IDable(){}
 

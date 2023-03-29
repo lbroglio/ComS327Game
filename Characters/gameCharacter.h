@@ -78,6 +78,19 @@ class GameCharacter : public IDable{
          * @return char 
          */
         virtual char move(mapTile_t* map){return '%';}
+        /**
+         * @brief Set the row number to the provided value
+         * 
+         * @param newNum The new row number
+         */
+        void setRowNum(int newNum){rowNum = newNum;}
+        /**
+         * @brief Set the column number to the provided value
+         * 
+         * @param newNum The new column number
+         */
+        void setColNum(int newNum){colNum = newNum;}
+
 
         operator GameCharStorage(){return GameCharStorage(this->id,this->type);}
         

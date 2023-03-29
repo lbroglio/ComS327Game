@@ -1,14 +1,17 @@
 #include<curses.h>
 #include<string.h>
 #include<string>
+#include<iostream>
 #include "playerMovement.h"
 #include "gameCharacter.h"
 #include "NPCMapInfo.h"
 #include "../Map/map.h"
 #include "../Battles/battles.h"
+#include"../Map/mapGeneration.h"
 #include"../Screen/screen.h"
 
 //Function Prototypes
+void fly(Player* player);
 playerMoves_t getInput(NPCMapInfo mapInfo);
 int costOfPlayerMove(char moveType);
 void displayPlayerMoveError(char moveType);
@@ -39,8 +42,13 @@ char Player::move(mapTile_t* map){
                 printw("You cannot enter as you aren't at a building");
            }
         }
+        else if(playerMove == FLY){
+            fly(this);
+            return 'F';
+        }
         else{
             char type = movePlayerInMap(playerMove,map);
+            
             if(type != 'I'){
                 return type;
             }
@@ -211,15 +219,21 @@ playerMoves_t getInput(NPCMapInfo mapInfo){
         case 't':
             listTrainers(mapInfo);
             break;
+        //Fly
+        case 'f':
+            chosenMove = FLY;
+            inputEnded = 1;
+            break;
         //Quit Game
         case 'q':
         case 'Q':
             chosenMove = QUIT;
             inputEnded = 1;
             break;
+        
         }
-    }
 
+    }
     return chosenMove;
 }
 
@@ -261,7 +275,7 @@ void listTrainers(NPCMapInfo mapInfo){
     //Gets location of all trainers from the location array add them to the list 
     for(int i=0; i < 21; i++){
         for(int j = 0; j < 80; j++){
-            if(mapInfo.charLocations[i][j].type != 'X'){
+            if(mapInfo.charLocations[i][j].type != 'X' && mapInfo.charLocations[i][j].type != '@'){
                 Point temp;
                 temp.rowNum = i;
                 temp.colNum = j;
@@ -309,7 +323,7 @@ void listTrainers(NPCMapInfo mapInfo){
                 horiDiff *= -1;
             }
 
-            printw("%c: %d %s %d %s ",currChar.type,vertDiff,vertStr,horiDiff,horiStr);
+            printw("%c: %d %s %d %s ",currChar.type,vertDiff,vertStr.c_str(),horiDiff,horiStr.c_str());
         }
     
         //Wait for player input
@@ -358,6 +372,30 @@ void displayPlayerMoveError(char moveType){
     clrtoeol();
 
     printw("You cannot move into a %s tile. Make a different move",moveStr.c_str());
+}
+
+void fly(Player* player){
+    //Display Error Message
+    ::move(0,0);
+    clrtoeol();
+    printw("Enter the coordinates you are flying to - Seperate the numbers with a space and press enter afterwards:");
+    
+    int flyRow = 0;
+    int flyCol = 0;
+
+    ::noraw();
+
+    scanw("%d %d",&flyRow,&flyCol);
+
+    ::raw();
+
+    flyRow += 200;
+    flyCol += 200;
+
+    //I'm sending the coords to fly to in the player's location attributes
+    //This is a really jankly way of doing it but its what im going with
+    player->setRowNum(flyRow);
+    player->setColNum(flyCol);
 }
 
 GameCharacter* Player::clone(){

@@ -14,7 +14,8 @@ typedef enum playerMoves{
     LEFT,
     REST,
     ENTER_BUILDING,
-    QUIT
+    QUIT,
+    FLY
 }playerMoves_t;
 
 
@@ -56,7 +57,7 @@ class Player : public GameCharacter
          * @return A pointer to the created copy
          */
         virtual GameCharacter* clone();
-
+        
 };
 
 

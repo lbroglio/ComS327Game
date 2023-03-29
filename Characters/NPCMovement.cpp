@@ -763,6 +763,32 @@ int checkPlayerByWater(GameCharacter player, mapTile_t map){
 int moveGameChar(GameCharacter* toMove, int time, GameCharacter* player, mapTile_t* map){
     //Checks if this npc has been defeated
     if(checkTrainerDefeated(toMove->getID(),map->mapInfo) == 1){
+        //Move off of a road
+        if(map->mapArr[toMove->getRowNum()][toMove->getColNum()] == '#' || map->mapArr[toMove->getRowNum()][toMove->getColNum()] == '='){
+            if((toMove->getRowNum() -1) > 0 && map->mapArr[(toMove->getRowNum() - 1)][toMove->getColNum()] != '#' && map->mapArr[(toMove->getRowNum() - 1)][toMove->getColNum()] != '='){
+                map->mapInfo.charLocations[toMove->getRowNum()][toMove->getColNum()] = GameCharacter();
+                toMove->setRowNum(toMove->getRowNum() -1);
+                map->mapInfo.charLocations[toMove->getRowNum()][toMove->getColNum()] = *toMove;
+
+            }            
+            else if(toMove->getColNum() -1 > 0 && map->mapArr[toMove->getRowNum()][toMove->getColNum() - 1] != '#' && map->mapArr[toMove->getRowNum()][toMove->getColNum() -1] != '='){
+                map->mapInfo.charLocations[toMove->getRowNum()][toMove->getColNum()] = GameCharacter();
+                toMove->setColNum(toMove->getColNum() -1);
+                map->mapInfo.charLocations[toMove->getRowNum()][toMove->getColNum()] = *toMove;
+
+            }
+            else if(toMove->getRowNum() + 1 < 20 && map->mapArr[toMove->getRowNum() + 1][toMove->getColNum()] != '#' && map->mapArr[toMove->getRowNum() + 1][toMove->getColNum()] != '='){
+                map->mapInfo.charLocations[toMove->getRowNum()][toMove->getColNum()] = GameCharacter();
+                toMove->setRowNum(toMove->getRowNum() + 1);
+                map->mapInfo.charLocations[toMove->getRowNum()][toMove->getColNum()] = *toMove;
+            }
+            else if(toMove->getColNum() + 1 < 80){
+                map->mapInfo.charLocations[toMove->getRowNum()][toMove->getColNum()] = GameCharacter();
+                toMove->setColNum(toMove->getColNum() + 1);
+                map->mapInfo.charLocations[toMove->getRowNum()][toMove->getColNum()] = *toMove;
+            }
+        }
+
         //Return a defeated flag
         return -2;
     }
@@ -826,8 +852,15 @@ int moveGameChar(GameCharacter* toMove, int time, GameCharacter* player, mapTile
             moveType = toMove->move(map);
             break;
     }
+
     if(moveType == 'Q'){
         return -1;
+    }
+    else if(moveType == ' '){
+        return -3;
+    }
+    else if(moveType == 'F'){
+        return -4;
     }
 
     //Set the cost for the move

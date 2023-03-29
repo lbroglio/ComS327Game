@@ -56,7 +56,7 @@ class Queue{
          * @param size The number of maximum entries for the queue
          */
         Queue(int size);
-
+            public:
         /**
          * @brief Destroy the Queue object
          * 

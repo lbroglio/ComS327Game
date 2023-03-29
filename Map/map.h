@@ -31,6 +31,10 @@ typedef struct mapTile{
     int rightEntLoc;
     /**The NPC info class for this map*/
     NPCMapInfo mapInfo;
+    /**Stores the current Queue for this map*/
+    Queue* eventManager;    
+    /** Stores the current time as of when the player last left this map*/
+    int savedTime;
     public:
         mapTile(){}
     

@@ -14,7 +14,7 @@
  * @param worldCol The column location in the worldMap Array
  * @return The newly created map tile
  */
-mapTile_t createMapTile(worldMap_t worldMap, int worldRow, int worldCol);
+mapTile_t createMapTile(WorldMap* worldMap, int worldRow, int worldCol);
 
 
 /**

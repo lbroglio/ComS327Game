@@ -4,21 +4,24 @@
 #include<string.h>
 #include<curses.h>
 #include<iostream>
-#include<fstream>
 #include"./Screen/screen.h"
 #include"./Map/map.h"
 #include"./Map/biome.h"
+#include"./Map/worldGeneration.h"
 #include"./Map/mapGeneration.h"
 #include"./Data-Structures/priorityQueue.h"
 #include"./Characters/gameCharacter.h"
 #include"./Characters/playerMovement.h"
 #include"./Characters/NPCMapInfo.h"
 
+//Declare World Map as Global
+ WorldMap worldMap = WorldMap();
 
 int main(int argc, char* argv[]){
-    srand(time(NULL));
     int numNPCs;
     terminalInit();
+
+    mapTile_t* map = (*(worldMap.worldArr + 200)) + 200;
 
 
     if(argc == 2){
@@ -27,31 +30,17 @@ int main(int argc, char* argv[]){
     else{
         numNPCs = (rand() %  4) + 9;
     }
+
     Queue eventManager = Queue(numNPCs + 1);
 
-    mapTile_t map = createMapTileIndependent();
 
-    std::ofstream myfile;
+    eventManager.addWithPriority(worldMap.player,1);
 
+    map->mapInfo = spawnNPCS(*map,numNPCs,&eventManager);
+    map->mapInfo.charLocations[worldMap.player->getRowNum()][worldMap.player->getColNum()] = *worldMap.player;
 
-    Point playerSpawn;
-    playerSpawn.colNum = ((map.biomeArr) + 1)->cenColNum;
-    playerSpawn.rowNum = ((map.biomeArr) + 1)->cenRowNum -1;
-
-    Player player = Player(playerSpawn);
-    eventManager.addWithPriority(&player,1);
-
-
-
-    map.mapInfo = spawnNPCS(map,numNPCs,&eventManager);
-    map.mapInfo.charLocations[player.getRowNum()][player.getColNum()] = player;
-
-    myfile.open ("log.txt", myfile.app);
-    myfile << numNPCs +1 << " -- " << eventManager.getSize()<< "\n";
-    myfile.close();
-
-    map.mapInfo.playerLocation.rowNum = -1;
-    map.mapInfo.playerLocation.colNum = -1;
+    map->mapInfo.playerLocation.rowNum = -1;
+    map->mapInfo.playerLocation.colNum = -1;
     int exitCom = 0;
 
 
@@ -63,16 +52,11 @@ int main(int argc, char* argv[]){
         GameCharacter* toMove = dynamic_cast<GameCharacter*>(temp);
 
 
-        myfile.open ("log.txt", myfile.app);
-        myfile << toMove->type << " -- " << toMove->getID() << " -- " << eventManager.getSize()<< "\n";
-        myfile.close();
-
-
         int moveCost;
-        moveCost = moveGameChar(toMove,time,&player,&map);
+        moveCost = moveGameChar(toMove,time,worldMap.player,map);
         
         if(toMove->type == '@'){
-            player = *(dynamic_cast<Player*>(toMove));
+            *worldMap.player = *(dynamic_cast<Player*>(toMove));
         }
 
         if(moveCost == -1){

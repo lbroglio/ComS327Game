@@ -2,31 +2,35 @@
 #define WORLDGEN_H
 
 #include"map.h"
+#include"../Characters/playerMovement.h"
 
 /**
  * @brief Wrapper struct for the array holding all the tiles in the world map
  * 
  */
-typedef struct worldMap{
+struct WorldMap{
+    Player* player;
     mapTile_t** worldArr;
     int placedArr[401][401];
+    /**
+     * @brief Creates a world map - Allocates all the memory for the tiles
+     * 
+     * @return The created worldMap
+     */
+    WorldMap();
 
-}worldMap_t;
+    /**
+     * @brief Destorys a world map - Dellocates the memory
+     * 
+     * @param toDestroy The world map to destroy
+     */
+    ~WorldMap();
 
 
-/**
- * @brief Creates a world map - Allocates all the memory for the tiles
- * 
- * @return The created worldMap
- */
-worldMap_t worldMapInit();
+};
 
-/**
- * @brief Destorys a world map - Dellocates the memory
- * 
- * @param toDestroy The world map to destroy
- */
-void worldMapDestroy(worldMap_t toDestroy);
+
+
 
 
 #endif

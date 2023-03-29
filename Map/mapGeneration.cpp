@@ -637,7 +637,7 @@ void addRoadSystem(mapTile_t* map){
     
 }
 
-mapTile_t createMapTile(worldMap_t worldMap, int worldRow, int worldCol){
+mapTile_t createMapTile(WorldMap* worldMap, int worldRow, int worldCol){
     
     //Randomly chooses what type of map this is. Grasslands maps are weighted slightly higher
     char mapType;
@@ -667,9 +667,9 @@ mapTile_t createMapTile(worldMap_t worldMap, int worldRow, int worldCol){
         topEnt = -1;
     }
     else{
-        placedInd = worldMap.placedArr[worldRow -1][worldCol];
+        placedInd = worldMap->placedArr[worldRow -1][worldCol];
         if(placedInd == 1){
-            neighbor = worldMap.worldArr[worldRow -1][worldCol];
+            neighbor = worldMap->worldArr[worldRow -1][worldCol];
             topEnt = neighbor.bottomEntLoc;
         }
         else{
@@ -681,9 +681,9 @@ mapTile_t createMapTile(worldMap_t worldMap, int worldRow, int worldCol){
         bottomEnt = -1;
     }
     else{
-        placedInd = worldMap.placedArr[worldRow + 1][worldCol];
+        placedInd = worldMap->placedArr[worldRow + 1][worldCol];
         if(placedInd == 1){
-            neighbor = worldMap.worldArr[worldRow + 1][worldCol];
+            neighbor = worldMap->worldArr[worldRow + 1][worldCol];
             bottomEnt = neighbor.topEntLoc;
         }
         else{
@@ -695,9 +695,9 @@ mapTile_t createMapTile(worldMap_t worldMap, int worldRow, int worldCol){
         leftEnt = -1;
     }
     else{
-        placedInd = worldMap.placedArr[worldRow][worldCol - 1];
+        placedInd = worldMap->placedArr[worldRow][worldCol - 1];
         if(placedInd == 1){
-            neighbor = worldMap.worldArr[worldRow][worldCol - 1];
+            neighbor = worldMap->worldArr[worldRow][worldCol - 1];
             leftEnt = neighbor.rightEntLoc;
         }
         else{
@@ -709,9 +709,9 @@ mapTile_t createMapTile(worldMap_t worldMap, int worldRow, int worldCol){
         rightEnt = -1;
     }
     else{
-         placedInd = worldMap.placedArr[worldRow][worldCol + 1];
+         placedInd = worldMap->placedArr[worldRow][worldCol + 1];
         if(placedInd == 1){
-            neighbor = worldMap.worldArr[worldRow][worldCol + 1];
+            neighbor = worldMap->worldArr[worldRow][worldCol + 1];
             rightEnt = neighbor.leftEntLoc;
         }
         else{

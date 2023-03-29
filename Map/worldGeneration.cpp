@@ -6,36 +6,46 @@
 #include"worldGeneration.h"
 
 
-
-worldMap_t worldMapInit(){
-    worldMap_t toReturn;
-
-    toReturn.worldArr = malloc(sizeof(mapTile_t*) * 401);
+WorldMap::WorldMap(){
+    srand(time(NULL));
+    worldArr = (mapTile_t**)malloc(sizeof(mapTile_t*) * 401);
 
     for(int i =0; i < 401; i++){
-        *(toReturn.worldArr + i) =  malloc(sizeof(mapTile_t) * 401);
+        *(worldArr + i) =  (mapTile_t*)malloc(sizeof(mapTile_t) * 401);
 
         for(int j =0; j < 401; j++){
-            toReturn.placedArr[i][j] = 0;
+            placedArr[i][j] = 0;
         }
     }
 
-    return toReturn;
+    worldArr[200][200] = createMapTile(this,200,200);
+    placedArr[200][200] = 1;
+
+    Point playerSpawn;
+    playerSpawn.colNum = ((worldArr[200][200].biomeArr) + 1)->cenColNum;
+    playerSpawn.rowNum = ((worldArr[200][200].biomeArr) + 1)->cenRowNum -1;
+
+    player = new Player(playerSpawn);
+
+
 }
 
 
-void worldMapDestroy(worldMap_t toDestroy){
+WorldMap::~WorldMap(){
+        delete player;
+
         for(int i =0; i < 401; i++){
-            free((toDestroy.worldArr + i));
+            free(worldArr[i]);
         }
-        free(toDestroy.worldArr);  
+        free(this->worldArr);  
 }
 
 
+/*
 int main (int argc, char** argv){
     srand(time(NULL));
     
-    worldMap_t worldMap = worldMapInit();
+   
 
     worldMap.worldArr[200][200] = createMapTile(worldMap,200,200);
     worldMap.placedArr[200][200] = 1;
@@ -90,3 +100,4 @@ int main (int argc, char** argv){
 
     return 0;
 }
+*/

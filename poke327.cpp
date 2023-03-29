@@ -4,7 +4,6 @@
 #include<string.h>
 #include<curses.h>
 #include<iostream>
-#include <fstream>
 #include"./Screen/screen.h"
 #include"./Map/map.h"
 #include"./Map/biome.h"
@@ -12,6 +11,7 @@
 #include"./Data-Structures/priorityQueue.h"
 #include"./Characters/gameCharacter.h"
 #include"./Characters/playerMovement.h"
+#include"./Characters/NPCMapInfo.h"
 
 
 int main(int argc, char* argv[]){
@@ -29,11 +29,6 @@ int main(int argc, char* argv[]){
     }
     Queue eventManager = Queue(numNPCs + 1);
 
-    std::ofstream myfile;
-    myfile.open ("example.txt");
-    myfile << "Reached\n";
-    myfile.close();
-
     mapTile_t map = createMapTileIndependent();
 
 
@@ -42,9 +37,6 @@ int main(int argc, char* argv[]){
     Point playerSpawn;
     playerSpawn.colNum = ((map.biomeArr) + 1)->cenColNum;
     playerSpawn.rowNum = ((map.biomeArr) + 1)->cenRowNum -1;
-
-
-
 
     GameCharacter player = GameCharacter(playerSpawn,'@',0,'#');
     eventManager.addWithPriority(&player,1);
@@ -69,12 +61,11 @@ int main(int argc, char* argv[]){
 
         if(toMove.type == '@'){
             //Player Movement
-            printMapWithChars(&map, mapInfo);
             moveCost = playerTurn(&toMove,map,&mapInfo);
             player = toMove;
         }
         else{
-            moveCost = moveNPC(&toMove,time,&player,map,&mapInfo);
+            moveCost = moveGameChar(&toMove,time,&player,map,&mapInfo);
         }
         if(moveCost == -1){
             exitCom = 1;

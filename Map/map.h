@@ -3,6 +3,7 @@
 
 #include"biome.h"
 #include"../Data-Structures/priorityQueue.h"
+#include"../Characters/NPCMapInfo.h"
 
 /**
  * @brief Holds the map tile.
@@ -27,7 +28,11 @@ typedef struct mapTile{
     int leftEntLoc;
     /**Location of the entrance/ exit on  the right*/
     int rightEntLoc;
+    /**The NPC info class for this map*/
+    NPCMapInfo mapInfo;
+    
 }mapTile_t;
+
 
 /**
  * @brief Stores a point on the map. Also used as unit vectors sometimes

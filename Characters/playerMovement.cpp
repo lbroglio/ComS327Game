@@ -3,29 +3,32 @@
 #include<string>
 #include "playerMovement.h"
 #include "gameCharacter.h"
+#include "NPCMapInfo.h"
 #include "../Map/map.h"
 #include "../Battles/battles.h"
+#include"../Screen.screen.h"
 
 //Function Prototypes
-playerMoves_t getInput(NPCMapInfo mapInfo);
+playerMoves_t getInput(mapTile_t map);
 int costOfPlayerMove(char moveType);
-int movePlayer(playerMoves_t playerMove, GameCharacter* player, mapTile_t map,NPCMapInfo* mapInfo);
 void displayPlayerMoveError(char moveType);
-void listTrainers(NPCMapInfo mapInfo);
+void listTrainers(mapTile_t map);
 void inBuilding();
 
-int playerTurn(GameCharacter* player, mapTile_t map,NPCMapInfo* mapInfo){
-    
+
+char Player::move(mapTile_t* map){
+    printMapWithChars(map,map->mapInfo);
+
     while(1 == 1){
         playerMoves_t playerMove = getInput(*mapInfo);
         if(playerMove == QUIT){
             return -1;
         }
         else if(playerMove == REST){ 
-            return costOfPlayerMove(map.mapArr[mapInfo->playerLocation.rowNum][mapInfo->playerLocation.colNum]);
+            return costOfPlayerMove(map->mapArr[rowNum][colNum]);
         }   
         else if(playerMove == ENTER_BUILDING){
-            if(map.mapArr[mapInfo->playerLocation.rowNum][mapInfo->playerLocation.colNum] == 'M' || map.mapArr[mapInfo->playerLocation.rowNum][mapInfo->playerLocation.colNum] == 'C'){
+            if(map->mapArr[rowNum][colNum] == 'M' || map->mapArr[rowNum][colNum] == 'C'){
                 inBuilding();
                 return 10;
             }
@@ -37,7 +40,7 @@ int playerTurn(GameCharacter* player, mapTile_t map,NPCMapInfo* mapInfo){
            }
         }
         else{
-            int cost = movePlayer(playerMove,player,map,mapInfo);
+            int cost = movePlayerInMap(playerMove,player,map,mapInfo);
             if(cost != -1){
                 return cost;
             }
@@ -45,43 +48,35 @@ int playerTurn(GameCharacter* player, mapTile_t map,NPCMapInfo* mapInfo){
     }
 }
 
-/**
- * @brief Moves the player character on the map based on user input
- * 
- * @param move The move to make
- * @param player The player struct
- * @param map The map to move on
- * @param mapInfo The maps corresponding info struct
- * @return The cost of the move
- */
-int movePlayer(playerMoves_t playerMove, GameCharacter* player, mapTile_t map,NPCMapInfo* mapInfo){
+
+char Player::movePlayerInMap(playerMoves_t playerMove,mapTile_t* map){
     Point newPos;
 
     switch (playerMove)
     {
     case UP_LEFT:
-        newPos = Point(player->rowNum -1,player->colNum -1);
+        newPos = Point(rowNum -1,colNum -1);
         break;
     case UP:
-        newPos = Point(player->rowNum -1,player->colNum);
+        newPos = Point(rowNum -1,colNum);
         break;
     case UP_RIGHT:
-        newPos = Point(player->rowNum -1,player->colNum +1);
+        newPos = Point(rowNum -1,colNum +1);
         break;
     case RIGHT:
-        newPos = Point(player->rowNum,player->colNum +1);
+        newPos = Point(rowNum,colNum +1);
         break;
     case DOWN_RIGHT:
-        newPos = Point(player->rowNum +1,player->colNum +1);
+        newPos = Point(rowNum +1,colNum +1);
         break;
     case DOWN:
-        newPos = Point(player->rowNum +1,player->colNum);
+        newPos = Point(rowNum +1,colNum);
         break;
     case DOWN_LEFT:
-        newPos = Point(player->rowNum +1,player->colNum -1);
+        newPos = Point(rowNum +1,colNum -1);mapInfo
         break;
     case LEFT:
-        newPos = Point(player->rowNum,player->colNum -1);
+        newPos = Point(rowNum,colNum -1);
         break;
     default:
         break;
@@ -93,28 +88,28 @@ int movePlayer(playerMoves_t playerMove, GameCharacter* player, mapTile_t map,NP
     std::string illegalChars = "%%\"~";
 
     //If theres a trainer at the location to move to
-    if(mapInfo->charLocations[newPos.rowNum][newPos.colNum].type != 'X'){
-        if(checkTrainerDefeated(mapInfo->charLocations[newPos.rowNum][newPos.colNum].id,*mapInfo) ==  0){
-             trainerBattle(mapInfo->charLocations[newPos.rowNum][newPos.colNum],mapInfo);
+    if(map->mapInfo.charLocations[newPos.rowNum][newPos.colNum].type != 'X'){
+        if(checkTrainerDefeated(map->mapInfo.charLocations[newPos.rowNum][newPos.colNum].id,map->mapInfo) ==  0){
+             trainerBattle(map->mapInfo.charLocations[newPos.rowNum][newPos.colNum],map);
         }
-        return costOfPlayerMove(map.mapArr[newPos.rowNum][newPos.colNum]);
+        return costOfPlayerMove(map->mapArr[newPos.rowNum][newPos.colNum]);
     }
     //If the move is illegal
-    else if(illegalChars.find(map.mapArr[newPos.rowNum][newPos.colNum]) != std::string::npos){
-        displayPlayerMoveError(map.mapArr[newPos.rowNum][newPos.colNum]);
+    else if(illegalChars.find(map->mapArr[newPos.rowNum][newPos.colNum]) != std::string::npos){
+        displayPlayerMoveError(map->mapArr[newPos.rowNum][newPos.colNum]);
         return -1;
     }
 
     //Hold player location
-    Point temp = Point(player->rowNum,player->colNum);
+    Point temp = Point(rowNum,colNum);
 
-    //Changes the player's location within its struct
-    player->rowNum = newPos.rowNum; 
-    player->colNum = newPos.colNum;
+    //Changes the player's location within its object
+    rowNum = newPos.rowNum; 
+    colNum = newPos.colNum;
 
     //Moves the player inside the character location array
-    mapInfo->charLocations[temp.rowNum][temp.colNum] = GameCharacter();
-    mapInfo->charLocations[newPos.rowNum][newPos.colNum] = *player;
+    map->mapInfo.charLocations[temp.rowNum][temp.colNum] = GameCharacter();
+    map->mapInfo.charLocations[newPos.rowNum][newPos.colNum] = *player;
 
     return costOfPlayerMove(map.mapArr[newPos.rowNum][newPos.colNum]);
 }

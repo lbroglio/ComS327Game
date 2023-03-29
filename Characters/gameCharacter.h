@@ -5,91 +5,321 @@
 #include"../Data-Structures/priorityQueue.h"
 
 /**
- * @brief Stores information about the a character
+ * @brief Stores information about the a character. 
+ * A default base GameCharacter is a sentry. 
  */
-struct GameCharacter : public IDable{
-    /** Row this character is in*/
-    int rowNum;
-    /** Columns this character is in*/
-    int colNum;
-    /** Char represneting what type of NPC (or player character) this character is*/
-    char type;
-    /** Unique id used for indexing this character*/
-    int id;
-    /** Stores the current direction this character is moving in as a unit vector. Not used by all character types */
-    Point direction;
-    /** Stores the biome this character spawned in. Set for all only used by Wanderer*/
-    char spawnBiome;
-    /**
-     * @brief Creates a new character struct
-     * 
-     * @param startLoc point the character is at
-     * @param type The type of character it is
-     * @param id The id to assign it
-     * @param spawnBiome The biome this character spawns in
-     */
-    GameCharacter(Point startLoc, char type, int id, char spawnBiome);
-    /**
-     * @brief Default Construcotr - returns the 'Empty' character
-     * 
-     * 
-     */
-    GameCharacter();
+class GameCharacter : public IDable{
+    protected:
+        /** Row this character is in*/
+        int rowNum;
+        /** Columns this character is in*/
+        int colNum;
+        /** Unique id used for indexing this character*/
+        int id;
+    public:
+        /** Char represneting what type of NPC (or player character) this character is*/
+        char type;
 
-    /**
-     * @brief Creates a copy of this Character
-     * Include memory allocation returned to the user 
-     * 
-     * @return A pointer to the created copy
-     */
-    GameCharacter* clone();
+        /**
+         * @brief Creates a new character struct
+         * 
+         * @param startLoc point the character is at
+         * @param type The type of character it is
+         * @param id The id to assign it
+         */
+        GameCharacter(Point startLoc, char type, int id);
+        /**
+         * @brief Default Constructor - returns the 'Empty' character
+         * 
+         * 
+         */
+        GameCharacter();
 
-    /**
-     * @brief Returns the ID of a given character 
-     * 
-     * @return The ID
-     */
-    int getID(){return id;};
+        /**
+         * @brief Destroy the Game Character object
+         * 
+         */
+        virtual ~GameCharacter(){}
+
+        /**
+         * @brief Creates a copy of this Character
+         * Includes memory allocation returned to the user 
+         * 
+         * @return A pointer to the created copy
+         */
+        virtual GameCharacter* clone();
+
+        /**
+         * @brief Returns the ID of a given character 
+         * 
+         * @return The ID
+         */
+        int getID(){return id;};
+        
+        /**
+         * @brief Gets the row this character is in
+         * 
+         * @return The row number
+         */
+        int getRowNum(){return rowNum;}
+
+        /**
+         * @brief Gets the column this character is in
+         * 
+         * @return The column number
+         */
+        int getColNum(){return colNum;}
+
+        /**
+         * @brief Performs the move action for this character
+         * 
+         * @param map The map the character is on 
+         * @return char 
+         */
+        virtual char move(mapTile_t* map){return '%';}
+        
 };
-
 
 /**
- * @brief Stores information about a map tile used by npcs
+ * @brief A Wayfinder is a character which moves around the map semi randomly according to preset rules 
  * 
  */
-struct NPCMapInfo{
-    /** Point on map representing last know location of the player on this map*/
-    Point playerLocation;
-    /** Stores the results of the hiker's pathfinding algorithm*/
-    int hikerDist[21][80];
-    /** Stores the results of the rival's pathfinding algorithm*/
-    int rivalDist[21][80];
-    /** Stores the location of the NPCs on the map X if none is there*/
-    GameCharacter charLocations[21][80];
-    /**Indicator of whether or not the player is by water. 1 = true, 0  = false*/
-    int playerByWater;
-    /**Stores the number of NPCs on this map*/
-    int numNPCs;
-    /**Stores the ids of trainers who have been defeated*/
-    int* defTrainers;
-    /**Stores the number of defeated trainer*/
-    int numDef;
+class Wayfinder : public GameCharacter{
+    protected:
+        /** Stores the current direction this character is moving in as a unit vector.*/
+        Point direction;
+    public:
+        Wayfinder(Point startLoc, char type, int id) : GameCharacter(startLoc,type,id);
+        /**
+         * @brief Virutal destructor to Destroy the Wayfinder object
+         * 
+         */
+        virtual ~Wayfinder(){}
 
-    /**
-     * @brief Creates a new npcMapInfpo struct
-     * 
-     * @param numNPCs The number of NPCs on this map
-     * @return The created struct
-     */
-    NPCMapInfo(int numNPCs);
+        /**
+         * @brief Moves this character. Uses character type to determine the next legal move. Also handles engaging player battles. 
+         * 
+         * @param map The map this character is on
+         * @return Char for the type of move (What biome) 
+         */
+        char move(mapTile_t* map);
 
-    /**
-     * @brief Destoys the given nMapInfo struct and frees its allocated memory
-     * 
-     */
-    //~NPCMapInfo();
+        /**
+         * @brief Handles the logic for determining if the character can continue moving in the current direction. If not finds the next desirable direction
+         * 
+         * @param map The map this character is on
+         * @return The direction to move in. 
+         */
+        virtual Point checkDirection(mapTile_t* map) = 0;
 
+        /**
+         * @brief Creates a copy of this Character
+         * Includes memory allocation returned to the user 
+         * 
+         * @return A pointer to the created copy
+         */
+        virtual GameCharacter* clone();
 };
+
+/**
+ * @brief A Pacer is a character which moves forwards until can't anymore and then turns around
+ * 
+ */
+class Pacer : public Wayfinder
+{
+    public:
+        /**
+         * @brief Construct a new Pacer object
+         * 
+         * @param startLoc The location this pacer spawned at
+         * @param id The unique ID for this character
+         * @param direction The direction this character will start moving in
+         */
+        Pacer(Point startLoc, int id) :  Wayfinder(startLoc,'p', id) {}
+
+        /**
+         * @brief Virutal destructor to Destroy the Pacer object
+         * 
+         */
+        virtual ~Pacer(){}
+
+        /**
+         * @brief Handles the logic for determining if the character can continue moving in the current direction. If not finds the next desirable direction
+         * 
+         * @param map The map this character is on
+         * @return The direction to move in. 
+         */
+        Point checkDirection(mapTile_t* map);
+
+        GameCharacter* clone();
+};
+
+/**
+ * @brief A Wanderer is a character which moves around and randoml;y changes direction when it find terrain it can't cross. It can't leave its spawn biome
+ * 
+ */
+class Wanderer : public Wayfinder
+{   
+    private:
+        /** Stores the biome this character spawned in.*/
+        char spawnBiome;
+    protected:
+        /**
+         * @brief Recusive call for this Characters direction function
+         * 
+         * @param map The map this chracter is on
+         * @param moveOptions Array of possible moves this character could make (As unit vecotrs)
+         * @param numOptions The length of move options
+         * @return The chosen move
+         */
+        virtual Point checkDirectionRec(mapTile_t* map, Point moveOptions[], int numOptions);
+
+    public:
+        /**
+         * @brief Construct a new Wanderer object
+         * 
+         * @param startLoc The location this Wanderer spawned at
+         * @param id The unique ID for this character
+         * @param direction The direction this character will start moving in
+         */
+        Wanderer(Point startLoc, int id,char spawnBiome) :  Wayfinder(startLoc,'w', id){this->spawnBiome = spawnBiome}
+        /**
+         * @brief Virutal destructor to Destroy the Wanderer object
+         * 
+         */
+        virtual ~Wanderer(){}
+
+        /**
+         * @brief Handles the logic for determining if the character can continue moving in the current direction. If not finds the next desirable direction
+         * 
+         * @param map The map this character is on
+         * @return The direction to move in. 
+         */
+         Point checkDirection(mapTile_t* map);
+
+         GameCharacter* clone();
+};
+
+/**
+ * @brief An Explorer is a character which moves around and randomly changes direction when it find terrain it can't cross.
+ * 
+ */
+class Explorer : public Wanderer
+{   
+    private:
+        /**
+         * @brief Recusive call for this Characters direction function
+         * 
+         * @param map The map this chracter is on
+         * @param moveOptions Array of possible moves this character could make (As unit vecotrs)
+         * @param numOptions The length of move options
+         * @return The chosen move
+         */
+         Point checkDirectionRec(mapTile_t* map,Point moveOptions[], int numOptions);
+
+    public:
+        /**
+         * @brief Construct a new Explorer object
+         * 
+         * @param startLoc The location this Explorer spawned at
+         * @param id The unique ID for this character
+         * @param direction The direction this character will start moving in
+         */
+        Explorer(Point startLoc, int id) :  Wayfinder(startLoc,'e', id){}
+        /**
+         * @brief Virutal destructor to Destroy the Explorer object
+         * 
+         */
+        virtual ~Explorer(){}
+
+        GameCharacter* clone();
+};
+
+/**
+ * @brief A Swimmer is a character which moves around and randomly changes direction when it find terrain it can't cross but it can't move out of the water
+ */
+class Swimmer : public Wayfinder
+{   
+    private:
+        /**
+         * @brief Recusive call for this Characters direction function only applies in wander mode
+         * 
+         * @param map The map this chracter is on
+         * @param moveOptions Array of possible moves this character could make (As unit vecotrs)
+         * @param numOptions The length of move options
+         * @return The chosen move
+         */
+         Point checkDirectionRec(mapTile_t* map,Point moveOptions[], int numOptions);
+        
+        /**
+         * @brief Moves the swimmer towards the player. Applies when in charge mod
+         * 
+         * @param map The map this chracter is on
+         * @return The chosen move 
+         */
+         Point checkDirectionCharge(mapTile_t* map);
+
+    public:
+        /**
+         * @brief Construct a new Explorer object
+         * 
+         * @param startLoc The location this Explorer spawned at
+         * @param id The unique ID for this character
+         * @param direction The direction this character will start moving in
+         */
+        Swimmer(Point startLoc, int id) :  Wayfinder(startLoc,'m', id){}
+        /**
+         * @brief Virutal destructor to Destroy the Swimmer object
+         * 
+         */
+        virtual ~Swimmer(){}
+        /**
+         * @brief Handles the logic for determining if the character can continue moving in the current direction. If not finds the next desirable direction
+         * 
+         * @param map The map this character is on
+         * @return The direction to move in. 
+         */
+        Point checkDirection(mapTile_t* map);
+
+        GameCharacter* clone();
+};
+
+/***
+ * @brief A Pathfinder is a character which follows the optimum path to reach the player
+ * 
+ */
+class Pathfinder : public GameCharacter
+{
+    private:
+        //NOTE TO SELF MAYBE REDO THIS WITH VECTOR LATER ***************
+        /**
+         * @brief Gets all possible moves a Pathfinder Character could make and stores them in an array sorted by distance
+         * 
+         * @param mapInfo The map the NPC is on 
+         * @param possible_moves The array to store the possible moves in
+         * @return The number of possible moves
+         */
+        int getPossibleMoves(mapTile_t map, Point* possibleMoves);
+    public:
+        Pathfinder(Point startLoc, char type, int id) : GameCharacter(startLoc,type,id){}
+        /**
+         * @brief Virutal destructor to Destroy the Pathfinder object
+         * 
+         */
+        virtual ~Pathfinder(){}
+
+        /**
+         * @brief Moves this character. Uses character type to determine the next legal move. Also handles engaging player battles. 
+         * 
+         * @param map The map this character is on
+         * @return Char for the type of move (What biome) 
+         */
+        char move(mapTile_t* map);
+
+        
+};
+
+
 
 
 /**
@@ -103,7 +333,7 @@ struct NPCMapInfo{
  * @return The cost of the move the npc made
  */
 
-int moveNPC(GameCharacter* toMove, int time, GameCharacter* player, mapTile_t map, NPCMapInfo* mapInfo);
+int moveGameChar(GameCharacter* toMove, int time, GameCharacter* player, mapTile_t map, NPCMapInfo* mapInfo);
 
 
 /**

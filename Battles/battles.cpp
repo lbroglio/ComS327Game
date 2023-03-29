@@ -1,10 +1,10 @@
 #include<curses.h>
 #include"../Characters/gameCharacter.h"
 
-void trainerBattle(GameCharacter enemyTrainer,NPCMapInfo* mapInfo){
+void trainerBattle(GameCharacter enemyTrainer,mapTile_t* map){
     //Defeat Trainer
-    mapInfo->defTrainers[mapInfo->numDef] = enemyTrainer.id;
-    mapInfo->numDef += 1;
+    map->mapInfo->defTrainers[mapInfo->numDef] = enemyTrainer.id;
+    map->mapInfo->numDef += 1;
 
     //Display Message
     move(0,0);

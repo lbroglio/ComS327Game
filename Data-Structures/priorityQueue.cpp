@@ -5,6 +5,8 @@
 #include"../Map/map.h"
 
 
+//HEAP METHODS
+
 void swap(Queue* s, int x, int y){
     QueueEntry xEntry = s->heapArr[x];
     QueueEntry yEntry = s->heapArr[y];
@@ -86,6 +88,9 @@ void percolateDown(Queue* s, int currentLoc){
 
 }
 
+
+//CODE FOR QUEUE
+
 Queue::Queue(int size){
     heapArr = (QueueEntry*)malloc(sizeof(QueueEntry) * size);
     locArr = (int*)malloc(sizeof(int) * size);
@@ -98,15 +103,6 @@ Queue::Queue(int size){
         locArr[i] = -1;
     }
     this->size =0;
-}
-
-
-QueueEntry::QueueEntry(IDable* data, int priority){
-    //this->data = (IDable*) malloc(sizeof(*data)); 
-    this->data = data->clone();
-    this->id = data->getID();
-    this->priority = priority;
-
 }
 
 /*
@@ -199,14 +195,15 @@ Queue::~Queue(){
     size = 0;
 }
 
+//CODE FOR QUEUE ENTRY
 
-/*
- QueueEntry QueueEntry::operator=(const QueueEntry &p){
-    QueueEntry temp = QueueEntry(p.data, p.priority);
 
-    return temp;
-    
- }
- */
-IDable::~IDable(){}
+QueueEntry::QueueEntry(IDable* data, int priority){
+    //this->data = (IDable*) malloc(sizeof(*data)); 
+    this->data = data->clone();
+    this->id = data->getID();
+    this->priority = priority;
+
+}
+
 

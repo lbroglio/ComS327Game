@@ -11,7 +11,7 @@ class IDable{
         /**Creates a clone of the IDable object*/
         virtual IDable* clone() = 0;
         /**Virtual destructor for IDable*/
-        virtual ~IDable();
+        virtual ~IDable(){}
 };
 
 

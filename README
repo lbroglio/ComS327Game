@@ -1,23 +1,16 @@
-This program adds player movement and related interactions to the game.
+The program has now been converted to C++
 
-Inputs for player movement:
-    7 or y - Move to upper left
-    8 or k - Move up
-    9 or u - Move to upper right
-    6 or l - Move right.
-    3 or n - Move to lower right.
-    2 or j - Move down.
-    1 or b - Move to tower left.
-    4 or h - Move left
-    > - Enter a building
-        You will be presented with dialogue saying you are in a building 
-        Enter < to leave
-    5 or space or . - rest (Don't move)
-    t - Display a list of trainers on the map, 
-        Use Up and Down Arrow to switch pages
-        Escape return control
-    Q  - Quit the game. 
+structs have been converted to class style which have attached methods, Constructors, and destructors
 
-Entering an impossible move will result in a warning and no change
 
-When a player runs into a trainer or vice-versa a trainer battle happens  The only option for this is to leave with Esc
+The biggest changes are that the program now uses polymorphism in place of void pointers and that the different types of characters are derived class of GameCharacters.
+
+Moving between maps is also possible in the main build now
+
+Stepping into a gate will send you to the adjacent map tile
+
+There is also a new fly command 
+
+Pressing 'f' on the players turn will allow you to enter in two numbers seperated by a space. If you then press enter you will be sent to the map tile at that location. (The numbers you enter will not be displayed)
+    Format - x x 
+

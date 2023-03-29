@@ -1,3 +1,81 @@
+commit c308f55b8bb8714b66f4ed37e002a1a1147d6c5e
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Mar 29 18:35:11 2023 -0500
+
+    1.06 ready to submit (Barring log and readme)
+
+commit f67bd18fc0bb5acbc7b7535785b485fc4f16b56b
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Mar 29 13:40:16 2023 -0500
+
+    Started implementing moving map to map also cleaned junk files
+
+commit ca06f4d67b91746bafe77a36dbe4ad5ca7ab2ed3
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Mar 29 11:52:06 2023 -0500
+
+    Debuggging - This has a ton of junk files I need to clear out - Also reminder to remove  the file debug code from main
+
+commit 660b1b7243c156f98fe38aa983815a74c03497af
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Mar 29 02:15:21 2023 -0500
+
+    Debugging
+
+commit a4f5498cf9b00ae4e2dbc96f45d71131e2355aea
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Mar 29 00:04:20 2023 -0500
+
+    Seperate pointed into its own files for dependancy reasons
+
+commit 210fc5896b8cca06db8a1ae7e3958adf4b094b0b
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Tue Mar 28 23:32:49 2023 -0500
+
+    Refactored the GameCharacter types to be Derived Classes from the GameChracter class. Included significant rewrite of NPCMovement.cpp took the oppurtunity to organize the code in there
+
+commit 775e398a391b72aeef9fbbc3bd3db4244fe992bc
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Tue Mar 28 15:17:44 2023 -0500
+
+    Removed some test files which got past me
+
+commit f802253c828dbafe20d97f2e664fac0945303dbf
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Tue Mar 28 15:17:22 2023 -0500
+
+    Remodeled quue bug fixed- Program is working in c++
+
+commit ce92b5700fa2e59cb1b51d5c8ca1efc05eeb74f7
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Sat Mar 25 20:28:09 2023 -0500
+
+    Cleaned up most of the compiler errors but then had to divert to redesigning the priority to work when IDable is abstract. In the middle of implementing the changes
+
+commit c9c9e01e7f3c091d11ce897d13854d9ab4e632ca
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Sat Mar 25 18:43:10 2023 -0500
+
+    Changed usage of prioirty queue to work with new polymorphism method. Also started changing type names
+
+commit 1099a40eb77d0e9df5270fda1e9078e84822ea3a
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Fri Mar 24 16:20:14 2023 -0500
+
+    Converted ther priority queue to an object which uses polymorphism instead of generic pointers
+
+commit 832de07a03e7d05de8b944130d2e9b8c5b12bda5
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Fri Mar 24 15:05:16 2023 -0500
+
+    Started moving to c++ - Changed file names
+
+commit 30bd7483790e4a821e99c2c89a9b37281032d422
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Mar 22 17:15:39 2023 -0500
+
+    CHANGELOG
+
 commit 1cf0d3f8d1229f1ec0079d1f8e5f680a614b0422
 Author: lbroglio <lbroglio@iastate.edu>
 Date:   Wed Mar 22 17:14:59 2023 -0500

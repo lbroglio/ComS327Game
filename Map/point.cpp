@@ -1,3 +1,5 @@
+#include"point.h"
+
 Point::Point(int row, int col){
     this->rowNum = row;
     this->colNum = col;

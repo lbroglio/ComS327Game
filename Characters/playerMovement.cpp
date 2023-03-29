@@ -6,21 +6,21 @@
 #include "NPCMapInfo.h"
 #include "../Map/map.h"
 #include "../Battles/battles.h"
-#include"../Screen.screen.h"
+#include"../Screen/screen.h"
 
 //Function Prototypes
-playerMoves_t getInput(mapTile_t map);
+playerMoves_t getInput(NPCMapInfo mapInfo);
 int costOfPlayerMove(char moveType);
 void displayPlayerMoveError(char moveType);
-void listTrainers(mapTile_t map);
+void listTrainers(NPCMapInfo mapInfo);
 void inBuilding();
 
 
 char Player::move(mapTile_t* map){
-    printMapWithChars(map,map->mapInfo);
+
 
     while(1 == 1){
-        playerMoves_t playerMove = getInput(*mapInfo);
+        playerMoves_t playerMove = getInput(map->mapInfo);
         if(playerMove == QUIT){
             return -1;
         }
@@ -34,13 +34,13 @@ char Player::move(mapTile_t* map){
             }
            else{
                //Display Error Message
-                move(0,0);
+                ::move(0,0);
                 clrtoeol();
                 printw("You cannot enter as you aren't at a building");
            }
         }
         else{
-            int cost = movePlayerInMap(playerMove,player,map,mapInfo);
+            int cost = movePlayerInMap(playerMove,map);
             if(cost != -1){
                 return cost;
             }
@@ -73,7 +73,7 @@ char Player::movePlayerInMap(playerMoves_t playerMove,mapTile_t* map){
         newPos = Point(rowNum +1,colNum);
         break;
     case DOWN_LEFT:
-        newPos = Point(rowNum +1,colNum -1);mapInfo
+        newPos = Point(rowNum +1,colNum -1);
         break;
     case LEFT:
         newPos = Point(rowNum,colNum -1);
@@ -90,7 +90,7 @@ char Player::movePlayerInMap(playerMoves_t playerMove,mapTile_t* map){
     //If theres a trainer at the location to move to
     if(map->mapInfo.charLocations[newPos.rowNum][newPos.colNum].type != 'X'){
         if(checkTrainerDefeated(map->mapInfo.charLocations[newPos.rowNum][newPos.colNum].id,map->mapInfo) ==  0){
-             trainerBattle(map->mapInfo.charLocations[newPos.rowNum][newPos.colNum],map);
+             trainerBattle(map->mapInfo.charLocations[newPos.rowNum][newPos.colNum].id,map);
         }
         return costOfPlayerMove(map->mapArr[newPos.rowNum][newPos.colNum]);
     }
@@ -109,9 +109,9 @@ char Player::movePlayerInMap(playerMoves_t playerMove,mapTile_t* map){
 
     //Moves the player inside the character location array
     map->mapInfo.charLocations[temp.rowNum][temp.colNum] = GameCharacter();
-    map->mapInfo.charLocations[newPos.rowNum][newPos.colNum] = *player;
+    map->mapInfo.charLocations[newPos.rowNum][newPos.colNum] = *this;
 
-    return costOfPlayerMove(map.mapArr[newPos.rowNum][newPos.colNum]);
+    return costOfPlayerMove(map->mapArr[newPos.rowNum][newPos.colNum]);
 }
 
 /**
@@ -265,7 +265,7 @@ void listTrainers(NPCMapInfo mapInfo){
                 temp.rowNum = i;
                 temp.colNum = j;
 
-                NPCList[placeTracker] = GameCharacter(temp,mapInfo.charLocations[i][j].type,0,'.');
+                NPCList[placeTracker] = GameCharacter(temp,mapInfo.charLocations[i][j].type,0);
 
                 placeTracker++;
             }
@@ -290,8 +290,8 @@ void listTrainers(NPCMapInfo mapInfo){
 
             //Set up relative location
             //Gets the location difference for each direction
-            int vertDiff = mapInfo.playerLocation.rowNum - currChar.rowNum;
-            int horiDiff = mapInfo.playerLocation.colNum - currChar.colNum;
+            int vertDiff = mapInfo.playerLocation.rowNum - currChar.getRowNum();
+            int horiDiff = mapInfo.playerLocation.colNum - currChar.getColNum();
 
             //Setuip std::strings to hold the cardinal directions
             std::string vertStr = "South";
@@ -357,4 +357,9 @@ void displayPlayerMoveError(char moveType){
     clrtoeol();
 
     printw("You cannot move into a %s tile. Make a different move",moveStr.c_str());
+}
+
+GameCharacter* Player::clone(){
+    Player* temp = new Player(Point(this->rowNum,this->colNum));
+    return temp;
 }

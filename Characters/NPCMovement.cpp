@@ -10,6 +10,7 @@
 #include"gameCharacter.h"
 #include"NPCMapInfo.h"
 #include"../Screen/screen.h"
+#include"playerMovement.h"
 
 //CODE FOR WAYFINDERS ---------------------------------------------------
 
@@ -105,7 +106,6 @@ Point Wanderer::checkDirection(mapTile_t* map)
 {
     //Stores the possible moves for the characters
     Point moveOptions[8] = {Point(-1,0),Point(-1,1),Point(0,1),Point(1,1),Point(1,0),Point(1,-1),Point(0,-1),Point(-1,-1)};
-    int numOptions = 8;
 
     return checkDirectionRec(map,moveOptions,8);
 }
@@ -175,13 +175,22 @@ Point Wanderer::checkDirectionRec(mapTile_t* map, Point moveOptions[], int numOp
 }
 
 GameCharacter* Wanderer::clone(){
-    Wanderer* temp = new Wanderer(Point(this->rowNum,this->colNum),this->id);
+    Wanderer* temp = new Wanderer(Point(this->rowNum,this->colNum),this->spawnBiome,this->id);
     temp->direction = this->direction;
     temp->spawnBiome = this->spawnBiome;
     return temp;
 }
 
 //CODE FOR EXPLORERS ---------------------------------------------------
+
+Point Explorer::checkDirection(mapTile_t* map)
+{
+    //Stores the possible moves for the characters
+    Point moveOptions[8] = {Point(-1,0),Point(-1,1),Point(0,1),Point(1,1),Point(1,0),Point(1,-1),Point(0,-1),Point(-1,-1)};
+
+    return checkDirectionRec(map,moveOptions,8);
+}
+
 Point Explorer::checkDirectionRec(mapTile_t* map, Point moveOptions[], int numOptions){
     Point nextSpace;
 
@@ -259,7 +268,6 @@ Point Swimmer::checkDirection(mapTile_t* map)
     if(map->mapInfo.playerByWater == 0){
         //Stores the possible moves for the characters
         Point moveOptions[8] = {Point(-1,0),Point(-1,1),Point(0,1),Point(1,1),Point(1,0),Point(1,-1),Point(0,-1),Point(-1,-1)};
-        int numOptions = 8;
 
         return checkDirectionRec(map,moveOptions,8);
     }
@@ -322,17 +330,17 @@ Point Swimmer::checkDirectionRec(mapTile_t* map,Point moveOptions[], int numOpti
 Point Swimmer::checkDirectionCharge(mapTile_t* map){
     Point nextSpace;
     std::string illegalChars = "#\"%%.: ";
-    this->direction.rowNum = (map->mapInfo.playerLocation.rowNum - this->rowNum ) / abs(mapInfo.playerLocation.rowNum - this->rowNum );
-    this->direction.colNum = (map->mapInfo.playerLocation.colNum - this->colNum ) / abs(mapInfo.playerLocation.colNum - this->colNum );
+    this->direction.rowNum = (map->mapInfo.playerLocation.rowNum - this->rowNum ) / abs(map->mapInfo.playerLocation.rowNum - this->rowNum );
+    this->direction.colNum = (map->mapInfo.playerLocation.colNum - this->colNum ) / abs(map->mapInfo.playerLocation.colNum - this->colNum );
 
     //If the swimmer can move in the direction of the player
-    if(illegalChars.find(map->mapArr[this->rowNum + (this->direction.rowNum)][this->colNum + (this->direction.colNum)]) == std::string::npos && mapInfo.charLocations[this->rowNum + (this->direction.rowNum)][this->colNum + (this->direction.colNum)].type == 'X'){
+    if(illegalChars.find(map->mapArr[this->rowNum + (this->direction.rowNum)][this->colNum + (this->direction.colNum)]) == std::string::npos && map->mapInfo.charLocations[this->rowNum + (this->direction.rowNum)][this->colNum + (this->direction.colNum)].type == 'X'){
         //Updates Next Space
         nextSpace.rowNum = this->rowNum + (this->direction.rowNum);
         nextSpace.colNum = this->colNum + (this->direction.colNum);
     }
     //Checks if the square is occupied by the player
-    else if(mapInfo.charLocations[this->rowNum + (this->direction.rowNum)][this->colNum + (this->direction.colNum)].type == '@'){
+    else if(map->mapInfo.charLocations[this->rowNum + (this->direction.rowNum)][this->colNum + (this->direction.colNum)].type == '@'){
         //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
         //Sets the next space to an impossible space as a flag for the trainer battle
         nextSpace.rowNum = -2;
@@ -707,7 +715,7 @@ char Pathfinder::move(mapTile_t* map){
         //Checks if the square is occupied by the player
         else if(map->mapInfo.charLocations[currBestMove.rowNum][currBestMove.colNum].type == '@'){
             printMapWithChars(map,map->mapInfo);
-            trainerBattle(*this,map->mapInfo);
+            trainerBattle(*this,map);
             //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
             //Returns the current space
             return map->mapArr[this->rowNum][this->colNum];        
@@ -735,32 +743,89 @@ char Pathfinder::move(mapTile_t* map){
     return map->mapArr[bestMove.rowNum][bestMove.colNum];    
 }
 
+GameCharacter* Pathfinder::clone(){
+    Pathfinder* temp = new Pathfinder(Point(this->rowNum,this->colNum),this->type,this->id);
+    return temp;
+}
+
+
+
+int checkPlayerByWater(GameCharacter player, mapTile_t map){
+    //Checks all adjacent squars
+    if(map.mapArr[player.getRowNum()][player.getColNum()] == '~' || map.mapArr[player.getRowNum() ][player.getColNum()] == '=' || map.mapArr[player.getRowNum() - 1][player.getColNum()] == '~' || map.mapArr[player.getRowNum() - 1][player.getColNum()] == '=' || map.mapArr[player.getRowNum() + 1][player.getColNum()] == '~' || map.mapArr[player.getRowNum() + 1][player.getColNum()] == '=' || map.mapArr[player.getRowNum()][player.getColNum() - 1] == '~' || map.mapArr[player.getRowNum()][player.getColNum() - 1] == '=' || map.mapArr[player.getRowNum() ][player.getColNum() + 1] == '~' || map.mapArr[player.getRowNum()][player.getColNum() + 1] == '='){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
 
 int moveGameChar(GameCharacter* toMove, int time, GameCharacter* player, mapTile_t* map){
     //Checks if this npc has been defeated
-    if(checkTrainerDefeated(toMove->id,map->mapInfo) == 1){
+    if(checkTrainerDefeated(toMove->getID(),map->mapInfo) == 1){
         //Return a defeated flag
         return -2;
     }
     //If the player has moved
-    if(mapInfo->playerLocation.rowNum != player->getRowNum() || mapInfo->playerLocation.colNum != player->getColNum()){ 
+    if(map->mapInfo.playerLocation.rowNum != player->getRowNum() || map->mapInfo.playerLocation.colNum != player->getColNum()){ 
         //printf("HERE");
         //Redraw pathfinding maps
-        dijkstraPathfindHiker(*map,*(player),mapInfo->hikerDist);
-        dijkstraPathfindRival(*map,*(player),mapInfo->rivalDist);
+        dijkstraPathfindHiker(*map,*(player),map->mapInfo.hikerDist);
+        dijkstraPathfindRival(*map,*(player),map->mapInfo.rivalDist);
 
         //Change last known player location
-        mapInfo->playerLocation.rowNum = player->getRowNum();
-        mapInfo->playerLocation.colNum = player->getColNum();
+        map->mapInfo.playerLocation.rowNum = player->getRowNum();
+        map->mapInfo.playerLocation.colNum = player->getColNum();
 
         //Check if the player is adjacent to water
-        mapInfo->playerByWater = checkPlayerByWater(*player,map);
+        map->mapInfo.playerByWater = checkPlayerByWater(*player,*map);
     }
 
     //Perform the move
     char moveType;
 
-    moveType = toMove->move();
+    switch(toMove->type){
+        case 'p':
+        {
+            Pacer* moveAs = dynamic_cast<Pacer*>(toMove);
+            moveType = moveAs->move(map);
+            break;
+        }
+        case 'w':
+        {
+            Wanderer* moveAs = dynamic_cast<Wanderer*>(toMove);
+            moveType = moveAs->move(map);
+            break;
+        }
+        case 'e':
+        {
+            Explorer* moveAs = dynamic_cast<Explorer*>(toMove);
+            moveType = moveAs->move(map);
+            break;
+        }             
+        case 'm':
+        {
+            Swimmer* moveAs = dynamic_cast<Swimmer*>(toMove);
+            moveType = moveAs->move(map);
+            break;
+        }
+        case 'r':
+        case 'h':
+        {
+            Pathfinder* moveAs = dynamic_cast<Pathfinder*>(toMove);
+            moveType = moveAs->move(map);
+            break;
+        }
+        case '@':
+        {
+            Player* moveAs = dynamic_cast<Player*>(toMove);
+            moveType = moveAs->move(map);
+            break;
+        }
+        default:
+            moveType = toMove->move(map);
+            break;
+    }
 
     //Set the cost for the move
     int moveCost;
@@ -805,15 +870,7 @@ int moveGameChar(GameCharacter* toMove, int time, GameCharacter* player, mapTile
     return moveCost;
 }
 
-int checkPlayerByWater(GameCharacter player, mapTile_t map){
-    //Checks all adjacent squars
-    if(map.mapArr[player.getRowNum()][player.getColNum()] == '~' || map.mapArr[player.getRowNum() ][player.getColNum()] == '=' || map.mapArr[player.getRowNum() - 1][player.getColNum()] == '~' || map.mapArr[player.getRowNum() - 1][player.getColNum()] == '=' || map.mapArr[player.getRowNum() + 1][player.getColNum()] == '~' || map.mapArr[player.getRowNum() + 1][player.getColNum()] == '=' || map.mapArr[player.getRowNum()][player.getColNum() - 1] == '~' || map.mapArr[player.getRowNum()][player.getColNum() - 1] == '=' || map.mapArr[player.getRowNum() ][player.getColNum() + 1] == '~' || map.mapArr[player.getRowNum()][player.getColNum() + 1] == '='){
-        return 1;
-    }
-    else{
-        return 0;
-    }
-}
+
 
 NPCMapInfo::NPCMapInfo(int numNPCs){
     

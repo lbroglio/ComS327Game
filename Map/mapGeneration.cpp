@@ -984,7 +984,7 @@ void genCharChooseArr(characterNames_t charPickArr[], mapTile_t map, int hasSwim
  * @param charNum The number of character they are (How many other chracters have been added)
  * @return The newly placed character
  */
-GameCharacter placeNPC(int typeIndex ,mapTile_t map, NPCMapInfo* mapInfo, int charNum){
+GameCharacter placeNPC(Queue* eventManager, int typeIndex ,mapTile_t map, NPCMapInfo* mapInfo, int charNum){
         Point spawnPos;
         GameCharacter toPlace;
         //Randomly choosed spawn location
@@ -993,7 +993,28 @@ GameCharacter placeNPC(int typeIndex ,mapTile_t map, NPCMapInfo* mapInfo, int ch
 
         //If spawn position is valid place character and return it 
         if(strchr(npcAllowedSpawns[typeIndex], map.mapArr[spawnPos.rowNum][spawnPos.colNum]) != NULL && mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum].type == 'X'){
-            toPlace = GameCharacter(spawnPos,charOptions[typeIndex],charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
+            //toPlace = GameCharacter(spawnPos,charOptions[typeIndex],charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
+            switch(charOptions[typeIndex]) {
+                case 'p':
+                    toPlace = Pacer(spawnPos,charNum);
+                    break;
+                case 'w':
+                    toPlace = Wanderer(spawnPos,charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
+                    break;
+                case 'e':
+                    toPlace = Explorer(spawnPos,charNum);
+                    break;
+                case 'm':
+                    toPlace = Swimmer(spawnPos,charNum);
+                    break;
+                case 'r':
+                case 'h':
+                    toPlace = Pathfinder(spawnPos,charOptions[typeIndex],charNum);
+                    break;    
+                default:
+                    toPlace = GameCharacter(spawnPos,'s',charNum);
+                    break;
+                }
             mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum] = toPlace;
             
         }
@@ -1006,7 +1027,50 @@ GameCharacter placeNPC(int typeIndex ,mapTile_t map, NPCMapInfo* mapInfo, int ch
                 spawnPos.colNum += mod;
                 //If the new postion is valid place the character and return it
                 if(strchr(npcAllowedSpawns[typeIndex], map.mapArr[spawnPos.rowNum][spawnPos.colNum]) != NULL && mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum].type == 'X'){
-                    toPlace = GameCharacter(spawnPos,charOptions[typeIndex],charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
+                    //toPlace = GameCharacter(spawnPos,charOptions[typeIndex],charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
+                    switch(charOptions[typeIndex]) {
+                    case 'p':
+                    {
+                        Pacer temp = Pacer(spawnPos,charNum);
+                        eventManager->addWithPriority(&temp,charNum);
+                        toPlace = temp;
+                        break;
+                    }
+                    case 'w':
+                    {
+                        Wanderer temp = Wanderer(spawnPos,charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
+                        eventManager->addWithPriority(&temp,charNum);
+                        toPlace = temp;
+                        break;
+                    }
+                    case 'e':
+                    {
+                        Explorer temp = Explorer(spawnPos,charNum);
+                        eventManager->addWithPriority(&temp,charNum);
+                        toPlace = temp;
+                        break;
+                    }
+                    case 'm':
+                    {
+                        Swimmer temp = Swimmer(spawnPos,charNum);
+                        eventManager->addWithPriority(&temp,charNum);
+                        toPlace = temp;
+                        break;
+                    }
+                    case 'r':
+                    case 'h':
+                    {
+                        Pathfinder temp = Pathfinder(spawnPos,charOptions[typeIndex],charNum);
+                        eventManager->addWithPriority(&temp,charNum);
+                        toPlace = temp;
+                        break;
+                    }    
+                    default:
+                    {
+                        toPlace = GameCharacter(spawnPos,'s',charNum);
+                        break;
+                    }
+                    }
                     mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum] = toPlace;
                     mod = 0;
                     
@@ -1043,11 +1107,12 @@ NPCMapInfo spawnNPCS(mapTile_t map, int numNPCs, Queue* eventManager){
         hasSwimmer = 0;
     }
 
+    //ITS THIS 
     //Add a rival
-    GameCharacter cToAdd = placeNPC(RIVAL, map,&mapInfo,1);
+    GameCharacter cToAdd = placeNPC(eventManager,RIVAL, map,&mapInfo,1);
 
     //Add the rival to the event manager
-    eventManager->addWithPriority(&cToAdd,1);
+    //eventManager->addWithPriority(&cToAdd,1);
 
     //Create an array with the correct ratios for trainers based off the map type
     characterNames_t charPickArr[100];
@@ -1066,10 +1131,10 @@ NPCMapInfo spawnNPCS(mapTile_t map, int numNPCs, Queue* eventManager){
             toAdd = charPickArr[toAddSelector];
         }
         //Places NPC on the map
-        cToAdd = placeNPC(toAdd, map,&mapInfo, 2 + i);
+        cToAdd = placeNPC(eventManager,toAdd, map,&mapInfo, 2 + i);
 
         //Puts NPC into event manager
-       eventManager->addWithPriority(&cToAdd,1);
+       //eventManager->addWithPriority(&cToAdd,1);
 
     }
     return mapInfo;

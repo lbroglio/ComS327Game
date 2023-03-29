@@ -8,6 +8,11 @@ struct GameCharStorage{
         int id;
         char type;
         GameCharStorage(int id, char type){this->id = id; this->type = type;}
+        /**
+         * @brief Default constructor - NOOP
+         * 
+         */
+        GameCharStorage(){}
 };
 
 /**
@@ -40,6 +45,11 @@ class NPCMapInfo{
          * @return The created struct
          */
         NPCMapInfo(int numNPCs);
+        /**
+         * @brief Default constructor - NOOP
+         * 
+         */
+        NPCMapInfo(){}
 
     /**
      * @brief Destoys the given nMapInfo struct and frees its allocated memory

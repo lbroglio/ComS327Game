@@ -121,7 +121,7 @@ class Wayfinder : public GameCharacter{
          * 
          * @return A pointer to the created copy
          */
-        virtual GameCharacter* clone();
+        //virtual GameCharacter* clone(){return GameCharacter::clone();};
 };
 
 /**
@@ -207,7 +207,7 @@ class Wanderer : public Wayfinder
  * @brief An Explorer is a character which moves around and randomly changes direction when it find terrain it can't cross.
  * 
  */
-class Explorer : public Wanderer
+class Explorer : public Wayfinder
 {   
     private:
         /**
@@ -234,8 +234,22 @@ class Explorer : public Wanderer
          * 
          */
         virtual ~Explorer(){}
+        /**
+         * @brief Handles the logic for determining if the character can continue moving in the current direction. If not finds the next desirable direction
+         * 
+         * @param map The map this character is on
+         * @return The direction to move in. 
+         */
+         Point checkDirection(mapTile_t* map);
 
-        GameCharacter* clone();
+        
+        /**
+         * @brief Creates a copy of this Character
+         * Includes memory allocation returned to the user 
+         * 
+         * @return A pointer to the created copy
+         */
+        virtual GameCharacter* clone();
 };
 
 /**
@@ -319,6 +333,14 @@ class Pathfinder : public GameCharacter
          */
         char move(mapTile_t* map);
 
+        /**
+         * @brief Creates a copy of this Character
+         * Includes memory allocation returned to the user 
+         * 
+         * @return A pointer to the created copy
+         */
+        virtual GameCharacter* clone();
+
         
 };
 
@@ -332,11 +354,10 @@ class Pathfinder : public GameCharacter
  * @param time The time of the current move
  * @param player Pointer to the struct containing the information about the player
  * @param map The map tile that the player is currently on
- * @param mapInfo Pointer to the struct which hold the information about NPC's on this map
  * @return The cost of the move the npc made
  */
 
-int moveGameChar(GameCharacter* toMove, int time, GameCharacter* player, mapTile_t map, NPCMapInfo* mapInfo);
+int moveGameChar(GameCharacter* toMove, int time, GameCharacter* player, mapTile_t* map);
 
 
 /**

@@ -17,20 +17,20 @@ void inBuilding();
 
 
 char Player::move(mapTile_t* map){
-
+    printMapWithChars(map,map->mapInfo);
 
     while(1 == 1){
         playerMoves_t playerMove = getInput(map->mapInfo);
         if(playerMove == QUIT){
-            return -1;
+            return 'Q';
         }
         else if(playerMove == REST){ 
-            return costOfPlayerMove(map->mapArr[rowNum][colNum]);
+            return  map->mapArr[rowNum][colNum];
         }   
         else if(playerMove == ENTER_BUILDING){
             if(map->mapArr[rowNum][colNum] == 'M' || map->mapArr[rowNum][colNum] == 'C'){
                 inBuilding();
-                return 10;
+                return map->mapArr[rowNum][colNum];
             }
            else{
                //Display Error Message
@@ -40,9 +40,9 @@ char Player::move(mapTile_t* map){
            }
         }
         else{
-            int cost = movePlayerInMap(playerMove,map);
-            if(cost != -1){
-                return cost;
+            char type = movePlayerInMap(playerMove,map);
+            if(type != 'I'){
+                return type;
             }
         }
     }
@@ -92,12 +92,12 @@ char Player::movePlayerInMap(playerMoves_t playerMove,mapTile_t* map){
         if(checkTrainerDefeated(map->mapInfo.charLocations[newPos.rowNum][newPos.colNum].id,map->mapInfo) ==  0){
              trainerBattle(map->mapInfo.charLocations[newPos.rowNum][newPos.colNum].id,map);
         }
-        return costOfPlayerMove(map->mapArr[newPos.rowNum][newPos.colNum]);
+        return map->mapArr[newPos.rowNum][newPos.colNum];
     }
     //If the move is illegal
     else if(illegalChars.find(map->mapArr[newPos.rowNum][newPos.colNum]) != std::string::npos){
         displayPlayerMoveError(map->mapArr[newPos.rowNum][newPos.colNum]);
-        return -1;
+        return 'I';
     }
 
     //Hold player location
@@ -111,10 +111,11 @@ char Player::movePlayerInMap(playerMoves_t playerMove,mapTile_t* map){
     map->mapInfo.charLocations[temp.rowNum][temp.colNum] = GameCharacter();
     map->mapInfo.charLocations[newPos.rowNum][newPos.colNum] = *this;
 
-    return costOfPlayerMove(map->mapArr[newPos.rowNum][newPos.colNum]);
+    return map->mapArr[newPos.rowNum][newPos.colNum];
 }
 
 /**
+ * THIS IS DEPRECATED AND NO LONGER USED
  * @brief Calculates cost of a move by the player
  * 
  * @param moveType The type of move

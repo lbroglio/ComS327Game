@@ -4,7 +4,7 @@
 #include<string.h>
 #include<curses.h>
 #include<iostream>
-
+#include<fstream>
 #include"./Screen/screen.h"
 #include"./Map/map.h"
 #include"./Map/biome.h"
@@ -31,7 +31,7 @@ int main(int argc, char* argv[]){
 
     mapTile_t map = createMapTileIndependent();
 
-
+    std::ofstream myfile;
 
 
     Point playerSpawn;
@@ -46,6 +46,10 @@ int main(int argc, char* argv[]){
     map.mapInfo = spawnNPCS(map,numNPCs,&eventManager);
     map.mapInfo.charLocations[player.getRowNum()][player.getColNum()] = player;
 
+    myfile.open ("log.txt", myfile.app);
+    myfile << numNPCs +1 << " -- " << eventManager.getSize()<< "\n";
+    myfile.close();
+
     map.mapInfo.playerLocation.rowNum = -1;
     map.mapInfo.playerLocation.colNum = -1;
     int exitCom = 0;
@@ -57,6 +61,12 @@ int main(int argc, char* argv[]){
         int time; 
         IDable* temp = (eventManager.extractMinWithPri(&time));
         GameCharacter* toMove = dynamic_cast<GameCharacter*>(temp);
+
+
+        myfile.open ("log.txt", myfile.app);
+        myfile << toMove->type << " -- " << toMove->getID() << " -- " << eventManager.getSize()<< "\n";
+        myfile.close();
+
 
         int moveCost;
         moveCost = moveGameChar(toMove,time,&player,&map);

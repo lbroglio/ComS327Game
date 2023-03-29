@@ -826,6 +826,9 @@ int moveGameChar(GameCharacter* toMove, int time, GameCharacter* player, mapTile
             moveType = toMove->move(map);
             break;
     }
+    if(moveType == 'Q'){
+        return -1;
+    }
 
     //Set the cost for the move
     int moveCost;

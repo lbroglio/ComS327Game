@@ -996,24 +996,47 @@ GameCharacter placeNPC(Queue* eventManager, int typeIndex ,mapTile_t map, NPCMap
             //toPlace = GameCharacter(spawnPos,charOptions[typeIndex],charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
             switch(charOptions[typeIndex]) {
                 case 'p':
-                    toPlace = Pacer(spawnPos,charNum);
+                {
+                    Pacer temp = Pacer(spawnPos,charNum);
+                    eventManager->addWithPriority(&temp,1);
+                    toPlace = temp;
                     break;
+                }
                 case 'w':
-                    toPlace = Wanderer(spawnPos,charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
+                {
+                    Wanderer temp = Wanderer(spawnPos,charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
+                    eventManager->addWithPriority(&temp,1);
+                    toPlace = temp;
                     break;
+                    }
                 case 'e':
-                    toPlace = Explorer(spawnPos,charNum);
+                {
+                    Explorer temp = Explorer(spawnPos,charNum);
+                    eventManager->addWithPriority(&temp,1);
+                    toPlace = temp;
                     break;
+                }
                 case 'm':
-                    toPlace = Swimmer(spawnPos,charNum);
+                {
+                    Swimmer temp = Swimmer(spawnPos,charNum);
+                    eventManager->addWithPriority(&temp,1);
+                    toPlace = temp;
                     break;
+                }
                 case 'r':
                 case 'h':
-                    toPlace = Pathfinder(spawnPos,charOptions[typeIndex],charNum);
-                    break;    
-                default:
-                    toPlace = GameCharacter(spawnPos,'s',charNum);
+                {
+                    Pathfinder temp = Pathfinder(spawnPos,charOptions[typeIndex],charNum);
+                    eventManager->addWithPriority(&temp,1);
+                    toPlace = temp;
                     break;
+                }    
+                default:
+                {
+                    toPlace = GameCharacter(spawnPos,'s',1);
+                    eventManager->addWithPriority(&toPlace,1);
+                    break;
+                }
                 }
             mapInfo->charLocations[spawnPos.rowNum][spawnPos.colNum] = toPlace;
             
@@ -1032,28 +1055,28 @@ GameCharacter placeNPC(Queue* eventManager, int typeIndex ,mapTile_t map, NPCMap
                     case 'p':
                     {
                         Pacer temp = Pacer(spawnPos,charNum);
-                        eventManager->addWithPriority(&temp,charNum);
+                        eventManager->addWithPriority(&temp,1);
                         toPlace = temp;
                         break;
                     }
                     case 'w':
                     {
                         Wanderer temp = Wanderer(spawnPos,charNum,map.mapArr[spawnPos.rowNum][spawnPos.colNum]);
-                        eventManager->addWithPriority(&temp,charNum);
+                        eventManager->addWithPriority(&temp,1);
                         toPlace = temp;
                         break;
                     }
                     case 'e':
                     {
                         Explorer temp = Explorer(spawnPos,charNum);
-                        eventManager->addWithPriority(&temp,charNum);
+                        eventManager->addWithPriority(&temp,1);
                         toPlace = temp;
                         break;
                     }
                     case 'm':
                     {
                         Swimmer temp = Swimmer(spawnPos,charNum);
-                        eventManager->addWithPriority(&temp,charNum);
+                        eventManager->addWithPriority(&temp,1);
                         toPlace = temp;
                         break;
                     }
@@ -1061,13 +1084,14 @@ GameCharacter placeNPC(Queue* eventManager, int typeIndex ,mapTile_t map, NPCMap
                     case 'h':
                     {
                         Pathfinder temp = Pathfinder(spawnPos,charOptions[typeIndex],charNum);
-                        eventManager->addWithPriority(&temp,charNum);
+                        eventManager->addWithPriority(&temp,1);
                         toPlace = temp;
                         break;
                     }    
                     default:
                     {
-                        toPlace = GameCharacter(spawnPos,'s',charNum);
+                        toPlace = GameCharacter(spawnPos,'s',1);
+                        eventManager->addWithPriority(&toPlace,1);
                         break;
                     }
                     }

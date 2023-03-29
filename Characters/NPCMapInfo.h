@@ -1,8 +1,15 @@
 #ifndef NMAPINFO_H
 #define NMAPINFO_H
 
+#include"../Map/point.h"
 
-class GameCharacter;
+struct GameCharStorage{
+    public:
+        int id;
+        char type;
+        GameCharStorage(int id, char type){this->id = id; this->type = type;}
+};
+
 /**
  * @brief Stores information about a map tile used by npcs
  * 
@@ -16,7 +23,7 @@ class NPCMapInfo{
         /** Stores the results of the rival's pathfinding algorithm*/
         int rivalDist[21][80];
         /** Stores the location of the NPCs on the map X if none is there*/
-        GameCharacter charLocations[21][80];
+        GameCharStorage charLocations[21][80];
         /**Indicator of whether or not the player is by water. 1 = true, 0  = false*/
         int playerByWater;
         /**Stores the number of NPCs on this map*/

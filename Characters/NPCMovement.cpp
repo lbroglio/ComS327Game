@@ -738,20 +738,20 @@ char Pathfinder::move(mapTile_t* map){
 
 int moveGameChar(GameCharacter* toMove, int time, GameCharacter* player, mapTile_t* map){
     //Checks if this npc has been defeated
-    if(checkTrainerDefeated(toMove->id,*mapInfo) == 1){
+    if(checkTrainerDefeated(toMove->id,map->mapInfo) == 1){
         //Return a defeated flag
         return -2;
     }
     //If the player has moved
-    if(mapInfo->playerLocation.rowNum != player->rowNum || mapInfo->playerLocation.colNum != player->colNum){ 
+    if(mapInfo->playerLocation.rowNum != player->getRowNum() || mapInfo->playerLocation.colNum != player->getColNum()){ 
         //printf("HERE");
         //Redraw pathfinding maps
         dijkstraPathfindHiker(*map,*(player),mapInfo->hikerDist);
         dijkstraPathfindRival(*map,*(player),mapInfo->rivalDist);
 
         //Change last known player location
-        mapInfo->playerLocation.rowNum = player->rowNum;
-        mapInfo->playerLocation.colNum = player->colNum;
+        mapInfo->playerLocation.rowNum = player->getRowNum();
+        mapInfo->playerLocation.colNum = player->getColNum();
 
         //Check if the player is adjacent to water
         mapInfo->playerByWater = checkPlayerByWater(*player,map);
@@ -902,3 +902,4 @@ void printDistArr(int dist[21][80]){
     printf("\n");
     }
 }
+

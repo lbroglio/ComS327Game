@@ -2,6 +2,7 @@
 #define CHARACTER_H
 
 #include"../Map/map.h"
+#include"NPCMapInfo.h"
 #include"../Data-Structures/priorityQueue.h"
 
 /**
@@ -77,6 +78,8 @@ class GameCharacter : public IDable{
          * @return char 
          */
         virtual char move(mapTile_t* map){return '%';}
+
+        operator GameCharStorage(){return GameCharStorage(this->id,this->type);}
         
 };
 
@@ -89,7 +92,7 @@ class Wayfinder : public GameCharacter{
         /** Stores the current direction this character is moving in as a unit vector.*/
         Point direction;
     public:
-        Wayfinder(Point startLoc, char type, int id) : GameCharacter(startLoc,type,id);
+        Wayfinder(Point startLoc, char type, int id);
         /**
          * @brief Virutal destructor to Destroy the Wayfinder object
          * 
@@ -182,7 +185,7 @@ class Wanderer : public Wayfinder
          * @param id The unique ID for this character
          * @param direction The direction this character will start moving in
          */
-        Wanderer(Point startLoc, int id,char spawnBiome) :  Wayfinder(startLoc,'w', id){this->spawnBiome = spawnBiome}
+        Wanderer(Point startLoc, int id,char spawnBiome) :  Wayfinder(startLoc,'w', id){this->spawnBiome = spawnBiome;}
         /**
          * @brief Virutal destructor to Destroy the Wanderer object
          * 

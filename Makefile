@@ -1,5 +1,5 @@
-poke327: poke327.o mapGeneration.o map.o priorityQueue.o NPCMovement.o biome.o Characters/gameCharacter.h Characters/NPCMapInfo.h screen.o playerMovement.o battles.o
-	g++ ./bin/poke327.o ./bin/NPCMovement.o ./bin/mapGeneration.o ./bin/map.o ./bin/biome.o ./bin/priorityQueue.o ./bin/screen.o ./bin/playerMovement.o ./bin/battles.o -lcurses -o poke327
+poke327: poke327.o mapGeneration.o map.o priorityQueue.o NPCMovement.o biome.o Characters/gameCharacter.h Characters/NPCMapInfo.h screen.o playerMovement.o battles.o point.o
+	g++ ./bin/poke327.o ./bin/NPCMovement.o ./bin/mapGeneration.o ./bin/map.o ./bin/biome.o ./bin/priorityQueue.o ./bin/screen.o ./bin/playerMovement.o ./bin/battles.o ./bin/point.o -lcurses -o poke327
 
 worldGen: mapGeneration.o biome.o map.o worldGeneration.o priorityQueue.o
 	g++ worldGeneration.o mapGeneration.o biome.o map.o priorityQueue.o -o worldGen
@@ -33,6 +33,9 @@ priorityQueue.o:  Data-Structures/priorityQueue.cpp  Data-Structures/priorityQue
 
 map.o:  Map/map.cpp  Map/map.h
 	g++ -Wall -Werror -ggdb  Map/map.cpp -c -o ./bin/map.o
+
+point.o:  Map/point.cpp  Map/point.h
+	g++ -Wall -Werror -ggdb  Map/point.cpp -c -o ./bin/point.o
 
 clean:
 	rm -r poke327 bin/*

@@ -1,5 +1,10 @@
+#ifndef SCREEN_H
+#define SCREEN_H
+
+
 #include<stdio.h>
 #include"../Map/map.h"
+#include"../Map/point.h"
 #include"../Characters/gameCharacter.h"
 
 
@@ -18,3 +23,6 @@ void terminalInit();
  * @param mapInfo The NPC information for the map
  */
 void printMapWithChars(mapTile_t* map, NPCMapInfo mapInfo);
+
+
+#endif

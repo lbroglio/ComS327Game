@@ -12,27 +12,75 @@ const std::string fileList[] = {"pokemon", "moves", "pokemon_moves", "pokemon_sp
  * @param readFrom The file stream to read from
  * @return The character until a space or comma is encountered
  */
-std::string readWord(std::string readFrom){
-    char currChar = readFrom[0];
+std::string readEntry(std::ifstream* readFrom){
+    char currChar = readFrom->get();
     std::string readWord = "";
 
-    int tracker = 1;
     while(currChar != ' ' && currChar != ',' && currChar != '\n'){
         readWord += currChar;
-        currChar = readFrom[tracker];
-        tracker += 1;
+        currChar = readFrom->get(); 
     }
-
 
     return readWord;
 }
 
+std::ifstream openFile(std::string fileName){
+    std::ifstream dataFile;
 
-int main(int argc, char* argv[]){
+    //Try to open file at first location
+    dataFile.open("/share/cs327/pokedex/pokedex/data/csv/" + fileName + ".csv");
 
-    return 0;
+    //If the file couldn't be found there
+    if(!dataFile.is_open()){
+        //Try to open at second location
+        dataFile.open("$HOME/.poke327/pokedex/pokedex/data/csv/" + fileName + ".csv");
+
+        //Alert the user and exit if the file can't be opened
+        if(!dataFile.is_open()){
+            std::cout << "ERROR: File could not be opened" << std::endl;
+            exit(1);
+        }
+    }
+
+    return dataFile;
 }
 
+
+
+void parsePokemonFile(){    
+     std::ifstream dataFile = openFile("pokemon");
+
+}
+
+
+void parseTypeNames(DataCon* dataCon){
+    std::ifstream dataFile("/share/cs327/pokedex/pokedex/data/csv/type_names.csv");
+
+    std::string lineDump;
+
+    int idTemp;
+    int lanTemp;
+    std::string nameTemp;
+    
+    std::getline(dataFile,lineDump);
+
+    int placeTracker = 0;
+
+    while(dataFile.peek() != EOF){
+        idTemp = atoi(readEntry(&dataFile).c_str());
+        lanTemp = atoi(readEntry(&dataFile).c_str());
+        nameTemp = readEntry(&dataFile);
+
+        Type_Name temp(idTemp,lanTemp,nameTemp);
+
+        if(temp.local_language_id() == 9){
+            dataCon->type_names[placeTracker] = temp;
+        }
+        else{
+            dataCon->otherLangues.push_back(temp);
+        }
+    }
+}
 
 
 

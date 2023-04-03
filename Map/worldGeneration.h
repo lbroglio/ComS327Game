@@ -3,6 +3,7 @@
 
 #include"map.h"
 #include"../Characters/playerMovement.h"
+#include"../PokemonData/PokemonData.h"
 
 /**
  * @brief Wrapper struct for the array holding all the tiles in the world map
@@ -26,6 +27,7 @@ struct WorldMap{
      */
     ~WorldMap();
 
+    DataCon pokeData; 
 
 };
 

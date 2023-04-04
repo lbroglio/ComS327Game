@@ -13,6 +13,7 @@ struct WorldMap{
     Player* player;
     mapTile_t** worldArr;
     int placedArr[401][401];
+    DataCon* pokeData; 
     /**
      * @brief Creates a world map - Allocates all the memory for the tiles
      * 
@@ -27,7 +28,7 @@ struct WorldMap{
      */
     ~WorldMap();
 
-    DataCon pokeData; 
+    
 
 };
 

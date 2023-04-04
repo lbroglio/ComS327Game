@@ -4,6 +4,8 @@
 #include"map.h"
 #include"mapGeneration.h"
 #include"worldGeneration.h"
+#include"../PokemonData/PokemonData.h"
+#include"../Parser/fileParser.h"
 
 
 WorldMap::WorldMap(){
@@ -25,6 +27,9 @@ WorldMap::WorldMap(){
     playerSpawn.colNum = ((worldArr[200][200].biomeArr) + 1)->cenColNum;
     playerSpawn.rowNum = ((worldArr[200][200].biomeArr) + 1)->cenRowNum -1;
 
+    pokeData = new DataCon();
+    loadData(pokeData);
+
     player = new Player(playerSpawn);
 
 
@@ -33,6 +38,7 @@ WorldMap::WorldMap(){
 
 WorldMap::~WorldMap(){
         delete player;
+        delete pokeData;
 
         for(int i =0; i < 401; i++){
             free(worldArr[i]);

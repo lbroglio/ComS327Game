@@ -1,3 +1,6 @@
+#ifndef POKEDATA_H
+#define POKEDATA_H
+
 #include<string>
 #include<vector>
 
@@ -197,9 +200,11 @@ class DataCon{
 		Pokemon_Move pokemon_moves[528238];
 		Pokemon_Species	pokemon_species[898];
 		Experience experience[601];
-		Type_Name type_names[193];
+		Type_Name type_names[19];
 		Pokemon_Stat pokemon_stats[6552];
 		Stat stats[8];
 		Pokemon_Type pokemon_types[1675];
 		std::vector<Type_Name> otherLangues;
 };
+
+#endif

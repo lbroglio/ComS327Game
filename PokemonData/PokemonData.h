@@ -3,7 +3,7 @@
 
 #include<string>
 #include<vector>
-
+#include<iostream>
 
 class Pokemon{
 	private:
@@ -206,5 +206,79 @@ class DataCon{
 		Pokemon_Type pokemon_types[1675];
 		std::vector<Type_Name> otherLangues;
 };
+
+/**
+* @brief Prints a formated Pokemon object to the provided ostream
+* 
+* @param o The stream to print the class to
+* @param s The Pokemon to print
+* @return The stream with the class added
+*/
+std::ostream &operator<<(std::ostream &o,  const Pokemon &s);
+/**
+* @brief Prints a formated Move object to the provided ostream
+* 
+* @param o The stream to print the class to
+* @param s The Move to print
+* @return The stream with the class added
+*/
+std::ostream &operator<<(std::ostream &o,  const Move &s);
+/**
+* @brief Prints a formated Pokemon_Move object to the provided ostream
+* 
+* @param o The stream to print the class to
+* @param s The Pokemon_Move to print
+* @return The stream with the class added
+*/
+std::ostream &operator<<(std::ostream &o,  const Pokemon_Move &s);
+/**
+* @brief Prints a formated Pokemon_Species object to the provided ostream
+* 
+* @param o The stream to print the class to
+* @param s The Pokemon_Species to print
+* @return The stream with the class added
+*/
+std::ostream &operator<<(std::ostream &o,  const Pokemon_Species &s);
+/**
+* @brief Prints a formated Experience object to the provided ostream
+* 
+* @param o The stream to print the class to
+* @param s The Experience to print
+* @return The stream with the class added
+*/
+std::ostream &operator<<(std::ostream &o,  const Experience &s);
+/**
+* @brief Prints a formated Type_Name object to the provided ostream
+* 
+* @param o The stream to print the class to
+* @param s The Type_Name to print
+* @return The stream with the class added
+*/
+std::ostream &operator<<(std::ostream &o,  const Type_Name &s);
+/**
+* @brief Prints a formated Pokemon_Stat object to the provided ostream
+* 
+* @param o The stream to print the class to
+* @param s The Pokemon_Stat to print
+* @return The stream with the class added
+*/
+std::ostream &operator<<(std::ostream &o,  const Pokemon_Stat &s);
+/**
+* @brief Prints a formated Stat object to the provided ostream
+* 
+* @param o The stream to print the class to
+* @param s The Stat to print
+* @return The stream with the class added
+*/
+std::ostream &operator<<(std::ostream &o,  const Stat &s);
+/**
+* @brief Prints a formated Pokemon_Type object to the provided ostream
+* 
+* @param o The stream to print the class to
+* @param s The Pokemon_Type to print
+* @return The stream with the class added
+*/
+std::ostream &operator<<(std::ostream &o,  const Pokemon_Type &s);
+
 
 #endif

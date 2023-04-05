@@ -17,7 +17,7 @@ std::string readEntry(std::ifstream* readFrom){
     char currChar = readFrom->get();
     std::string readWord = "";
 
-    while(currChar != ' ' && currChar != ',' && currChar != '\n'){
+    while(currChar != ' ' && currChar != ',' && currChar != '\n' && currChar != EOF){
         readWord += currChar;
         currChar = readFrom->get(); 
     }
@@ -80,7 +80,6 @@ void parsePokemonFile(DataCon* dataCon){
         idTemp = atoi(readEntry(&dataFile).c_str());
         identifierTemp = readEntry(&dataFile);
         species_idTemp = atoi(readEntry(&dataFile).c_str());
-        species_idTemp = atoi(readEntry(&dataFile).c_str());
         heightTemp = atoi(readEntry(&dataFile).c_str());
         weightTemp = atoi(readEntry(&dataFile).c_str());
         base_experienceTemp = atoi(readEntry(&dataFile).c_str());
@@ -88,7 +87,7 @@ void parsePokemonFile(DataCon* dataCon){
         is_defaultTemp = atoi(readEntry(&dataFile).c_str());
 
        	Pokemon temp(idTemp,identifierTemp, species_idTemp, heightTemp, weightTemp, base_experienceTemp, orderTemp, is_defaultTemp);
-        dataCon->pokemon[placeTracker] = temp;
+        dataCon->pokemon.push_back(temp);
 
         placeTracker += 1;
 
@@ -147,7 +146,7 @@ void parseMoveFile(DataCon* dataCon){
         super_contest_effect_idTemp = atoi(readEntry(&dataFile).c_str());
 
        	Move temp(idTemp, identifierTemp, generation_idTemp, type_idTemp, powerTemp, ppTemp, accuracyTemp, priorityTemp, target_idTemp, damage_class_idTemp, effect_idTemp, effect_chanceTemp, contest_type_idTemp, contest_effect_idTemp, super_contest_effect_idTemp);
-        dataCon->moves[placeTracker] = temp;
+        dataCon->moves.push_back(temp);
 
         placeTracker += 1;
 
@@ -185,7 +184,7 @@ void parsePokemonMoveFile(DataCon* dataCon){
         orderTemp = atoi(readEntry(&dataFile).c_str());	
 
        	Pokemon_Move temp(pokemon_idTemp, version_group_idTemp, move_idTemp, pokemon_move_method_idTemp, levelTemp, orderTemp);
-        dataCon->pokemon_moves[placeTracker] = temp;
+        dataCon->pokemon_moves.push_back(temp);
 
         placeTracker += 1;
 
@@ -251,7 +250,7 @@ void parsePokemonSpeciesFile(DataCon* dataCon){
         conquest_orderTemp = atoi(readEntry(&dataFile).c_str());
 
         Pokemon_Species temp(idTemp, identifierTemp, generation_idTemp, evolves_from_species_idTemp, evolution_chain_idTemp, color_idTemp, shape_idTemp, habitat_idTemp, gender_rateTemp, capture_rateTemp, base_happinessTemp, is_babyTemp, hatch_counterTemp, has_gender_differencesTemp, growth_rate_idTemp, forms_switchableTemp, is_legendaryTemp, is_mythicalTemp, orderTemp, conquest_orderTemp);
-        dataCon->pokemon_species[placeTracker] = temp;
+        dataCon->pokemon_species.push_back(temp);
 
         placeTracker += 1;
 
@@ -278,13 +277,13 @@ void parseExperienceFile(DataCon* dataCon){
     int placeTracker = 0;
 
     while(dataFile.peek() != EOF){
-        int growth_rate_idTemp = atoi(readEntry(&dataFile).c_str());
-        int levelTemp = atoi(readEntry(&dataFile).c_str());
-        int experienceTemp = atoi(readEntry(&dataFile).c_str());
+        growth_rate_idTemp = atoi(readEntry(&dataFile).c_str());
+        levelTemp = atoi(readEntry(&dataFile).c_str());
+        experienceTemp = atoi(readEntry(&dataFile).c_str());
 
 
        	Experience temp(growth_rate_idTemp, levelTemp, experienceTemp);
-        dataCon->experience[placeTracker] = temp;
+        dataCon->experience.push_back(temp);
 
         placeTracker += 1;
 
@@ -318,7 +317,7 @@ void parsePokemonStatFile(DataCon* dataCon){
 	    effortTemp = atoi(readEntry(&dataFile).c_str());
 
        	Pokemon_Stat temp(pokemon_idTemp,stat_idTemp,base_statTemp,effortTemp);
-        dataCon->pokemon_stats[placeTracker] = temp;
+        dataCon->pokemon_stats.push_back(temp);
 
         placeTracker += 1;
 
@@ -354,7 +353,7 @@ void parseStatFile(DataCon* dataCon){
 	    game_indexTemp = atoi(readEntry(&dataFile).c_str());
 
        	Stat temp(idTemp,damage_class_idTemp, identifierTemp, is_battle_onlyTemp, game_indexTemp);
-        dataCon->stats[placeTracker] = temp;
+        dataCon->stats.push_back(temp);
 
         placeTracker += 1;
 
@@ -386,7 +385,7 @@ void parsePokemonTypeFile(DataCon* dataCon){
 	    slotTemp = atoi(readEntry(&dataFile).c_str());
 
        	Pokemon_Type temp(pokemon_idTemp,type_idTemp,slotTemp);
-        dataCon->pokemon_types[placeTracker] = temp;
+        dataCon->pokemon_types.push_back(temp);
 
         placeTracker += 1;
 
@@ -421,7 +420,7 @@ void parseTypeNameFile(DataCon* dataCon){
         Type_Name temp(idTemp,lanTemp,nameTemp);
 
         if(temp.local_language_id() == 9){
-            dataCon->type_names[placeTracker] = temp;
+            dataCon->type_names.push_back(temp);
         }
         else{
             dataCon->otherLangues.push_back(temp);

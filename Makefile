@@ -1,8 +1,13 @@
-poke327: poke327.o mapGeneration.o map.o priorityQueue.o worldGeneration.o NPCMovement.o biome.o Characters/gameCharacter.h Characters/NPCMapInfo.h screen.o playerMovement.o battles.o point.o
-	g++ ./bin/poke327.o ./bin/NPCMovement.o ./bin/mapGeneration.o ./bin/worldGeneration.o ./bin/map.o ./bin/biome.o ./bin/priorityQueue.o ./bin/screen.o ./bin/playerMovement.o ./bin/battles.o ./bin/point.o -lcurses -o poke327
 
-worldGen: mapGeneration.o biome.o map.o worldGeneration.o priorityQueue.o
-	g++ worldGeneration.o mapGeneration.o biome.o map.o priorityQueue.o -o worldGen
+
+poke327: poke327.o mapGeneration.o map.o priorityQueue.o worldGeneration.o NPCMovement.o biome.o Characters/gameCharacter.h Characters/NPCMapInfo.h screen.o playerMovement.o battles.o point.o fileParser.o pokeData.o
+	g++ ./bin/poke327.o ./bin/NPCMovement.o ./bin/mapGeneration.o ./bin/worldGeneration.o ./bin/PokemonData.o ./bin/fileParser.o ./bin/map.o ./bin/biome.o ./bin/priorityQueue.o ./bin/screen.o ./bin/playerMovement.o ./bin/battles.o ./bin/point.o -lcurses -o poke327
+
+fileParser.o: Parser/fileParser.h Parser/fileParser.cpp
+	g++ -Wall -Werror -ggdb  Parser/fileParser.cpp -c -o ./bin/fileParser.o
+
+pokeData.o: PokemonData/PokemonData.h PokemonData/PokemonData.cpp
+	g++ -Wall -Werror -ggdb  PokemonData/PokemonData.cpp -c -o ./bin/PokemonData.o
 
 battles.o: Battles/battles.cpp Battles/battles.h
 	g++ -Wall -Werror -ggdb  Battles/battles.cpp -c -o ./bin/battles.o

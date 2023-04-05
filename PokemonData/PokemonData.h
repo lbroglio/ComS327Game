@@ -195,16 +195,22 @@ class Pokemon_Type{
 
 class DataCon{
 	public:
-		Pokemon pokemon[1092];
-		Move moves[844];
-		Pokemon_Move pokemon_moves[528238];
-		Pokemon_Species	pokemon_species[898];
-		Experience experience[601];
-		Type_Name type_names[19];
-		Pokemon_Stat pokemon_stats[6552];
-		Stat stats[8];
-		Pokemon_Type pokemon_types[1675];
+		std::vector<Pokemon> pokemon;
+		std::vector<Move> moves;
+		std::vector<Pokemon_Move> pokemon_moves;
+		std::vector<Pokemon_Species> pokemon_species;
+		std::vector<Experience> experience;
+		std::vector<Type_Name> type_names;
+		std::vector<Pokemon_Stat> pokemon_stats;
+		std::vector<Stat> stats;
+		std::vector<Pokemon_Type> pokemon_types;
 		std::vector<Type_Name> otherLangues;
+
+		/**
+		 * @brief Construct a new DataCon object. Includes reserving the needed space in all of the vectors
+		 * 
+		 */
+		DataCon();
 };
 
 /**

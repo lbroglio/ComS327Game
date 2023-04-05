@@ -116,3 +116,5 @@ void printMapWithChars(mapTile_t* map, NPCMapInfo  mapInfo){
     }
     refresh();
 }
+
+

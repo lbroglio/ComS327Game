@@ -1,3 +1,45 @@
+commit 3388111f8957235302a2f922a0ac4180ccaa0787
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Apr 5 11:25:52 2023 -0500
+
+    1.07 is fully completed except for README  and  CHANGELOG - All testing is done (Includes changing the number outputs to involve string conversion for bugfixing  reasons)
+
+commit 269ef811172670c726a4d0531e1e649853e738ff
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Tue Apr 4 22:36:13 2023 -0500
+
+    Needs final testing to confirm but 1.07 should be complete. Added integreation into main file, makefile changes, and debugging (Including converting storage arrays to vectors)
+
+commit 8096cabed207442c5292cddfdab422654558af56
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Tue Apr 4 17:45:46 2023 -0500
+
+    Added print operators for data classes
+
+commit bad737abaec3f6fcbd1e46c1c5d35abb411b86c6
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Tue Apr 4 17:07:25 2023 -0500
+
+    Finished data loading functions and integrated them into the world object
+
+commit e480d64b3800eab40140ed3474d37b8605114f26
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Mon Apr 3 16:15:49 2023 -0500
+
+    Created classes to hold all of the parsed data and created container for there arrays. Started on parser functions
+
+commit b5dad0f3198b901f7f58d07067e4a4352a18ff25
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Sat Apr 1 17:35:40 2023 -0500
+
+    Created code for the classes to hold the data parsed from files. - Code created semi automatically
+
+commit 5500ff31139814413dcd7446548185809665201a
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Mar 29 18:42:06 2023 -0500
+
+    README AND CHANGELOG
+
 commit c308f55b8bb8714b66f4ed37e002a1a1147d6c5e
 Author: lbroglio <lbroglio@iastate.edu>
 Date:   Wed Mar 29 18:35:11 2023 -0500

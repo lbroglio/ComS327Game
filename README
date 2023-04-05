@@ -1,16 +1,20 @@
-The program has now been converted to C++
+The program is now equipped to handle parsing in data from the provided data files.
+    The program will search for the data first at /share/cs327/pokedex/pokedex/data/csv/
+    If it can't be found there it will check $HOME/.poke327/pokedex/pokedex/data/csv/
+    If it can't be found either of those places the program will exit
 
-structs have been converted to class style which have attached methods, Constructors, and destructors
-
-
-The biggest changes are that the program now uses polymorphism in place of void pointers and that the different types of characters are derived class of GameCharacters.
-
-Moving between maps is also possible in the main build now
-
-Stepping into a gate will send you to the adjacent map tile
-
-There is also a new fly command 
-
-Pressing 'f' on the players turn will allow you to enter in two numbers seperated by a space. If you then press enter you will be sent to the map tile at that location. (The numbers you enter will not be displayed)
-    Format - x x 
-
+The program now takes command line arguments in order to know which file to print
+    To use the program enter ./poke327 {argument}
+    The possible arguments are
+        pokemon
+        moves
+        pokemon moves
+        pokemon species
+        experience
+        type names
+        pokemon stats
+        stats
+        pokemon types
+        all
+    The first nine arguments all print out the parsed contents of the file of the same name
+    all prints out the parsed contents of all of them

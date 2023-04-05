@@ -79,7 +79,7 @@ void parsePokemonFile(DataCon* dataCon){
     while(dataFile.peek() != EOF){
         idTemp = atoi(readEntry(&dataFile).c_str());
         identifierTemp = readEntry(&dataFile);
-        species_idTemp = atoi(readEntry(&dataFile).c_str());
+        species_idTemp = atoi(readEntry(&dataFile).c_str());  
         heightTemp = atoi(readEntry(&dataFile).c_str());
         weightTemp = atoi(readEntry(&dataFile).c_str());
         base_experienceTemp = atoi(readEntry(&dataFile).c_str());

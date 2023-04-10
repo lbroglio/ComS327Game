@@ -5,6 +5,15 @@
 #include<cstdlib>
 #include"../PokemonData/PokemonData.h"
 
+enum StatID{
+    HP = 1,
+    ATTACK,
+    DEFENSE,
+    SPEED,
+    SPECIAL_ATTACK,
+    SPECIAL_DEFENSE
+};
+
 
 class Pokemon{
     private:
@@ -19,8 +28,40 @@ class Pokemon{
             int speed;
             int specialAttack;
             int specialDefense;
-            PokemonStats(int pokemonId);
+            /**
+             * @brief Construct a new Pokemon Stats object by pulling the base stats of the pokemon with the given id from the parsed data
+             * 
+             * @param pokemonId The id of the pokemon to pull stats from
+             */
+            PokemonStats(int pokemonID);
+            /**
+             * @brief Construct a new Pokemon Stats object by setting its values to the provided ones. Used for consturctiong IVs
+             * 
+             * @param HPVal The HP to set this to
+             * @param attackVal The attack to set this to
+             * @param defenseVal The defense to set this to
+             * @param speedVal The speed to set this to
+             * @param sAttackVal The special sttack to set this to
+             * @param sDefenseVal The special defense to set this to
+             */
             PokemonStats(int HPVal, int attackVal, int defenseVal, int speedVal, int sAttackVal, int sDefenseVal);
+
+            /**
+             * @brief Adds two PokemonStats together by adding the individual stats
+             * 
+             * @param x The Stat struct to add to this one
+             * @return Reference to the result of the additon
+             */
+            PokemonStats& operator+(PokemonStats x);
+            /**
+             * @brief Adds a PokemonStat to this one by adding the individual stats
+             * 
+             * @param x The Stat struct to add to this one
+             * @return Reference to the result of the additon
+             */
+            PokemonStats& operator+=(PokemonStats x);
+            private:
+                PokemonStats(){}
         };
     private:
         /** @brief  The current HP this pokemon has*/
@@ -37,10 +78,12 @@ class Pokemon{
         int pokemonID;
         /** @brief  Stores the stats of this pokemon*/
         PokemonStats stats;
+        /** @brief  Stores the base(starting) stats of this pokemon*/
+        PokemonStats baseStats;
         /** @brief  Stores the IVs of this poekmon*/
         PokemonStats IVs;
         /** @brief The moves this pokemon currently knows*/
-        Move* moveList;
+        std::vector<Move> moveList;
         /** @brief  Stores a boolean for whether or not the Pokemon is shiny. 0 means it isn't shiny 1 means it is*/
         int isShiny;
     public:
@@ -127,7 +170,7 @@ class Pokemon{
          * 
          * @return The list of moves
          */
-        Move* getMoves(){return moveList;}
+        std::vector<Move> getMoves(){return moveList;}
         /**
          * @brief Increases this Pokemon's level. Handles updating the Stats.
          * 
@@ -146,6 +189,11 @@ class Pokemon{
          */
         void rename(std::string newName){name = newName;}
         /**
+         * @brief Calculates the current stats for this Pokemon based on its current level and IVs. Changes the stats member accordingly
+         * 
+         */
+        void updateStats();
+        /**
          * @brief Construct a new Pokemon object at the given level
          * 
          * @param startingLevel The level this Pokemon is
@@ -162,6 +210,7 @@ class Pokemon{
     * @return A Stats struct holding the generated IVs 
     */
     friend PokemonStats generateIVs();
+    
 };
 
 #endif

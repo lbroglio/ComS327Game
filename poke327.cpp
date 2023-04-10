@@ -164,6 +164,7 @@ int main(int argc, char* argv[]){
     }
     //npcMapInfoDestroy(mapInfo);
     //delete map->eventManager;
+    delete pokeData;
     endwin();
 
 }

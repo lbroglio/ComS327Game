@@ -17,8 +17,8 @@ DataCon::DataCon(){
 
 
 
-std::ostream &operator<<(std::ostream &o,  const Pokemon &s){
-	o << "Pokemon{\n"; 
+std::ostream &operator<<(std::ostream &o,  const Pokemon_Info &s){
+	o << "Pokemon_Info{\n"; 
 	o << '\t' << "id: " << (s.id() == INT_MAX ? " " : std::to_string(s.id())) << '\n';
 	o << '\t' << "identifier: " << s.identifier() << '\n';
 	o << '\t' << "species_id: " << (s.species_id() == INT_MAX ? " " : std::to_string(s.species_id())) << '\n';

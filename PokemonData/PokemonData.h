@@ -1,11 +1,19 @@
 #ifndef POKEDATA_H
 #define POKEDATA_H
 
+
+
 #include<string>
 #include<vector>
 #include<iostream>
 
-class Pokemon{
+/**
+ * @brief The container for the data parsed from the files
+ * 
+ */
+extern DataCon* pokeData;
+
+class Pokemon_Info{
 	private:
 		int id_;
 		std::string identifier_;
@@ -16,7 +24,7 @@ class Pokemon{
 		int order_;
 		int is_default_;
 	public:
-		Pokemon(int id, std::string identifier, int species_id, int height, int weight, int base_experience, int order, int is_default) : id_(id), identifier_(identifier), species_id_(species_id), height_(height), weight_(weight), base_experience_(base_experience), order_(order), is_default_(is_default){}
+		Pokemon_Info(int id, std::string identifier, int species_id, int height, int weight, int base_experience, int order, int is_default) : id_(id), identifier_(identifier), species_id_(species_id), height_(height), weight_(weight), base_experience_(base_experience), order_(order), is_default_(is_default){}
 		int id() const {return id_;}
 		std::string identifier() const {return identifier_;}
 		int species_id() const {return species_id_;}
@@ -195,7 +203,7 @@ class Pokemon_Type{
 
 class DataCon{
 	public:
-		std::vector<Pokemon> pokemon;
+		std::vector<Pokemon_Info> pokemon;
 		std::vector<Move> moves;
 		std::vector<Pokemon_Move> pokemon_moves;
 		std::vector<Pokemon_Species> pokemon_species;
@@ -220,7 +228,7 @@ class DataCon{
 * @param s The Pokemon to print
 * @return The stream with the class added
 */
-std::ostream &operator<<(std::ostream &o,  const Pokemon &s);
+std::ostream &operator<<(std::ostream &o,  const Pokemon_Info &s);
 /**
 * @brief Prints a formated Move object to the provided ostream
 * 

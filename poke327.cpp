@@ -14,81 +14,18 @@
 #include"./Characters/playerMovement.h"
 #include"./Characters/NPCMapInfo.h"
 #include"./PokemonData/PokemonData.h"
+#include"./Parser/fileParser.h"
 
 //Declare World Map as Global
- WorldMap worldMap = WorldMap();
+WorldMap worldMap = WorldMap();
+
+//Create the PokeData container
+DataCon* pokeData = new DataCon();
+
 
 int main(int argc, char* argv[]){
-    //If the user didn't give a command line argument
-    if(argc == 1){
-        throw "No Command line argument supplied";
-    }
-
-    //Prints the correct array based on command line arg
-    if(argv[1] == std::string("pokemon")){
-        //Prints the pokemon array
-        printDataVector(worldMap.pokeData->pokemon,1092);
-    }
-    else if(argv[1] == std::string("moves")){
-        //Prints the moves array
-        printDataVector(worldMap.pokeData->moves,844);
-    }
-    else if(argv[1] == std::string("pokemon_moves")){
-        //Prints the pokemon_moves array
-        printDataVector(worldMap.pokeData->pokemon_moves,528238);
-    }
-    else if(argv[1] == std::string("pokemon_species")){
-        //Prints the pokemon_species array
-        printDataVector(worldMap.pokeData->pokemon_species,898);
-    }
-    else if(argv[1] == std::string("experience")){
-        //Prints the experience array
-        printDataVector(worldMap.pokeData->experience,601);
-    }
-    else if(argv[1] == std::string("type_names")){
-        //Prints the type _names array
-        printDataVector(worldMap.pokeData->type_names,19);
-    }
-    else if(argv[1] == std::string("pokemon_stats")){
-        //Prints the pokemon_stats array
-        printDataVector(worldMap.pokeData->pokemon_stats,6552);
-    }
-    else if(argv[1] == std::string("stats")){
-        //Prints the stats array
-        printDataVector(worldMap.pokeData->stats,8);
-    }
-    else if(argv[1] == std::string("pokemon_types")){
-        //Prints the pokemon_types array
-        printDataVector(worldMap.pokeData->pokemon_types,1675);
-    }
-    else if(argv[1] == std::string("all")){
-        //Prints the pokemon array
-        printDataVector(worldMap.pokeData->pokemon,1092);
-        //Prints the moves array
-        printDataVector(worldMap.pokeData->moves,844);
-        //Prints the pokemon_moves array
-        printDataVector(worldMap.pokeData->pokemon_moves,528238);
-        //Prints the pokemon_species array
-        printDataVector(worldMap.pokeData->pokemon_species,898);
-        //Prints the experience array
-        printDataVector(worldMap.pokeData->experience,601);
-        //Prints the type _names array
-        printDataVector(worldMap.pokeData->type_names,19);
-        //Prints the pokemon_stats array
-        printDataVector(worldMap.pokeData->pokemon_stats,6552);
-        //Prints the stats array
-        printDataVector(worldMap.pokeData->stats,8);
-        //Prints the pokemon_types array
-        printDataVector(worldMap.pokeData->pokemon_types,1675);
-    }
-    else{
-        throw "Invalid command line argument";
-    }
-    
-    
-    
-    return 0;
-    //Program ends before reaching here for the purposes of assigment 1.07
+    //Load the files into the pokeData container
+    loadData(pokeData);
     int numNPCs;
     terminalInit();
 

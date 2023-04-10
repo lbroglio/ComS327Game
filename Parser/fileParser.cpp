@@ -86,7 +86,7 @@ void parsePokemonFile(DataCon* dataCon){
         orderTemp = atoi(readEntry(&dataFile).c_str());
         is_defaultTemp = atoi(readEntry(&dataFile).c_str());
 
-       	Pokemon temp(idTemp,identifierTemp, species_idTemp, heightTemp, weightTemp, base_experienceTemp, orderTemp, is_defaultTemp);
+       	Pokemon_Info temp(idTemp,identifierTemp, species_idTemp, heightTemp, weightTemp, base_experienceTemp, orderTemp, is_defaultTemp);
         dataCon->pokemon.push_back(temp);
 
         placeTracker += 1;

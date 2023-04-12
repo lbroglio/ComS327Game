@@ -10,6 +10,16 @@
 #include"../Characters/gameCharacter.h"
 
 
+//Colors
+#define COLOR_SOFT_BLACK 236
+#define COLOR_TALLGRASS 58
+#define COLOR_FOREST 28
+#define COLOR_POKEMART 17
+#define COLOR_ROCK 235
+#define COLOR_DESSERT 220
+#define COLOR_BRIDGE 94
+#define COLOR_PATH 255
+
 
 
 /**
@@ -40,5 +50,23 @@ void printDataVector(std::vector<T> v, int length){
         std::cout << v[i] << std::endl;
     }
 }
+
+/**
+ * @brief Change the terminal display to have a space in the center of the map to be ready for battle/ catch interface etc
+ * 
+ */
+void setInterfaceScreen();
+
+/**
+ * @brief Removes text currently on the interface screen
+ * 
+ */
+void clearInterfaceScreen();
+/**
+ * @brief Redraws the map after setting an interface
+ * 
+ * @param map The map to draw
+ */
+void  endInterfaceScreen(mapTile_t* map);
 
 #endif

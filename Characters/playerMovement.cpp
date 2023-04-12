@@ -12,10 +12,10 @@
 
 //Function Prototypes
 void fly(Player* player);
-playerMoves_t getInput(NPCMapInfo mapInfo);
+playerMoves_t getInput(mapTile_t* map);
 int costOfPlayerMove(char moveType);
 void displayPlayerMoveError(char moveType);
-void listTrainers(NPCMapInfo mapInfo);
+void listTrainers(mapTile_t* map);
 void inBuilding();
 
 
@@ -23,7 +23,7 @@ char Player::move(mapTile_t* map){
     printMapWithChars(map,map->mapInfo);
 
     while(1 == 1){
-        playerMoves_t playerMove = getInput(map->mapInfo);
+        playerMoves_t playerMove = getInput(map);
         if(playerMove == QUIT){
             return 'Q';
         }
@@ -145,7 +145,7 @@ int costOfPlayerMove(char moveType){
  * @param mapInfo The info struct for the current map tile
  * @return Type of move made
  */
-playerMoves_t getInput(NPCMapInfo mapInfo){
+playerMoves_t getInput(mapTile_t* map){
 
     int inputEnded = 0;
     playerMoves_t chosenMove;
@@ -217,7 +217,7 @@ playerMoves_t getInput(NPCMapInfo mapInfo){
             break;
         //List Trainers
         case 't':
-            listTrainers(mapInfo);
+            listTrainers(map);
             break;
         //Fly
         case 'f':
@@ -267,20 +267,20 @@ void inBuilding(){
  * 
  * @param mapInfo Info struct for the current map tile
  */
-void listTrainers(NPCMapInfo mapInfo){
+void listTrainers(mapTile_t* map){
     //Make a list to the trainers in
-    GameCharacter NPCList[mapInfo.numNPCs];
+    GameCharacter NPCList[map->mapInfo.numNPCs];
     int placeTracker = 0;
     
     //Gets location of all trainers from the location array add them to the list 
     for(int i=0; i < 21; i++){
         for(int j = 0; j < 80; j++){
-            if(mapInfo.charLocations[i][j].type != 'X' && mapInfo.charLocations[i][j].type != '@'){
+            if(map->mapInfo.charLocations[i][j].type != 'X' && map->mapInfo.charLocations[i][j].type != '@'){
                 Point temp;
                 temp.rowNum = i;
                 temp.colNum = j;
 
-                NPCList[placeTracker] = GameCharacter(temp,mapInfo.charLocations[i][j].type,0);
+                NPCList[placeTracker] = GameCharacter(temp,map->mapInfo.charLocations[i][j].type,0);
 
                 placeTracker++;
             }
@@ -290,14 +290,21 @@ void listTrainers(NPCMapInfo mapInfo){
 
     int escPressed = 0;
     int pageTracker = 0; 
-
+    int npcListTracker;
+    setInterfaceScreen();
     //Display the list
     while(escPressed == 0){
+        
+        /*
         //Clears any text currently displayed at the top
         move(0,0);
         clrtoeol();
-        for(int i = pageTracker; i < mapInfo.numNPCs && i < (pageTracker + 4); i++){
-            GameCharacter currChar = NPCList[i];
+        */
+       
+        clearInterfaceScreen();
+        npcListTracker = pageTracker;
+        for(int i = 3; i < 15 && npcListTracker < (map->mapInfo.numNPCs - 1); i++){
+            GameCharacter currChar = NPCList[npcListTracker];
 
             if(currChar.type == '@'){
                 continue;
@@ -305,35 +312,37 @@ void listTrainers(NPCMapInfo mapInfo){
 
             //Set up relative location
             //Gets the location difference for each direction
-            int vertDiff = mapInfo.playerLocation.rowNum - currChar.getRowNum();
-            int horiDiff = mapInfo.playerLocation.colNum - currChar.getColNum();
+            int vertDiff = map->mapInfo.playerLocation.rowNum - currChar.getRowNum();
+            int horiDiff = map->mapInfo.playerLocation.colNum - currChar.getColNum();
 
             //Setuip std::strings to hold the cardinal directions
-            std::string vertStr = "South";
-            std::string horiStr = "West";
+            std::string vertStr = "North";
+            std::string horiStr = "East";
 
             //Flips the sign and cardinal direction if the difference is negative
             if(vertDiff < 0){
-                vertStr = "North";
+                vertStr = "South";
                 vertDiff *= -1;
             }
 
             if(horiDiff < 0){
-                horiStr = "East";
+                horiStr = "West";
                 horiDiff *= -1;
             }
 
-            printw("%c: %d %s %d %s ",currChar.type,vertDiff,vertStr.c_str(),horiDiff,horiStr.c_str());
+            attron(COLOR_PAIR(COLOR_SOFT_BLACK));
+            mvprintw(i,5,"%c: %d %s %d %s ",currChar.type,vertDiff,vertStr.c_str(),horiDiff,horiStr.c_str());
+            npcListTracker++;
         }
     
         //Wait for player input
         int action = getch();
 
-        if(action == KEY_UP && (pageTracker - 4) >= 0){
-            pageTracker -= 4;
+        if(action == KEY_UP && (pageTracker - 15) >= 0){
+            pageTracker -= 15;
         }
-        else if(action == KEY_DOWN && (pageTracker + 4) < mapInfo.numNPCs){
-            pageTracker += 4;
+        else if(action == KEY_DOWN && (pageTracker + 15) < map->mapInfo.numNPCs){
+            pageTracker += 15;
         }
         else if(action == 27){
             escPressed = 1;
@@ -342,9 +351,12 @@ void listTrainers(NPCMapInfo mapInfo){
     
     }
 
+    /*
     //Clear Message
     move(0,0);
     clrtoeol();
+    */
+   endInterfaceScreen(map);
   
 
 }
@@ -402,3 +414,4 @@ GameCharacter* Player::clone(){
     Player* temp = new Player(Point(this->rowNum,this->colNum));
     return temp;
 }
+

@@ -34,6 +34,7 @@ class Player : public GameCharacter
          * @return The type of move made
          */
         char movePlayerInMap(playerMoves_t playerMove,mapTile_t* map);
+
     public:
         /**
          * @brief Construct a new Player object
@@ -57,7 +58,6 @@ class Player : public GameCharacter
          * @return A pointer to the created copy
          */
         virtual GameCharacter* clone();
-        
 };
 
 

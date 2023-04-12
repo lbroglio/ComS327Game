@@ -1,16 +1,10 @@
 #include<stdio.h>
 #include<curses.h>
+#include"screen.h"
 #include"../Map/map.h"
 #include"../Characters/gameCharacter.h"
 
-//Colors
-#define COLOR_TALLGRASS 58
-#define COLOR_FOREST 28
-#define COLOR_POKEMART 17
-#define COLOR_ROCK 235
-#define COLOR_DESSERT 220
-#define COLOR_BRIDGE 94
-#define COLOR_PATH 255
+
 
 
 void terminalInit(){
@@ -117,4 +111,33 @@ void printMapWithChars(mapTile_t* map, NPCMapInfo  mapInfo){
     refresh();
 }
 
+void setInterfaceScreen(){
+    //CREATE NEW COLOR FOR BACKGROUND
+    init_pair(COLOR_SOFT_BLACK, COLOR_WHITE, COLOR_SOFT_BLACK);
 
+    for(int i = 3; i < 20; i++){
+        move(i,4);
+        for(int j = 0; j < 76;j ++){
+                attron(COLOR_PAIR(COLOR_SOFT_BLACK));
+                printw("  ");
+        }
+        
+    }
+
+}
+
+
+void clearInterfaceScreen(){
+        for(int i =3; i < 20; i++){
+            move(i,4);
+            for(int j = 0; j < 76; j++){
+                    attron(COLOR_PAIR(COLOR_SOFT_BLACK));
+                    printw("  ");
+            }   
+    }
+}
+
+
+void  endInterfaceScreen(mapTile_t* map){
+    printMapWithChars(map, map->mapInfo);
+}

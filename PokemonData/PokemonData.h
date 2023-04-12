@@ -7,11 +7,6 @@
 #include<vector>
 #include<iostream>
 
-/**
- * @brief The container for the data parsed from the files
- * 
- */
-extern DataCon* pokeData;
 
 class Pokemon_Info{
 	private:
@@ -220,6 +215,12 @@ class DataCon{
 		 */
 		DataCon();
 };
+
+/**
+ * @brief The container for the data parsed from the files
+ * 
+ */
+extern DataCon* pokeData;
 
 /**
 * @brief Prints a formated Pokemon object to the provided ostream

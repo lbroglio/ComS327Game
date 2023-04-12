@@ -52,7 +52,7 @@ class Pokemon{
              * @param x The Stat struct to add to this one
              * @return Reference to the result of the additon
              */
-            PokemonStats& operator+(PokemonStats x);
+            PokemonStats operator+(PokemonStats x);
             /**
              * @brief Adds a PokemonStat to this one by adding the individual stats
              * 
@@ -76,14 +76,16 @@ class Pokemon{
         std::string species;
         /** @brief  This type of pokemon's ID*/
         int pokemonID;
-        /** @brief  Stores the stats of this pokemon*/
-        PokemonStats stats;
-        /** @brief  Stores the base(starting) stats of this pokemon*/
+        /** @brief  This type of pokemon's species ID*/
+        int speciesID;
         PokemonStats baseStats;
         /** @brief  Stores the IVs of this poekmon*/
         PokemonStats IVs;
+        /** @brief  Stores the stats of this pokemon*/
+        PokemonStats stats;
+        /** @brief  Stores the base(starting) stats of this pokemon*/
         /** @brief The moves this pokemon currently knows*/
-        std::vector<Move> moveList;
+        std::vector<Move>* moveList;
         /** @brief  Stores a boolean for whether or not the Pokemon is shiny. 0 means it isn't shiny 1 means it is*/
         int isShiny;
     public:
@@ -170,7 +172,7 @@ class Pokemon{
          * 
          * @return The list of moves
          */
-        std::vector<Move> getMoves(){return moveList;}
+        std::vector<Move>* getMoves(){return moveList;}
         /**
          * @brief Increases this Pokemon's level. Handles updating the Stats.
          * 
@@ -203,14 +205,39 @@ class Pokemon{
          * @brief Destroy the Pokemon object
          * 
          */
-        ~Pokemon(); 
+        ~Pokemon(){delete moveList;}
     /**
     * @brief Randomly Generates a set of IVs (Indivudal Values) for a pokemon
     * 
     * @return A Stats struct holding the generated IVs 
     */
     friend PokemonStats generateIVs();
+
+    /**
+    * @brief Prints a formated Pokemon object to the provided ostream
+    * 
+    * @param o The stream to print the class to
+    * @param s The Pokemon to print
+    * @return The stream with the class added
+    */
+    friend std::ostream &operator<<(std::ostream &o,  const Pokemon &s);
+    /**
+    * @brief Prints a formated PokemonStats object to the provided ostream
+    * 
+    * @param o The stream to print the class to
+    * @param s The PokemonStats object to print
+    * @return The stream with the class added
+    */
+    friend std::ostream &operator<<(std::ostream &o,  const PokemonStats &s);
     
 };
+
+/**
+ * @brief Gets the ID of a random pokemon
+ * 
+ * @return The randomly selected ID
+ */
+int getRandomPokemonID();
+
 
 #endif

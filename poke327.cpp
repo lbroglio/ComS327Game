@@ -15,6 +15,7 @@
 #include"./Characters/NPCMapInfo.h"
 #include"./PokemonData/PokemonData.h"
 #include"./Parser/fileParser.h"
+#include"./Pokemon/Pokemon.h"
 
 //Declare World Map as Global
 WorldMap worldMap = WorldMap();
@@ -26,6 +27,7 @@ DataCon* pokeData = new DataCon();
 int main(int argc, char* argv[]){
     //Load the files into the pokeData container
     loadData(pokeData);
+
     int numNPCs;
     terminalInit();
 

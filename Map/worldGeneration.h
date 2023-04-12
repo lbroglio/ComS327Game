@@ -2,8 +2,11 @@
 #define WORLDGEN_H
 
 #include"map.h"
+#include"point.h"
 #include"../Characters/playerMovement.h"
 //#include"../PokemonData/PokemonData.h"
+
+extern Point worldLoc;
 
 /**
  * @brief Wrapper struct for the array holding all the tiles in the world map

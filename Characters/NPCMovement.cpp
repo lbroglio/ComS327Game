@@ -929,8 +929,6 @@ NPCMapInfo::NPCMapInfo(int numNPCs){
             this->charLocations[i][j] = GameCharacter();
         }
     }
-
-    
 }
 
 
@@ -952,10 +950,10 @@ GameCharacter::GameCharacter(Point startLoc, char type, int id){
     int getsNext = 1;
     
     if(type != '@'){
-        while(numPoke < 6 && getsNext <= 6){
-            this->heldPokemon.push_back(getRandomPokemon());
-            getsNext = (rand() % 10) + 1;
-        }
+    while(numPoke < 6 && getsNext <= 6){
+        this->heldPokemon.push_back(getRandomPokemon());
+        getsNext = (rand() % 10) + 1;
+    }
     }   
 }
 

@@ -293,8 +293,7 @@ Pokemon getRandomPokemon(){
         id = (rand() % 193) + 10001;
     }
 
-    //int manDist = abs(200 - worldMap->worldLoc.rowNum) + abs(200 - worldMap->worldLoc.colNum);
-    int manDist = 50;
+    int manDist = abs(200 - worldLoc.rowNum) + abs(200 - worldLoc.colNum);
     int level;
     if(manDist == 0){
         level = 1;

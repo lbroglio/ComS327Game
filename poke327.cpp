@@ -20,6 +20,9 @@
 //Declare World Map as Global
 WorldMap worldMap = WorldMap();
 
+//Stores the current postion within the world
+Point worldLoc = Point(200,200);
+
 //Create the PokeData container
 DataCon* pokeData = new DataCon();
 
@@ -31,10 +34,7 @@ int main(int argc, char* argv[]){
     int numNPCs;
     terminalInit();
 
-    int currWorldRow = 200;
-    int currWorldCol = 200;
-
-    mapTile_t* map = (*(worldMap.worldArr + currWorldRow)) + currWorldCol;
+    mapTile_t* map = (*(worldMap.worldArr + worldLoc.rowNum)) + worldLoc.colNum;
 
 
     if(argc == 2){
@@ -79,30 +79,30 @@ int main(int argc, char* argv[]){
             map->mapInfo.charLocations[worldMap.player->getRowNum()][worldMap.player->getColNum()] = GameCharacter();
 
             if(worldMap.player->getRowNum() == 0){
-                currWorldRow -= 1;
+                worldLoc.rowNum -= 1;
                 worldMap.player->setRowNum(19);
                 worldMap.player->setColNum(map->topEntLoc);
             }
             else if(worldMap.player->getRowNum() == 20){
-                currWorldRow += 1;
+                worldLoc.rowNum += 1;
                 worldMap.player->setRowNum(1);
                 worldMap.player->setColNum(map->bottomEntLoc);               
             }
             else if(worldMap.player->getColNum() == 0){
-                currWorldCol -= 1;
+                worldLoc.colNum -= 1;
                 worldMap.player->setRowNum(map->leftEntLoc);
                 worldMap.player->setColNum(78);    
             }
             else if(worldMap.player->getColNum() == 79){
-                currWorldCol += 1;;
+                worldLoc.colNum += 1;;
                 worldMap.player->setRowNum(map->rightEntLoc);
                 worldMap.player->setColNum(1);   
             }
 
-            if(worldMap.placedArr[currWorldRow][currWorldCol] == 0){
-                worldMap.worldArr[currWorldRow][currWorldCol] = createMapTile(&worldMap,currWorldRow,currWorldCol);
-                worldMap.placedArr[currWorldRow][currWorldCol] = 1;
-                map = (*(worldMap.worldArr + currWorldRow)) + currWorldCol;
+            if(worldMap.placedArr[worldLoc.rowNum][worldLoc.colNum] == 0){
+                worldMap.worldArr[worldLoc.rowNum][worldLoc.colNum] = createMapTile(&worldMap,worldLoc.rowNum,worldLoc.colNum);
+                worldMap.placedArr[worldLoc.rowNum][worldLoc.colNum] = 1;
+                map = (*(worldMap.worldArr + worldLoc.rowNum)) + worldLoc.colNum;
 
                 map->eventManager = new Queue(numNPCs + 1);
                 map->eventManager->addWithPriority(worldMap.player,1);
@@ -115,7 +115,7 @@ int main(int argc, char* argv[]){
                 map->mapInfo.playerLocation.colNum = -1;
             }
             else{
-                map = (*(worldMap.worldArr + currWorldRow)) + currWorldCol;
+                map = (*(worldMap.worldArr + worldLoc.rowNum)) + worldLoc.colNum;
                 map->eventManager->addWithPriority(worldMap.player,map->savedTime);
             }
 
@@ -126,13 +126,13 @@ int main(int argc, char* argv[]){
             map->savedTime = time;
             map->mapInfo.charLocations[map->mapInfo.playerLocation.rowNum][map->mapInfo.playerLocation.colNum] = GameCharacter();
             
-            currWorldRow = worldMap.player->getRowNum();
-            currWorldCol = worldMap.player->getColNum();
+            worldLoc.rowNum = worldMap.player->getRowNum();
+            worldLoc.colNum = worldMap.player->getColNum();
 
-            if(worldMap.placedArr[currWorldRow][currWorldCol] == 0){
-                worldMap.worldArr[currWorldRow][currWorldCol] = createMapTile(&worldMap,currWorldRow,currWorldCol);
-                worldMap.placedArr[currWorldRow][currWorldCol] = 1;
-                map = (*(worldMap.worldArr + currWorldRow)) + currWorldCol;
+            if(worldMap.placedArr[worldLoc.rowNum][worldLoc.colNum] == 0){
+                worldMap.worldArr[worldLoc.rowNum][worldLoc.colNum] = createMapTile(&worldMap,worldLoc.rowNum,worldLoc.colNum);
+                worldMap.placedArr[worldLoc.rowNum][worldLoc.colNum] = 1;
+                map = (*(worldMap.worldArr + worldLoc.rowNum)) + worldLoc.colNum;
 
 
                 worldMap.player->setRowNum(((map->biomeArr) + 1)->cenRowNum -1);
@@ -152,7 +152,7 @@ int main(int argc, char* argv[]){
                 worldMap.player->setRowNum(((map->biomeArr) + 1)->cenRowNum -1);
                 worldMap.player->setColNum(((map->biomeArr) + 1)->cenColNum); 
 
-                map = (*(worldMap.worldArr + currWorldRow)) + currWorldCol;
+                map = (*(worldMap.worldArr + worldLoc.rowNum)) + worldLoc.colNum;
                 map->eventManager->addWithPriority(worldMap.player,map->savedTime);
             }
         }   

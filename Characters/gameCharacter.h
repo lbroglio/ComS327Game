@@ -32,6 +32,7 @@ class GameCharacter : public IDable{
          * @param startLoc point the character is at
          * @param type The type of character it is
          * @param id The id to assign it
+         * @param worldLoc The postion this character is in the world
          */
         GameCharacter(Point startLoc, char type, int id);
         /**

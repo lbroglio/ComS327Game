@@ -45,6 +45,7 @@ class Pokemon{
              * @param sDefenseVal The special defense to set this to
              */
             PokemonStats(int HPVal, int attackVal, int defenseVal, int speedVal, int sAttackVal, int sDefenseVal);
+            PokemonStats(){}
 
             /**
              * @brief Adds two PokemonStats together by adding the individual stats
@@ -60,8 +61,12 @@ class Pokemon{
              * @return Reference to the result of the additon
              */
             PokemonStats& operator+=(PokemonStats x);
-            private:
-                PokemonStats(){}
+            /**
+             * @brief Gets string to display these stats to the screen
+             * 
+             * @return The display string
+             */
+            std::string getDisplayString();
         };
     private:
         /** @brief  The current HP this pokemon has*/
@@ -78,6 +83,7 @@ class Pokemon{
         int pokemonID;
         /** @brief  This type of pokemon's species ID*/
         int speciesID;
+        /** @brief  Stores the Base Stats of this pokemon*/
         PokemonStats baseStats;
         /** @brief  Stores the IVs of this poekmon*/
         PokemonStats IVs;
@@ -85,9 +91,11 @@ class Pokemon{
         PokemonStats stats;
         /** @brief  Stores the base(starting) stats of this pokemon*/
         /** @brief The moves this pokemon currently knows*/
-        std::vector<Move>* moveList;
+        std::vector<Move> moveList;
         /** @brief  Stores a boolean for whether or not the Pokemon is shiny. 0 means it isn't shiny 1 means it is*/
         int isShiny;
+        /** @brief  Stores the gener of this pokemon*/
+        std::string gender;
     public:
         /**
          * @brief Returns the number of Hit points this pokemon  has 
@@ -172,7 +180,13 @@ class Pokemon{
          * 
          * @return The list of moves
          */
-        std::vector<Move>* getMoves(){return moveList;}
+        std::vector<Move> getMoves(){return moveList;}
+        /**
+         * @brief Get this pokemon's gender
+         * 
+         * @return The pokemons gender
+         */
+        std::string getGender(){return gender;}
         /**
          * @brief Increases this Pokemon's level. Handles updating the Stats.
          * 
@@ -196,16 +210,24 @@ class Pokemon{
          */
         void updateStats();
         /**
+        * @brief Gets string to display this pokemone to the screen
+        * 
+        * @return The display string
+        */
+        std::string getDisplayString();
+        /**
+        * @brief Gets stats string to display this pokmemon's stats to the screen
+        * 
+        * @return The stat's display string
+        */
+        std::string getStatsString(){return  this->stats.getDisplayString();}
+        Pokemon(){}
+        /**
          * @brief Construct a new Pokemon object at the given level
          * 
          * @param startingLevel The level this Pokemon is
          */
         Pokemon(int givenID, int startingLevel);
-        /**
-         * @brief Destroy the Pokemon object
-         * 
-         */
-        ~Pokemon(){delete moveList;}
     /**
     * @brief Randomly Generates a set of IVs (Indivudal Values) for a pokemon
     * 
@@ -233,11 +255,12 @@ class Pokemon{
 };
 
 /**
- * @brief Gets the ID of a random pokemon
+ * @brief Randomly creates new Pokemon based on the location in the world
  * 
- * @return The randomly selected ID
+ * 
+ * @return The created pokemon 
  */
-int getRandomPokemonID();
+Pokemon getRandomPokemon();
 
 
 #endif

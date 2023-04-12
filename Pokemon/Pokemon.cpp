@@ -2,6 +2,8 @@
 #include<vector>
 #include"../PokemonData/PokemonData.h"
 #include"Pokemon.h"
+#include"../Map/point.h"
+#include"../Map/worldGeneration.h"
 
 
 
@@ -126,10 +128,10 @@ void Pokemon::updateStats(){
  * @param level The level of the Pokemon
  * @return Vector containing the chosen moves
  */
-std::vector<Move>* chooseMoves(int givenID, int level){
+std::vector<Move> chooseMoves(int givenID, int level){
     //Create vectors
     std::vector<int> possibleMoveIDs;
-    std::vector<Move>* chosenMoves = new std::vector<Move>();
+    std::vector<Move> chosenMoves;
 
     int  dataVectorSize = pokeData->pokemon_moves.size();
 
@@ -168,10 +170,10 @@ std::vector<Move>* chooseMoves(int givenID, int level){
         Move temp = pokeData->moves[tracker];
 
         if(temp.id() == possibleMoveIDs[moveLoc1] || temp.id() == possibleMoveIDs[moveLoc2]){
-            chosenMoves->push_back(temp);
+            chosenMoves.push_back(temp);
         }
         tracker++;
-        foundMoves = chosenMoves->size();
+        foundMoves = chosenMoves.size();
     }
     
     //Return Chosen moves
@@ -204,9 +206,46 @@ Pokemon::Pokemon(int givenID, int startingLevel) : baseStats(PokemonStats(givenI
         else{
             isShiny = 0;
         }
+    
+        int genderNum = rand() % 2;
+        if(genderNum == 0){
+            gender = "male";
+        }
+        else{
+            gender = "female";
+        }
       
-
 }
+
+ std::string Pokemon::getDisplayString(){
+    
+    std::string levelString = "Level: " +  this->level;
+
+    std::string movesString = "Moves[";
+    int dataSize = this->moveList.size();
+    for(int i=0; i < dataSize; i++){
+        movesString += this->moveList[i].identifier();
+        if(i != dataSize -1){
+            movesString +=  ", ";
+        }
+    }
+    movesString += "]";
+
+    return this->species + " "  + levelString + " " + this->gender + " " + (this->isShiny == 0  ? "Not Shiny" : "Shiny") + " " + movesString;
+
+ }
+
+
+ std::string Pokemon::PokemonStats::getDisplayString(){
+    std:: string HPString = "HP: " +  this->HP;
+    std:: string atckString = "Attack: " +  this->attack;
+    std:: string defString = "Defense: " +  this->defense;
+    std:: string speedString = "Speed: " +  this->speed;
+    std:: string specAString = "Special Attack: " +  this->specialAttack;
+    std:: string specDString = "Special Defense: " +  this->specialDefense;
+
+    return "{ "  + HPString + ", " + atckString + ", " + defString + ", " + speedString + ", " + specAString + ", " + specDString + "}";
+ }
 
 
 std::ostream &operator<<(std::ostream &o,  const Pokemon &s){
@@ -221,9 +260,9 @@ std::ostream &operator<<(std::ostream &o,  const Pokemon &s){
     o << "\tIVs" << s.IVs;
     o << "\tMoves[";
 
-    int dataSize = s.moveList->size();
+    int dataSize = s.moveList.size();
     for(int i=0; i < dataSize; i++){
-        o << (*s.moveList)[i].identifier();
+        o << s.moveList[i].identifier();
         if(i != dataSize -1){
             o <<  ", ";
         }
@@ -248,10 +287,31 @@ std::ostream &operator<<(std::ostream &o,  const Pokemon::PokemonStats &s){
 
 }
 
-int getRandomPokemonID(){
+Pokemon getRandomPokemon(){
     int id = (rand() % 1092) + 1;
     if (id > 898){
         id = (rand() % 193) + 10001;
     }
-    return id;
+
+    //int manDist = abs(200 - worldMap->worldLoc.rowNum) + abs(200 - worldMap->worldLoc.colNum);
+    int manDist = 50;
+    int level;
+    if(manDist == 0){
+        level = 1;
+    }
+    else if(manDist <= 200){
+        level = (rand() % (manDist /2)) + 1;
+    }
+    else{
+        int minLevel = ((manDist - 200) / 2);
+        if(minLevel == 100){
+            level = 100;
+        }
+        else{
+            level = (rand() % (100 - minLevel)) + minLevel;
+        }
+        
+    }
+
+    return Pokemon(id,level);   
 }

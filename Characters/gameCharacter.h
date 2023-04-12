@@ -1,9 +1,12 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
+#include<vector>
 #include"../Map/map.h"
 #include"NPCMapInfo.h"
 #include"../Data-Structures/priorityQueue.h"
+#include"../Pokemon/Pokemon.h"
+
 
 /**
  * @brief Stores information about the a character. 
@@ -17,6 +20,8 @@ class GameCharacter : public IDable{
         int colNum;
         /** Unique id used for indexing this character*/
         int id;
+        /** Stores a list of the pokemon this character has*/
+        std::vector<Pokemon> heldPokemon;
     public:
         /** Char represneting what type of NPC (or player character) this character is*/
         char type;
@@ -70,7 +75,12 @@ class GameCharacter : public IDable{
          * @return The column number
          */
         int getColNum(){return colNum;}
-
+        /**
+         * @brief Gets the list of pokemon this trainer is holding
+         * 
+         * @return Vector containing the list of pokemon 
+         */
+        std::vector<Pokemon> getHeldPokemon(){return heldPokemon;}
         /**
          * @brief Performs the move action for this character
          * 

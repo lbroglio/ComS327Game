@@ -17,6 +17,7 @@ int costOfPlayerMove(char moveType);
 void displayPlayerMoveError(char moveType);
 void listTrainers(mapTile_t* map);
 void inBuilding();
+void encounterPokemon(mapTile_t* map);
 
 
 char Player::move(mapTile_t* map){
@@ -97,8 +98,8 @@ char Player::movePlayerInMap(playerMoves_t playerMove,mapTile_t* map){
 
     //If theres a trainer at the location to move to
     if(map->mapInfo.charLocations[newPos.rowNum][newPos.colNum].type != 'X'){
-        if(checkTrainerDefeated(map->mapInfo.charLocations[newPos.rowNum][newPos.colNum].id,map->mapInfo) ==  0){
-             trainerBattle(map->mapInfo.charLocations[newPos.rowNum][newPos.colNum].id,map);
+        if(checkTrainerDefeated(map->mapInfo.charLocations[newPos.rowNum][newPos.colNum].getID(),map->mapInfo) ==  0){
+             trainerBattle(*this,map->mapInfo.charLocations[newPos.rowNum][newPos.colNum],map);
         }
         return map->mapArr[newPos.rowNum][newPos.colNum];
     }
@@ -118,6 +119,13 @@ char Player::movePlayerInMap(playerMoves_t playerMove,mapTile_t* map){
     //Moves the player inside the character location array
     map->mapInfo.charLocations[temp.rowNum][temp.colNum] = GameCharacter();
     map->mapInfo.charLocations[newPos.rowNum][newPos.colNum] = *this;
+
+    if(map->mapArr[newPos.rowNum][newPos.colNum] == ':'){
+        int chooseNum = rand() % 10;
+        if(chooseNum == 1){
+            encounterPokemon(map);
+        }
+    }
 
     return map->mapArr[newPos.rowNum][newPos.colNum];
 }
@@ -303,7 +311,7 @@ void listTrainers(mapTile_t* map){
        
         clearInterfaceScreen();
         npcListTracker = pageTracker;
-        for(int i = 3; i < 15 && npcListTracker < (map->mapInfo.numNPCs - 1); i++){
+        for(int i = 3; i < 20 && npcListTracker < (map->mapInfo.numNPCs - 1); i++){
             GameCharacter currChar = NPCList[npcListTracker];
 
             if(currChar.type == '@'){
@@ -412,6 +420,77 @@ void fly(Player* player){
 
 GameCharacter* Player::clone(){
     Player* temp = new Player(Point(this->rowNum,this->colNum));
+    temp->heldPokemon = this->heldPokemon;
     return temp;
 }
 
+void chooseStarter(GameCharacter* player,mapTile_t* map){
+    Pokemon choices[3] = {getRandomPokemon(1),getRandomPokemon(1),getRandomPokemon(1)};
+    
+
+    setInterfaceScreen();
+
+    mvprintw(3,5,"Choose your starter pokemon. Press space to select");
+
+    mvprintw(5,7,choices[0].getDisplayString().c_str());
+    mvprintw(6,7,choices[1].getDisplayString().c_str());
+    mvprintw(7,7,choices[2].getDisplayString().c_str());
+
+
+
+    int chosen = 0;
+    int i =0;
+
+    while(chosen == 0){
+        mvprintw(5+i,5,"*");
+        //Wait for player input
+        int action = getch();
+        
+        mvprintw(5+i,5," ");
+
+        if(action == KEY_UP && i > 0){
+            i -= 1;
+        }
+        else if(action == KEY_DOWN && i < 2){
+            i += 1;
+        }
+        else if(action == ' '){
+            chosen = 1;
+        }
+        
+        
+
+    }
+
+    player->addPokemon(choices[i]);
+
+    endInterfaceScreen(map);
+
+}
+
+void encounterPokemon(mapTile_t* map){
+    Pokemon encountered = getRandomPokemon();
+
+    setInterfaceScreen();
+
+    mvprintw(3,5,"You have encountered a wild pokemon: Press esc to exit");
+
+    mvprintw(5,5,"Pokemon Details: ");
+    mvprintw(6,5,encountered.getDisplayString().c_str());
+    mvprintw(7,5,"stats: ");
+    printw(encountered.getStatsString().c_str());
+
+
+
+
+
+    char action;
+
+    while(action != 27){
+        action =  getch();
+    }
+
+    endInterfaceScreen(map);
+
+
+}

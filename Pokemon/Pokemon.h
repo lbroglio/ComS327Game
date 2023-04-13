@@ -262,5 +262,11 @@ class Pokemon{
  */
 Pokemon getRandomPokemon();
 
-
+/**
+ * @brief Randomly creates new Pokemon based on a given level
+ * 
+ * @param level The level to make this pokemon
+ * @return The created pokemon  
+ */
+Pokemon getRandomPokemon(int level);
 #endif

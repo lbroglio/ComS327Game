@@ -14,7 +14,6 @@ WorldMap::WorldMap(){
 
     for(int i =0; i < 401; i++){
         *(worldArr + i) =  (mapTile_t*)malloc(sizeof(mapTile_t) * 401);
-
         for(int j =0; j < 401; j++){
             placedArr[i][j] = 0;
         }
@@ -42,7 +41,13 @@ WorldMap::~WorldMap(){
         delete player;
         //delete pokeData;
 
-        for(int i =0; i < 401; i++){
+        for(int i =0; i < 400; i++){
+            for(int j =0; j < 400; j++){
+                if(placedArr[i][j] == 1){
+                    mapTileDestroy(worldArr[i] + j);
+                }
+            
+            }   
             free(worldArr[i]);
         }
         free(this->worldArr);  

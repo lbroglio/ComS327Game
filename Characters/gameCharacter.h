@@ -7,7 +7,6 @@
 #include"../Data-Structures/priorityQueue.h"
 #include"../Pokemon/Pokemon.h"
 
-
 /**
  * @brief Stores information about the a character. 
  * A default base GameCharacter is a sentry. 
@@ -85,10 +84,11 @@ class GameCharacter : public IDable{
         /**
          * @brief Performs the move action for this character
          * 
+         * @param player The player object
          * @param map The map the character is on 
          * @return char 
          */
-        virtual char move(mapTile_t* map){return '%';}
+        virtual char move(GameCharacter player, mapTile_t* map){return '%';}
         /**
          * @brief Set the row number to the provided value
          * 
@@ -101,6 +101,12 @@ class GameCharacter : public IDable{
          * @param newNum The new column number
          */
         void setColNum(int newNum){colNum = newNum;}
+        /**
+         * @brief Adds a given pokemon to this characters heldPokemon
+         * 
+         * @param toAdd The pokemon to add
+         */
+        void addPokemon(Pokemon toAdd){heldPokemon.push_back(toAdd);}
 
 
         operator GameCharStorage(){return GameCharStorage(this->id,this->type);}
@@ -126,10 +132,11 @@ class Wayfinder : public GameCharacter{
         /**
          * @brief Moves this character. Uses character type to determine the next legal move. Also handles engaging player battles. 
          * 
+         * @param player The player object
          * @param map The map this character is on
          * @return Char for the type of move (What biome) 
          */
-        char move(mapTile_t* map);
+        char move(GameCharacter player, mapTile_t* map);
 
         /**
          * @brief Handles the logic for determining if the character can continue moving in the current direction. If not finds the next desirable direction
@@ -352,10 +359,11 @@ class Pathfinder : public GameCharacter
         /**
          * @brief Moves this character. Uses character type to determine the next legal move. Also handles engaging player battles. 
          * 
+         * @param player The player object
          * @param map The map this character is on
          * @return Char for the type of move (What biome) 
          */
-        char move(mapTile_t* map);
+        char move(GameCharacter player, mapTile_t* map);
 
         /**
          * @brief Creates a copy of this Character

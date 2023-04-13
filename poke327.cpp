@@ -37,15 +37,20 @@ int main(int argc, char* argv[]){
     mapTile_t* map = (*(worldMap.worldArr + worldLoc.rowNum)) + worldLoc.colNum;
 
 
-    if(argc == 2){
-        numNPCs = atoi(argv[1]);
+    if(argc == 3){
+        std::string compString = "--num-trainers";
+        if(argv[1] == compString){
+            numNPCs = atoi(argv[2]);
+        }
     }
     else{
         numNPCs = (rand() %  4) + 9;
     }
 
+
+
     map->eventManager = new Queue(numNPCs + 1);
-    map->eventManager->addWithPriority(worldMap.player,1);
+    
 
     map->mapInfo = spawnNPCS(map,numNPCs);
     map->mapInfo.charLocations[worldMap.player->getRowNum()][worldMap.player->getColNum()] = *worldMap.player;
@@ -54,6 +59,10 @@ int main(int argc, char* argv[]){
     map->mapInfo.playerLocation.colNum = -1;
 
 
+    printMapWithChars(map,map->mapInfo);
+    chooseStarter(worldMap.player,map);
+
+    map->eventManager->addWithPriority(worldMap.player,1);
     int exitCom = 0;
     while(exitCom == 0){
         //printMapWithChars(&map,map.mapInfo);

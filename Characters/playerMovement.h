@@ -71,4 +71,13 @@ class Player : public GameCharacter
  */
 int playerTurn(GameCharacter* player, mapTile_t map);
 
+/**
+ * @brief Prompts the player to choose there starter pokemon and gives it to them
+ * 
+ * @param player Pointer to the player object
+ * @param map Pointer to the map the player is on
+ */
+void chooseStarter(GameCharacter* player,mapTile_t* map);
+
+
 #endif

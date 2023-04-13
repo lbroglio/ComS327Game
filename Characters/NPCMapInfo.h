@@ -3,10 +3,14 @@
 
 #include"../Map/point.h"
 
+
+class GameCharacter;
+
 struct GameCharStorage{
     public:
         int id;
         char type;
+
         GameCharStorage(int id, char type){this->id = id; this->type = type;}
         /**
          * @brief Default constructor - NOOP
@@ -28,7 +32,7 @@ class NPCMapInfo{
         /** Stores the results of the rival's pathfinding algorithm*/
         int rivalDist[21][80];
         /** Stores the location of the NPCs on the map X if none is there*/
-        GameCharStorage charLocations[21][80];
+        GameCharacter** charLocations;
         /**Indicator of whether or not the player is by water. 1 = true, 0  = false*/
         int playerByWater;
         /**Stores the number of NPCs on this map*/
@@ -50,12 +54,6 @@ class NPCMapInfo{
          * 
          */
         NPCMapInfo(){}
-
-    /**
-     * @brief Destoys the given nMapInfo struct and frees its allocated memory
-     * 
-     */
-    //~NPCMapInfo();
 
 };
 

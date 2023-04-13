@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include"map.h"
+#include"../Characters/gameCharacter.h"
 
 
 //Colors
@@ -96,6 +97,15 @@ void printMap(mapTile_t* map){
 }
 
 void mapTileDestroy(mapTile_t* map){
+
+        /*
+        for(int i =0; i < 21; i++){
+            delete map->mapInfo.charLocations[i];
+        }
+        */
+        delete map->mapInfo.charLocations;
+        free(map->mapInfo.defTrainers);
+
     free(map->biomeArr);
 }
 

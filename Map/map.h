@@ -71,7 +71,7 @@ void printMap(mapTile_t* map);
  * 
  * @param map The map to destroy
  */
-void mapTileDestory(mapTile_t* map);
+void mapTileDestroy(mapTile_t* map);
 
 
 /**

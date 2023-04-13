@@ -14,13 +14,13 @@
 
 //CODE FOR WAYFINDERS ---------------------------------------------------
 
-char Wayfinder::move(mapTile_t* map){
+char Wayfinder::move(GameCharacter player, mapTile_t* map){
     Point nextSpace = this->checkDirection(map);
 
     //If a trainer battle was signaled
     if(nextSpace.rowNum == -2){
         printMapWithChars(map, map->mapInfo); 
-        trainerBattle(*this, map);
+        trainerBattle(player,*this, map);
         //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
         //Returns the current space
         return map->mapArr[this->rowNum][this->colNum];      
@@ -98,6 +98,7 @@ Point Pacer::checkDirection(mapTile_t* map){
 GameCharacter* Pacer::clone(){
     Pacer* temp = new Pacer(Point(this->rowNum,this->colNum),this->id);
     temp->direction = this->direction;
+    temp->heldPokemon = this->heldPokemon;
     return temp;
 }
 
@@ -178,6 +179,7 @@ GameCharacter* Wanderer::clone(){
     Wanderer* temp = new Wanderer(Point(this->rowNum,this->colNum),this->spawnBiome,this->id);
     temp->direction = this->direction;
     temp->spawnBiome = this->spawnBiome;
+    temp->heldPokemon = this->heldPokemon;
     return temp;
 }
 
@@ -259,6 +261,7 @@ Point Explorer::checkDirectionRec(mapTile_t* map, Point moveOptions[], int numOp
 GameCharacter* Explorer::clone(){
     Explorer* temp = new Explorer(Point(this->rowNum,this->colNum),this->id);
     temp->direction = this->direction;
+    temp->heldPokemon = this->heldPokemon;
     return temp;
 }
 
@@ -358,6 +361,7 @@ Point Swimmer::checkDirectionCharge(mapTile_t* map){
 GameCharacter* Swimmer::clone(){
     Swimmer* temp = new Swimmer(Point(this->rowNum,this->colNum),this->id);
     temp->direction = this->direction;
+    temp->heldPokemon = this->heldPokemon;
     return temp;
 }
 
@@ -689,13 +693,7 @@ int Pathfinder::getPossibleMoves(mapTile_t map, Point* possibleMoves){
 }
 
 
-/**
- * @brief Moves a given hiker or rival character on the map
- * 
- * @param toMove Pointer to the hiker to move
- * @param mapInfo NPC info for the current map tile
- */
-char Pathfinder::move(mapTile_t* map){
+char Pathfinder::move(GameCharacter player, mapTile_t* map){
     //Gets the squares it could move to ordered by distance
     Point possibleMoves[8];
     int numMoves = getPossibleMoves(*map,possibleMoves);
@@ -715,7 +713,7 @@ char Pathfinder::move(mapTile_t* map){
         //Checks if the square is occupied by the player
         else if(map->mapInfo.charLocations[currBestMove.rowNum][currBestMove.colNum].type == '@'){
             printMapWithChars(map,map->mapInfo);
-            trainerBattle(*this,map);
+            trainerBattle(player,*this,map);
             //THIS MIGHT NEED TO CHANGE DEPEDING ON WHAT THE CHARACTER WINNING A TRAINER BATTLE MEANS
             //Returns the current space
             return map->mapArr[this->rowNum][this->colNum];        
@@ -745,6 +743,7 @@ char Pathfinder::move(mapTile_t* map){
 
 GameCharacter* Pathfinder::clone(){
     Pathfinder* temp = new Pathfinder(Point(this->rowNum,this->colNum),this->type,this->id);
+    temp->heldPokemon = this->heldPokemon;
     return temp;
 }
 
@@ -814,42 +813,42 @@ int moveGameChar(GameCharacter* toMove, int time, GameCharacter* player, mapTile
         case 'p':
         {
             Pacer* moveAs = dynamic_cast<Pacer*>(toMove);
-            moveType = moveAs->move(map);
+            moveType = moveAs->move(*player,map);
             break;
         }
         case 'w':
         {
             Wanderer* moveAs = dynamic_cast<Wanderer*>(toMove);
-            moveType = moveAs->move(map);
+            moveType = moveAs->move(*player,map);;
             break;
         }
         case 'e':
         {
             Explorer* moveAs = dynamic_cast<Explorer*>(toMove);
-            moveType = moveAs->move(map);
+            moveType = moveAs->move(*player,map);
             break;
         }             
         case 'm':
         {
             Swimmer* moveAs = dynamic_cast<Swimmer*>(toMove);
-            moveType = moveAs->move(map);
+            moveType = moveAs->move(*player,map);;
             break;
         }
         case 'r':
         case 'h':
         {
             Pathfinder* moveAs = dynamic_cast<Pathfinder*>(toMove);
-            moveType = moveAs->move(map);
+            moveType = moveAs->move(*player,map);
             break;
         }
         case '@':
         {
             Player* moveAs = dynamic_cast<Player*>(toMove);
-            moveType = moveAs->move(map);
+            moveType = moveAs->move(map);;
             break;
         }
         default:
-            moveType = toMove->move(map);
+            moveType = toMove->move(*player,map);;
             break;
     }
 
@@ -923,13 +922,18 @@ NPCMapInfo::NPCMapInfo(int numNPCs){
     this->playerLocation.rowNum = -1;
     this->playerLocation.colNum = -1;
 
-    //Fills the NPC positions array with Empty Character markers
+    // Create the NPC positions array fill it with Empty Character markers
+    charLocations = new GameCharacter*[21];
+
     for(int i =0; i< 21; i++){
+        charLocations[i] = new GameCharacter[80];
         for(int j =0; j < 80; j++){
             this->charLocations[i][j] = GameCharacter();
         }
     }
 }
+
+
 
 
 
@@ -945,6 +949,7 @@ GameCharacter::GameCharacter(Point startLoc, char type, int id){
     this->colNum = startLoc.colNum;
     this->type = type;
     this->id = id;
+    
 
     int numPoke = 0;
     int getsNext = 1;
@@ -953,6 +958,7 @@ GameCharacter::GameCharacter(Point startLoc, char type, int id){
     while(numPoke < 6 && getsNext <= 6){
         this->heldPokemon.push_back(getRandomPokemon());
         getsNext = (rand() % 10) + 1;
+        numPoke++;
     }
     }   
 }
@@ -979,6 +985,7 @@ int checkTrainerDefeated(int id,NPCMapInfo mapInfo){
 
 GameCharacter* GameCharacter::clone(){
     GameCharacter* temp = new GameCharacter(Point(this->rowNum,this->colNum),this->type,this->id);
+    temp->heldPokemon = this->heldPokemon;
     return temp;
 }
 

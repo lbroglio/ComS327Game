@@ -219,7 +219,7 @@ Pokemon::Pokemon(int givenID, int startingLevel) : baseStats(PokemonStats(givenI
 
  std::string Pokemon::getDisplayString(){
     
-    std::string levelString = "Level: " +  this->level;
+    std::string levelString = "Level: " +  std::to_string(this->level);
 
     std::string movesString = "Moves[";
     int dataSize = this->moveList.size();
@@ -231,18 +231,18 @@ Pokemon::Pokemon(int givenID, int startingLevel) : baseStats(PokemonStats(givenI
     }
     movesString += "]";
 
-    return this->species + " "  + levelString + " " + this->gender + " " + (this->isShiny == 0  ? "Not Shiny" : "Shiny") + " " + movesString;
+    return this->species + " " + levelString + " " + this->gender + " " + (this->isShiny == 0  ? "Not Shiny" : "Shiny") + " " + movesString;
 
  }
 
 
  std::string Pokemon::PokemonStats::getDisplayString(){
-    std:: string HPString = "HP: " +  this->HP;
-    std:: string atckString = "Attack: " +  this->attack;
-    std:: string defString = "Defense: " +  this->defense;
-    std:: string speedString = "Speed: " +  this->speed;
-    std:: string specAString = "Special Attack: " +  this->specialAttack;
-    std:: string specDString = "Special Defense: " +  this->specialDefense;
+    std:: string HPString = "HP: " +  std::to_string(this->HP);
+    std:: string atckString = "Attack: " +  std::to_string(this->attack);
+    std:: string defString = "Defense: " +  std::to_string(this->defense);
+    std:: string speedString = "Speed: " +  std::to_string(this->speed);
+    std:: string specAString = "Special Attack: " +  std::to_string(this->specialAttack);
+    std:: string specDString = "Special Defense: " +  std::to_string(this->specialDefense);
 
     return "{ "  + HPString + ", " + atckString + ", " + defString + ", " + speedString + ", " + specAString + ", " + specDString + "}";
  }
@@ -295,11 +295,11 @@ Pokemon getRandomPokemon(){
 
     int manDist = abs(200 - worldLoc.rowNum) + abs(200 - worldLoc.colNum);
     int level;
-    if(manDist == 0){
+    if((manDist/2) == 0){
         level = 1;
     }
     else if(manDist <= 200){
-        level = (rand() % (manDist /2)) + 1;
+        level = (rand() % (manDist / 2)) + 1;
     }
     else{
         int minLevel = ((manDist - 200) / 2);
@@ -310,6 +310,15 @@ Pokemon getRandomPokemon(){
             level = (rand() % (100 - minLevel)) + minLevel;
         }
         
+    }
+
+    return Pokemon(id,level);   
+}
+
+Pokemon getRandomPokemon(int level){
+    int id = (rand() % 1092) + 1;
+    if (id > 898){
+        id = (rand() % 193) + 10001;
     }
 
     return Pokemon(id,level);   

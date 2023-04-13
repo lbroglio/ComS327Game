@@ -1,20 +1,16 @@
-The program is now equipped to handle parsing in data from the provided data files.
-    The program will search for the data first at /share/cs327/pokedex/pokedex/data/csv/
-    If it can't be found there it will check $HOME/.poke327/pokedex/pokedex/data/csv/
-    If it can't be found either of those places the program will exit
+The program now utiilizes its pokemon data to spawn pokemon
 
-The program now takes command line arguments in order to know which file to print
-    To use the program enter ./poke327 {argument}
-    The possible arguments are
-        pokemon
-        moves
-        pokemon moves
-        pokemon species
-        experience
-        type names
-        pokemon stats
-        stats
-        pokemon types
-        all
-    The first nine arguments all print out the parsed contents of the file of the same name
-    all prints out the parsed contents of all of them
+Players will be given a pokemon at the start and will ecounter more walking in tall grass
+    To pick a starter navigate with the UP and DOWN arrow keys and press space to select
+
+Pokemon are randomly generated. Starting levels scale up as you get farther away from the center.
+    Pokemon are given at most two moves that corrspeond to it's species and are below it's current levels
+
+When selecting a starter, entering a trainer battle, viewing the trainer list, or encountering a pokemon a new interface is displayed
+    The new interface is overlayed on top of the map instead of being put on the live above
+
+
+Run the Program with 
+    ./poke327
+OR
+    ./poke327 --num-trainers {# of trainers}

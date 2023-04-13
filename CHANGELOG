@@ -1,3 +1,51 @@
+commit 51999181d94c6736debe2fbf33b703b4f47589c5
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Apr 12 19:27:57 2023 -0500
+
+    1.08 Finished
+
+commit 8060bb091fef5f1ed1eabf299b4bedeebfa8f739
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Apr 12 16:28:21 2023 -0500
+
+    Random pokemon should be complete
+
+commit 71311516a7bf1fea23fd4f1cd9a8c9bcac2ab6f0
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Apr 12 16:12:48 2023 -0500
+
+    Started pokemon generation
+
+commit 2d18391e542b4d6d40f20fc43f77bc2443bb1e20
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Apr 12 16:06:59 2023 -0500
+
+    Interface screen added list trainerd modified
+
+commit c7f5ed8dd239c3467cbe1e999bd2b54f474e536d
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Tue Apr 11 21:43:38 2023 -0500
+
+    Pokemon Class complete
+
+commit 49fe49d5758d47b6be3a99ee71cf3ba40381cf9b
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Sun Apr 9 22:41:00 2023 -0500
+
+    Finished pokemon class
+
+commit 29b9f9cbbd8c349dd98d51246037d13c91524232
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Sun Apr 9 21:00:55 2023 -0500
+
+    Started on imeplementing Pokemonm spawning. Converted the file conatiner from a memeber of World to its own global variable
+
+commit f1c0a42cad855b02bc581597e68331fec0172b65
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Apr 5 11:34:03 2023 -0500
+
+    README and CHANGELOG -  1.07
+
 commit 3388111f8957235302a2f922a0ac4180ccaa0787
 Author: lbroglio <lbroglio@iastate.edu>
 Date:   Wed Apr 5 11:25:52 2023 -0500

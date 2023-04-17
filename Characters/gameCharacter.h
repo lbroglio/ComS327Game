@@ -82,13 +82,27 @@ class GameCharacter : public IDable{
          */
         std::vector<Pokemon> getHeldPokemon(){return heldPokemon;}
         /**
+         * @brief Takes a pokemon out of the held list  so it can be used in  a battle
+         * 
+         * @return The first pokemon in the character's party
+         */
+        Pokemon usePokemon();
+        /**
+         * @brief Takes a pokemon out of the held list  so it can be used in  a battle
+         * 
+         * @param i The postion of the pokemon to use
+         * 
+         * @return The pokemon at postion in i in the character's party
+         */
+        Pokemon usePokemon(int i);
+        /**
          * @brief Performs the move action for this character
          * 
          * @param player The player object
          * @param map The map the character is on 
          * @return char 
          */
-        virtual char move(GameCharacter player, mapTile_t* map){return '%';}
+        virtual char move(GameCharacter* player, mapTile_t* map){return '%';}
         /**
          * @brief Set the row number to the provided value
          * 
@@ -136,7 +150,7 @@ class Wayfinder : public GameCharacter{
          * @param map The map this character is on
          * @return Char for the type of move (What biome) 
          */
-        char move(GameCharacter player, mapTile_t* map);
+        char move(GameCharacter* player, mapTile_t* map);
 
         /**
          * @brief Handles the logic for determining if the character can continue moving in the current direction. If not finds the next desirable direction
@@ -363,7 +377,7 @@ class Pathfinder : public GameCharacter
          * @param map The map this character is on
          * @return Char for the type of move (What biome) 
          */
-        char move(GameCharacter player, mapTile_t* map);
+        char move(GameCharacter* player, mapTile_t* map);
 
         /**
          * @brief Creates a copy of this Character

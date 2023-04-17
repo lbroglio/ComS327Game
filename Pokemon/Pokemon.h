@@ -79,9 +79,9 @@ class Pokemon{
         std::string name;
         /** @brief  The species this pokemon belongs to (Pikachu, Charizard etc)*/
         std::string species;
-        /** @brief  This type of pokemon's ID*/
+        /** @brief  This kind of pokemon's ID*/
         int pokemonID;
-        /** @brief  This type of pokemon's species ID*/
+        /** @brief  This kind of pokemon's species ID*/
         int speciesID;
         /** @brief  Stores the Base Stats of this pokemon*/
         PokemonStats baseStats;
@@ -96,6 +96,8 @@ class Pokemon{
         int isShiny;
         /** @brief  Stores the gener of this pokemon*/
         std::string gender;
+        /** @brief  Stores the types of this pokemon*/
+        std::vector<Type_Name> typeList;
     public:
         /**
          * @brief Returns the number of Hit points this pokemon  has 
@@ -198,6 +200,12 @@ class Pokemon{
          * @return 1 if it is shiny 0 is it isnt 
          */
         int pokemonShiny(){return isShiny;}
+        /**
+         * @brief Get the list of types for this pokemon
+         * 
+         * @return std::vector<std::string> 
+         */
+        std::vector<Type_Name> getTypes(){return typeList;}
         /**
          * @brief Change this pokemons name
          * 

@@ -99,7 +99,7 @@ char Player::movePlayerInMap(playerMoves_t playerMove,mapTile_t* map){
     //If theres a trainer at the location to move to
     if(map->mapInfo.charLocations[newPos.rowNum][newPos.colNum].type != 'X'){
         if(checkTrainerDefeated(map->mapInfo.charLocations[newPos.rowNum][newPos.colNum].getID(),map->mapInfo) ==  0){
-             trainerBattle(*this,map->mapInfo.charLocations[newPos.rowNum][newPos.colNum],map);
+             trainerBattle(this,map->mapInfo.charLocations[newPos.rowNum][newPos.colNum],map);
         }
         return map->mapArr[newPos.rowNum][newPos.colNum];
     }

@@ -2,40 +2,37 @@
 #include"../Characters/gameCharacter.h"
 #include"../Screen/screen.h"
 
-void trainerBattle(GameCharacter player, GameCharacter enemyTrainer,mapTile_t* map){
+void trainerBattle(GameCharacter* player, GameCharacter enemyTrainer,mapTile_t* map){
     //Defeat Trainer
     map->mapInfo.defTrainers[map->mapInfo.numDef] = enemyTrainer.getID();
     map->mapInfo.numDef += 1;
 
+    //Get the starting  Pokemon for each
+    Pokemon playerPoke = player->usePokemon();
+    Pokemon trainerPoke = enemyTrainer.usePokemon();
+
     //Display Message
     setInterfaceScreen();
     attron(COLOR_PAIR(COLOR_SOFT_BLACK));
-    mvprintw(3,5,"You are in a trainer battle. Press esc to exit");
-    mvprintw(5,5,"Your Pokemon: ");
+    mvprintw(3,5,"You are in a trainer battle!");
 
-    int i;
+    mvprintw(5,5,"Your Pokemon: %s", playerPoke.getDisplayString().c_str());
+    mvprintw(7,5,"Opponent Pokemon: %s", trainerPoke.getDisplayString().c_str());
 
-    std::vector<Pokemon> pokeList = player.getHeldPokemon();
-    int numPoke = pokeList.size();
-    int pokeTracker =0;
 
-    for(i =6; pokeTracker < numPoke; i++){
-        std::string toPrint = " " + pokeList[pokeTracker].getDisplayString();
-        mvprintw(i,5,toPrint.c_str());
-        pokeTracker++;
+    int turnIndicator = 0;
+
+    if(playerPoke.getSpeed() < trainerPoke.getSpeed()){
+        turnIndicator += 1;
     }
 
-    mvprintw(i+2,5,"Opponent's Pokemon: ");
-
-    pokeList = enemyTrainer.getHeldPokemon();
-    numPoke = pokeList.size();
-    pokeTracker =0;
-
-    for(i = i + 3; pokeTracker < numPoke; i++){
-        std::string toPrint = " " + pokeList[pokeTracker].getDisplayString();
-        mvprintw(i,5,toPrint.c_str());
-        pokeTracker++;
+    if(turnIndicator % 2 == 0){
+        
     }
+    else{
+
+    }
+
 
 
     

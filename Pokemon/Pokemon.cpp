@@ -180,6 +180,38 @@ std::vector<Move> chooseMoves(int givenID, int level){
     return chosenMoves;
 }
 
+/**
+ * @brief Get the Tlist of types for this pokemon
+ * 
+ * @param pokemonID The ID of the pokemon to get the types for
+ * @return Vector storing the types 
+ */
+std::vector<Type_Name> extractTypes(int pokemonID){
+    //Create a vector to store the types 
+    std::vector<Type_Name> types;
+    types.reserve(2);
+    
+    //Loop through the pokemomn types array
+    int dataSize = pokeData->pokemon_types.size();
+    for(int i =0; i < dataSize; i++){
+        Pokemon_Type temp = pokeData->pokemon_types[i];
+
+        //If the current type is one for the given pokemon
+        if(temp.pokemon_id() == pokemonID){
+            int typeArrSize = pokeData->type_names.size();
+            //Find the type in the type array
+            for(int j =0; j < typeArrSize; j++){
+                if(pokeData->type_names[j].type_id() == temp.type_id()){
+                    //Add it into the array corresponding to its slot
+                    types.insert(types.begin() + (temp.slot() - 1), pokeData->type_names[j]);
+                }
+            }
+        }
+    }
+    return types;
+}
+
+
 Pokemon::Pokemon(int givenID, int startingLevel) : baseStats(PokemonStats(givenID)), IVs(generateIVs()), stats(baseStats){
         level = startingLevel;
         pokemonID = givenID;
@@ -214,6 +246,8 @@ Pokemon::Pokemon(int givenID, int startingLevel) : baseStats(PokemonStats(givenI
         else{
             gender = "female";
         }
+
+        typeList = extractTypes(pokemonID);
       
 }
 
@@ -231,7 +265,17 @@ Pokemon::Pokemon(int givenID, int startingLevel) : baseStats(PokemonStats(givenI
     }
     movesString += "]";
 
-    return this->species + " " + levelString + " " + this->gender + " " + (this->isShiny == 0  ? "Not Shiny" : "Shiny") + " " + movesString;
+    std::string typeString = "Types[";
+    dataSize = this->typeList.size();
+    for(int i=0; i < dataSize; i++){
+        typeString += this->typeList[i].name();
+        if(i != dataSize -1){
+            typeString +=  ", ";
+        }
+    }
+    typeString += "]";
+
+    return this->species + " " + typeString + " " + levelString + " " + this->gender + " " + (this->isShiny == 0  ? "Not Shiny" : "Shiny") + " " + movesString;
 
  }
 

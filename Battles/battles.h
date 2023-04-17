@@ -11,7 +11,7 @@
  * @param enemyTrainer The enenmy trainer object
  * @param map The map the player/trainer is on
  */
-void trainerBattle(GameCharacter player, GameCharacter enemyTrainer,mapTile_t* map);
+void trainerBattle(GameCharacter* player, GameCharacter enemyTrainer,mapTile_t* map);
 
 
 #endif

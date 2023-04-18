@@ -430,6 +430,24 @@ void parseTypeNameFile(DataCon* dataCon){
     }
 }
 
+void parseTypeModFile(DataCon* dataCon){
+    std::ifstream dataFile("Data/type_mods.csv");
+
+    //Dump the fist line
+    std::string lineDump;
+    std::getline(dataFile,lineDump);
+
+    int aTypeTracker = 0;
+        while(dataFile.peek() != EOF){
+            readEntry(&dataFile);
+            for(int i=0; i < 18; i ++){
+                std::string currEntry = readEntry(&dataFile);
+                dataCon->typeModGraph[aTypeTracker][i] = std::stof(currEntry);
+            }
+            aTypeTracker++;
+        }   
+       
+}
 
 
 void loadData(DataCon* dataCon){
@@ -444,6 +462,7 @@ void loadData(DataCon* dataCon){
     parseStatFile(dataCon);
     parsePokemonTypeFile(dataCon);
     parseTypeNameFile(dataCon);
+    parseTypeModFile(dataCon);
 }
 
 

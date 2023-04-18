@@ -141,3 +141,49 @@ void clearInterfaceScreen(){
 void  endInterfaceScreen(mapTile_t* map){
     printMapWithChars(map, map->mapInfo);
 }
+
+
+void clearInterfaceSection(int startLine, int numLines){
+    for(int i = 0; i < numLines; i++){
+        move(startLine + i,4);
+        for(int j = 0; j < 76; j++){
+            printw("  ");
+        }
+    }
+}
+
+int playerBattleInterface(){
+
+    mvprintw(10,6,"Use spacebar to choose an action");
+    mvprintw(11,7,"Fight");
+    mvprintw(12,7,"Bag");
+    mvprintw(13,7,"Run");
+    mvprintw(14,7,"Pokemon");    
+
+
+    int actionSelected = 0;
+    int i =0;
+    while(actionSelected == 0){
+        mvprintw(11+i,5,"*");
+        //Wait for player input
+        int action = getch();
+        
+        mvprintw(11+i,5," ");
+
+        if(action == KEY_UP && i > 0){
+            i -= 1;
+        }
+        else if(action == KEY_DOWN && i < 3){
+            i += 1;
+        }
+        else if(action == ' '){
+            actionSelected = 1;
+        }
+        
+    }
+
+    clearInterfaceSection(10,5);
+    return i;
+}
+
+

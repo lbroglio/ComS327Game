@@ -27,6 +27,12 @@ void Pokemon::heal(int healthReturned){
     }
 }
 
+
+void Pokemon::revive(){
+    hasFainted =0;
+    currentHP = (stats.HP / 2);
+}
+
 void Pokemon::recover(){
     hasFainted =0;
     currentHP = stats.HP;
@@ -275,7 +281,7 @@ Pokemon::Pokemon(int givenID, int startingLevel) : baseStats(PokemonStats(givenI
     }
     typeString += "]";
 
-    return this->species + " " + typeString + " " + levelString + " " + this->gender + " " + (this->isShiny == 0  ? "Not Shiny" : "Shiny") + " " + movesString;
+    return this->species + " " + typeString + " HP: " + std::to_string((this->currentHP)) + " " + levelString + " " + this->gender + " " + (this->isShiny == 0  ? "Not Shiny" : "Shiny") + " " + movesString;
 
  }
 

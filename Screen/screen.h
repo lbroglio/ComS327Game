@@ -69,4 +69,19 @@ void clearInterfaceScreen();
  */
 void  endInterfaceScreen(mapTile_t* map);
 
+/**
+ * @brief Gets the player to choose a move to make
+ * 
+ * @return Number corresponding to the chosen move
+ */
+int playerBattleInterface();
+
+
+/**
+ * @brief Removes all the content from a given section of the interface scren
+ * 
+ * @param startLine The line to start on 
+ * @param numLines The number of lines to clear
+ */
+void clearInterfaceSection(int startLine, int numLines);
 #endif

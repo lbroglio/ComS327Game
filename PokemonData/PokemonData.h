@@ -208,6 +208,8 @@ class DataCon{
 		std::vector<Stat> stats;
 		std::vector<Pokemon_Type> pokemon_types;
 		std::vector<Type_Name> otherLangues;
+		float typeModGraph[18][18];
+
 
 		/**
 		 * @brief Construct a new DataCon object. Includes reserving the needed space in all of the vectors

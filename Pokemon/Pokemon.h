@@ -119,6 +119,11 @@ class Pokemon{
          */
         void heal(int healthReturned);
         /**
+         * @brief Bring a pokemon back if it has fainted and gives it half of its health
+         * 
+         */
+        void revive();
+        /**
          * @brief Completely restores this Pokemon's health and brings it back if it has fainted
          * 
          */

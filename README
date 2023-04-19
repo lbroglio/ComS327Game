@@ -1,16 +1,12 @@
-The program now utiilizes its pokemon data to spawn pokemon
+The Program is now fully playable with the ability to catch pokemon and battle trainers.
 
-Players will be given a pokemon at the start and will ecounter more walking in tall grass
-    To pick a starter navigate with the UP and DOWN arrow keys and press space to select
+Players also now have an inventory with item Pokeballs, potions, and revives as items
 
-Pokemon are randomly generated. Starting levels scale up as you get farther away from the center.
-    Pokemon are given at most two moves that corrspeond to it's species and are below it's current levels
+Pokemon damage is determined by the given formula but with STAB and type advantage bonues calculated and factored in.
+    My Pokemon were doing way to muhc damage so I turned down how high the random numer in the damage calculation was. 
 
-When selecting a starter, entering a trainer battle, viewing the trainer list, or encountering a pokemon a new interface is displayed
-    The new interface is overlayed on top of the map instead of being put on the live above
+Player's will be given the option to access there inventory during battles by selecting the bag option or can access in the world by pressing 'B'
+    It needs to be specifically a capital 'B' as 'b' is mapped for movement
 
-
-Run the Program with 
-    ./poke327
-OR
-    ./poke327 --num-trainers {# of trainers}
+Pokemon will also level up as they gather XP.
+    XP is distributed to a players entire team when they win battle

@@ -1,3 +1,27 @@
+commit 4f80eecb1d9a6fd7bad35c3e0860de609da35013
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Apr 19 16:01:27 2023 -0500
+
+    Finished implementing inventory, battles, and catching 1.09 Finished needs read me and changelog
+
+commit fc12814164c9423098968da89e056b7d6a7684b8
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Tue Apr 18 16:00:48 2023 -0500
+
+    Started implementing Battles. Added a an array used to get type advantages into the dataCon. ()
+
+commit f2be22e92e5f63fa83bd4879cf8448df4d3898d3
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Mon Apr 17 14:11:05 2023 -0500
+
+    Added types for pokemon
+
+commit 0d7569614ddd3f39285680d3983dd48d62df6d56
+Author: lbroglio <lbroglio@iastate.edu>
+Date:   Wed Apr 12 19:34:52 2023 -0500
+
+    Read me and changelog
+
 commit 51999181d94c6736debe2fbf33b703b4f47589c5
 Author: lbroglio <lbroglio@iastate.edu>
 Date:   Wed Apr 12 19:27:57 2023 -0500

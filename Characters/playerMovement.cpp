@@ -9,22 +9,22 @@
 #include "../Battles/battles.h"
 #include"../Map/mapGeneration.h"
 #include"../Screen/screen.h"
+#include"../Pokemon/Pokemon.h"
 
 //Function Prototypes
 void fly(Player* player);
-playerMoves_t getInput(mapTile_t* map);
+playerMoves_t getInput(Player* player, mapTile_t* map);
 int costOfPlayerMove(char moveType);
 void displayPlayerMoveError(char moveType);
 void listTrainers(mapTile_t* map);
 void inBuilding();
-void encounterPokemon(mapTile_t* map);
 
 
 char Player::move(mapTile_t* map){
     printMapWithChars(map,map->mapInfo);
 
     while(1 == 1){
-        playerMoves_t playerMove = getInput(map);
+        playerMoves_t playerMove = getInput(this,map);
         if(playerMove == QUIT){
             return 'Q';
         }
@@ -34,6 +34,14 @@ char Player::move(mapTile_t* map){
         else if(playerMove == ENTER_BUILDING){
             if(map->mapArr[rowNum][colNum] == 'M' || map->mapArr[rowNum][colNum] == 'C'){
                 inBuilding();
+                if(map->mapArr[rowNum][colNum] == 'M'){
+                    this->inventory.pokeBalls = 10;
+                    this->inventory.potions = 5;
+                    this->inventory.revives = 5;
+                }
+                else{
+                    this->restoreTeam();
+                }
                 return map->mapArr[rowNum][colNum];
             }
            else{
@@ -123,7 +131,7 @@ char Player::movePlayerInMap(playerMoves_t playerMove,mapTile_t* map){
     if(map->mapArr[newPos.rowNum][newPos.colNum] == ':'){
         int chooseNum = rand() % 10;
         if(chooseNum == 1){
-            encounterPokemon(map);
+            wildBattle(this,getRandomPokemon(),map);
         }
     }
 
@@ -153,7 +161,7 @@ int costOfPlayerMove(char moveType){
  * @param mapInfo The info struct for the current map tile
  * @return Type of move made
  */
-playerMoves_t getInput(mapTile_t* map){
+playerMoves_t getInput(Player* player,mapTile_t* map){
 
     int inputEnded = 0;
     playerMoves_t chosenMove;
@@ -231,6 +239,12 @@ playerMoves_t getInput(mapTile_t* map){
         case 'f':
             chosenMove = FLY;
             inputEnded = 1;
+            break;
+        //BAG
+        case 'B':
+            setInterfaceScreen();
+            inventoryInterface(player);
+            endInterfaceScreen(map);
             break;
         //Quit Game
         case 'q':
@@ -468,29 +482,234 @@ void chooseStarter(GameCharacter* player,mapTile_t* map){
 
 }
 
-void encounterPokemon(mapTile_t* map){
-    Pokemon encountered = getRandomPokemon();
-
-    setInterfaceScreen();
-
-    mvprintw(3,5,"You have encountered a wild pokemon: Press esc to exit");
-
-    mvprintw(5,5,"Pokemon Details: ");
-    mvprintw(6,5,encountered.getDisplayString().c_str());
-    mvprintw(7,5,"stats: ");
-    printw(encountered.getStatsString().c_str());
+Player::PlayerInventory::PlayerInventory(){
+    pokeBalls = 10;
+    potions = 5;
+    revives = 5;
+}
 
 
 
+int usePotion(Player* player){
+    clearInterfaceSection(10,4);
 
+    int numPokemon = player->heldPokemon.size();
+    int displayTracker = 0;
+    std::vector<int> pokeNums;
 
-    char action;
+    mvprintw(10,6,"Use spacebar to choose which pokemon to heal or press esc to go back");
 
-    while(action != 27){
-        action =  getch();
+    for(int i =0; i < numPokemon; i++){
+        if(player->heldPokemon[i].getHP() != player->heldPokemon[i].getHealth()){
+            mvprintw(11+displayTracker,7,player->heldPokemon[i].getDisplayString().c_str());
+            printw(" Max Health: %d", player->heldPokemon[i].getHP());
+            displayTracker++;
+            pokeNums.push_back(i);
+        }
     }
 
-    endInterfaceScreen(map);
+    if(displayTracker == 0){
+        clearInterfaceSection(10,1);
+        mvprintw(10,6,"None of your pokemon need healing. Press any key to go back");
+        getch();
+        clearInterfaceSection(10,1);
+        return 0;
+    }
+
+    int i = 0;
+    int pokemonChose = 0;
+    while(pokemonChose == 0){
+        mvprintw(11+i,5,"*");
+        //Wait for player input
+        int action = getch();
+        
+        mvprintw(11+i,5," ");
+
+        if(action == KEY_UP && i > 0){
+            i -= 1;
+        }
+        else if(action == KEY_DOWN && i < 2){
+            i += 1;
+        }
+        else if(action == ' '){
+            player->heldPokemon[pokeNums[i]].heal(20);
+            player->inventory.potions -= 1;
+            mvprintw(8,5,"You used a potion on your %s. Press any key to advance", player->heldPokemon[pokeNums[i]].getName().c_str());
+            clearInterfaceSection(10,7);
+            return 1;
+        }
+        else if(action == 27){
+            clearInterfaceSection(10,7);
+            return 0;
+        }
+        
+    }
+    //This is unreachable it exists for the sake of the compiler
+    return 0;
+}
 
 
+int useRevive(Player* player){
+    clearInterfaceSection(10,4);
+
+    int numPokemon = player->heldPokemon.size();
+    int displayTracker = 0;
+    std::vector<int> pokeNums;
+
+    mvprintw(10,6,"Use spacebar to choose which pokemon to revive or press esc to go back");
+
+    for(int i =0; i < numPokemon; i++){
+        if(player->heldPokemon[i].getHP() != player->heldPokemon[i].getHealth()){
+            mvprintw(11+displayTracker,7,player->heldPokemon[i].getDisplayString().c_str());
+            displayTracker++;
+            pokeNums.push_back(i);
+        }
+    }
+
+    if(displayTracker == 0){
+        clearInterfaceSection(10,1);
+        mvprintw(10,6,"None of your pokemon have fainted. Press any key to go back");
+        getch();
+        clearInterfaceSection(10,1);
+        return 0;
+    }
+
+    int i = 0;
+    int pokemonChose = 0;
+    while(pokemonChose == 0){
+        mvprintw(11+i,5,"*");
+        //Wait for player input
+        int action = getch();
+        
+        mvprintw(11+i,5," ");
+
+        if(action == KEY_UP && i > 0){
+            i -= 1;
+        }
+        else if(action == KEY_DOWN && i < 2){
+            i += 1;
+        }
+        else if(action == ' '){
+            player->heldPokemon[pokeNums[i]].revive();
+            clearInterfaceSection(10,7);
+            player->inventory.revives -= 1;
+            mvprintw(8,5,"You used a revive on your %s. Press any key to advance", player->heldPokemon[pokeNums[i]].getName().c_str());
+            return 1;
+        }
+        else if(action == 27){
+            clearInterfaceSection(10,7);
+            return 0;
+        }
+        
+    }
+    //This is unreachable it exists for the sake of the compiler
+    return 0;
+}
+
+
+int inventoryInterface(Player* player){
+    //Display message
+    mvprintw(10,6,"Use spacebar to choose what item to use or press esc to go back");
+
+
+    mvprintw(11,6,"%d PokeBalls",player->inventory.pokeBalls);
+    mvprintw(12,6,"%d Potions",player->inventory.potions);
+    mvprintw(13,6,"%d Revives",player->inventory.revives);
+
+    int itemSelected = 0;
+    int i =0;
+    while(itemSelected == 0){
+        mvprintw(11+i,5,"*");
+        //Wait for player input
+        int action = getch();
+        
+        mvprintw(11+i,5," ");
+
+        if(action == KEY_UP && i > 0){
+            i -= 1;
+        }
+        else if(action == KEY_DOWN && i < 2){
+            i += 1;
+        }
+        else if(action == ' '){
+            if(i == 0 && player->inventory.pokeBalls > 0){
+                clearInterfaceSection(10,4);
+                return 1;
+            }
+            else if(i == 1 && player->inventory.potions > 0){
+                int used = usePotion(player);
+                if(used == 1){
+                    clearInterfaceSection(10,4);
+                    return 2;
+                }
+            }
+            else if(i == 2 && player->inventory.revives > 0){
+                int used = useRevive(player);
+                if(used == 1){
+                    clearInterfaceSection(10,4);
+                    return 3;
+                }
+            }
+        }
+        else if(action == 27){
+            clearInterfaceSection(10,4);
+            return -1;
+        }
+        mvprintw(10,6,"Use spacebar to choose what item to use or press esc to go back");
+        mvprintw(11,6,"%d PokeBalls",player->inventory.pokeBalls);
+        mvprintw(12,6,"%d Potions",player->inventory.potions);
+        mvprintw(13,6,"%d Revives",player->inventory.revives);
+        
+    }
+    //This is unreachable it exists for the sake of the compiler
+    return 0;
+}
+
+
+int pokemonInterface(Player* player){
+    //Display message
+    mvprintw(10,6,"Use spacebar to choose which pokemon to swap or press esc to go back");
+
+    std::vector<Pokemon> pokeList = player->getHeldPokemon();
+    std::vector<int> pokeNums; 
+    int numPokemon = pokeList.size();
+    
+    int i;
+    for(i =0; i < numPokemon; i++){
+        if(pokeList[i].pokemonFainted() == 0){
+                mvprintw(11 + i,7,pokeList[i].getDisplayString().c_str());
+                pokeNums.push_back(i);
+        }
+      
+    }
+
+    i =0;
+    int pokemonChose = 0;
+    while(pokemonChose == 0){
+        mvprintw(11+i,5,"*");
+        //Wait for player input
+        int action = getch();
+        
+        mvprintw(11+i,5," ");
+
+        int numPoke = pokeNums.size();
+        if(action == KEY_UP && i > 0){
+            i -= 1;
+        }
+        else if(action == KEY_DOWN && i < numPoke - 1){
+            i += 1;
+        }
+        else if(action == ' '){
+            clearInterfaceSection(10,7);
+            mvprintw(8,1,"You you swapped in your %s. Press any key to advance", pokeList[pokeNums[i]].getDisplayString().c_str());
+            return i;
+        }
+        else if(action == 27){
+            clearInterfaceSection(10,7);
+            return -1;
+        }
+        
+    }
+
+    return 0;
 }

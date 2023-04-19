@@ -187,3 +187,12 @@ int playerBattleInterface(){
 }
 
 
+void setDeathScreen(){
+    clear();
+    attron(COLOR_PAIR(COLOR_WHITE));
+    mvprintw(10,5,"All your Pokemon are defeated. You have been returned to the spawn. Press any key to advance");
+    getch();
+
+}
+
+

@@ -26,6 +26,14 @@ typedef enum playerMoves{
 class Player : public GameCharacter
 {   
     private:
+        class PlayerInventory {
+            public:
+                int pokeBalls;
+                int potions;
+                int revives;
+                PlayerInventory();
+        };
+    private:
         /**
          * @brief Moves the player character on the map based on user input
          * 
@@ -34,7 +42,16 @@ class Player : public GameCharacter
          * @return The type of move made
          */
         char movePlayerInMap(playerMoves_t playerMove,mapTile_t* map);
-
+        /**
+         * @brief The players inventory of usable items
+         * 
+         */
+        PlayerInventory inventory;
+        /**
+         * @brief Flag for if the player has lost a pokemon battle
+         * 0 means it hasn't been. 1 means it has
+         */
+        int defeatedFlag = 0;
     public:
         /**
          * @brief Construct a new Player object
@@ -50,7 +67,29 @@ class Player : public GameCharacter
          * @return Char for the type of move (What biome) 
          */
         char move(mapTile_t* map);
-
+        /**
+         * @brief Sets the defeated flag to one
+         * 
+         */
+        void defeat(){defeatedFlag = 1;}
+        /**
+         * @brief Sets the defeated flag to zero
+         *
+         * 
+         */
+        void resetDefeat(){defeatedFlag = 0;}
+        /**
+         * @brief Returns the defeated flag
+         *  0 means it hasn't been. 1 means it has
+         * 
+         * @return The defeated flag
+         */
+        int getDefeated(){return defeatedFlag;}
+        /**
+         * @brief Removes a pokeball from the players inventory
+         * 
+         */
+        void usePokeball(){inventory.pokeBalls -= 1;}
         /**
          * @brief Creates a copy of this Character
          * Includes memory allocation returned to the user 
@@ -58,6 +97,29 @@ class Player : public GameCharacter
          * @return A pointer to the created copy
          */
         virtual GameCharacter* clone();
+
+    /**
+     * @brief Displays the interface for interacting with an inventory and using items
+     * 
+     * @param inventory The inventory to interact with
+     * 
+     * @return Indicator for what kind of item was used. 1 for Pokeball - -1 for no item 
+     */
+    friend int inventoryInterface(Player* player);
+    /**
+     * @brief Handles the interface and logic for using a potion item
+     * 
+     * @param player Pointer to the player
+     * @return Indicator for it an item has been used. 1 if it has 0 if it hasnt
+     */
+    friend int usePotion(Player* player);
+    /**
+     * @brief Handles the interface and logic for using a revive item
+     * 
+     * @param player Pointer to the player
+     * @return Indicator for it an item has been used. 1 if it has 0 if it hasnt
+     */
+    friend int useRevive(Player* player);
 };
 
 
@@ -79,5 +141,12 @@ int playerTurn(GameCharacter* player, mapTile_t map);
  */
 void chooseStarter(GameCharacter* player,mapTile_t* map);
 
+/**
+ * @brief Hanldes the interface and logic for swapping a new pokemon
+ * 
+ * @param player Pointer to the player object holding the pokemon
+ * @return The number of pokemon to swap in or -1 if none is
+ */
+int pokemonInterface(Player* player);
 
 #endif

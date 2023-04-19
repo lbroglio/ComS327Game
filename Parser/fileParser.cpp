@@ -463,6 +463,11 @@ void loadData(DataCon* dataCon){
     parsePokemonTypeFile(dataCon);
     parseTypeNameFile(dataCon);
     parseTypeModFile(dataCon);
+
+    int dataSize = dataCon->type_names.size();
+    for(int i =0; i < dataSize; i++){
+        dataCon->typeNameMap.insert({dataCon->type_names[i].type_id(),dataCon->type_names[i].name()});
+    }
 }
 
 

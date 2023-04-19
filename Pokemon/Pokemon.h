@@ -98,6 +98,10 @@ class Pokemon{
         std::string gender;
         /** @brief  Stores the types of this pokemon*/
         std::vector<Type_Name> typeList;
+        /** @brief  Stores the type ids of this pokemon*/
+        std::vector<int> typeIDList;
+        /** @brief The amount of xp this pokemon has*/
+        int xp;
     public:
         /**
          * @brief Returns the number of Hit points this pokemon  has 
@@ -195,6 +199,12 @@ class Pokemon{
          */
         std::string getGender(){return gender;}
         /**
+         * @brief Get this pokemon's level
+         * 
+         * @return The pokemons level
+         */
+        int getLevel(){return level;}
+        /**
          * @brief Increases this Pokemon's level. Handles updating the Stats.
          * 
          */
@@ -211,6 +221,12 @@ class Pokemon{
          * @return std::vector<std::string> 
          */
         std::vector<Type_Name> getTypes(){return typeList;}
+        /**
+         * @brief Get the list of types for this pokemon
+         * 
+         * @return The list of IDs
+         */
+        std::vector<int> getTypeIDs(){return typeIDList;}
         /**
          * @brief Change this pokemons name
          * 
@@ -234,7 +250,19 @@ class Pokemon{
         * @return The stat's display string
         */
         std::string getStatsString(){return  this->stats.getDisplayString();}
-        Pokemon(){}
+        /**
+         * @brief Adds xp to the Pokemon. Handles level up if necessary 
+         * 
+         * @param amtToAdd The amount of xp to add
+         * 
+         * @return Indicator for if the pokemon leveled up. 1 if did 0 if not
+         */
+        int addXP(int amtToAdd);
+        /**
+         * @brief Construct a new Pokemon object. Used as a default "NULL" pokemon
+         * 
+         */
+        Pokemon(){name = "invalid";}
         /**
          * @brief Construct a new Pokemon object at the given level
          * 
@@ -247,6 +275,13 @@ class Pokemon{
     * @return A Stats struct holding the generated IVs 
     */
     friend PokemonStats generateIVs();
+
+    /**
+     * @brief Adds the types and there ids into the pokemon's type and typeID list
+     * 
+     * @param toInsert The pokemon to add types for
+     */
+    friend void insertTypes(Pokemon* toInsert);
 
     /**
     * @brief Prints a formated Pokemon object to the provided ostream

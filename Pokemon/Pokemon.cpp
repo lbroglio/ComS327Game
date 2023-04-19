@@ -38,8 +38,60 @@ void Pokemon::recover(){
     currentHP = stats.HP;
 }
 
-//To be implemented later
-void levelUp();
+
+void Pokemon::levelUp(){
+    level++;
+    updateStats();
+
+    int numMoves = moveList.size();
+   
+
+    if(numMoves < 4){
+        std::vector<int> possibleMoveIDs;
+        int  dataVectorSize = pokeData->pokemon_moves.size();
+
+        //Get all moves for this pokemon below or at its current level
+        for(int i =0; i < dataVectorSize; i++){
+            Pokemon_Move temp = pokeData->pokemon_moves[i];
+
+            if(temp.pokemon_id() == speciesID && temp.pokemon_move_method_id() == 1 && temp.level() <= level){
+                for(int j =0; j < numMoves; j++){
+                    if(moveList[j].id() != temp.move_id()){
+                        possibleMoveIDs.push_back(temp.move_id());
+                        j += 4;
+                    }
+                }
+                
+            }
+        }
+        int possibleMoves = possibleMoveIDs.size();
+        int chosenMove = rand() % possibleMoves;
+        
+        dataVectorSize = pokeData->moves.size();
+
+        for(int i=0; i < dataVectorSize; i++){
+            Move tmp = pokeData->moves[i];
+
+            if(tmp.id() == chosenMove){
+                moveList.push_back(tmp);
+                i += dataVectorSize;
+            }
+        }
+    }
+
+}
+
+int Pokemon::addXP(int amtToAdd){
+    xp += amtToAdd; 
+    
+    if(xp >= level * 10){
+        xp = 0;
+        levelUp();
+
+        return 1;
+    }
+    return 0;
+}
 
 Pokemon::PokemonStats::PokemonStats(int pokemonID){
     int i;
@@ -186,35 +238,28 @@ std::vector<Move> chooseMoves(int givenID, int level){
     return chosenMoves;
 }
 
-/**
- * @brief Get the Tlist of types for this pokemon
- * 
- * @param pokemonID The ID of the pokemon to get the types for
- * @return Vector storing the types 
- */
-std::vector<Type_Name> extractTypes(int pokemonID){
-    //Create a vector to store the types 
-    std::vector<Type_Name> types;
-    types.reserve(2);
+void insertTypes(Pokemon* toInsert){
+    //Reserve space in  the type vectors 
+    toInsert->typeList.reserve(2);
+    toInsert->typeIDList.reserve(2);
     
     //Loop through the pokemomn types array
     int dataSize = pokeData->pokemon_types.size();
     for(int i =0; i < dataSize; i++){
         Pokemon_Type temp = pokeData->pokemon_types[i];
-
         //If the current type is one for the given pokemon
-        if(temp.pokemon_id() == pokemonID){
+        if(temp.pokemon_id() == toInsert->pokemonID){
             int typeArrSize = pokeData->type_names.size();
-            //Find the type in the type array
+            //Find the type in the type data  
             for(int j =0; j < typeArrSize; j++){
                 if(pokeData->type_names[j].type_id() == temp.type_id()){
-                    //Add it into the array corresponding to its slot
-                    types.insert(types.begin() + (temp.slot() - 1), pokeData->type_names[j]);
+                    //Add it into the arrays corresponding to its slot
+                      toInsert->typeList.insert(toInsert->typeList.begin() + (temp.slot() - 1), pokeData->type_names[j]);
+                      toInsert->typeIDList.insert(toInsert->typeIDList.begin() + (temp.slot() - 1), temp.type_id());
                 }
             }
         }
     }
-    return types;
 }
 
 
@@ -222,6 +267,7 @@ Pokemon::Pokemon(int givenID, int startingLevel) : baseStats(PokemonStats(givenI
         level = startingLevel;
         pokemonID = givenID;
         hasFainted = 0;
+        xp = 0;
         updateStats();
         currentHP = stats.HP;
         int dataSize = pokeData->pokemon.size();
@@ -253,7 +299,7 @@ Pokemon::Pokemon(int givenID, int startingLevel) : baseStats(PokemonStats(givenI
             gender = "female";
         }
 
-        typeList = extractTypes(pokemonID);
+        insertTypes(this);
       
 }
 
@@ -373,3 +419,5 @@ Pokemon getRandomPokemon(int level){
 
     return Pokemon(id,level);   
 }
+
+

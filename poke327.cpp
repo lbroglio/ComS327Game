@@ -70,15 +70,35 @@ int main(int argc, char* argv[]){
         int time; 
         IDable* temp = (map->eventManager->extractMinWithPri(&time));
         GameCharacter* toMove = dynamic_cast<GameCharacter*>(temp);
-        
+
+        if(toMove->type == '@'){
+            toMove = worldMap.player;
+        }
 
 
         int moveCost;
         moveCost = moveGameChar(toMove,time,worldMap.player,map);
         
         if(toMove->type == '@'){
+            int deleteFlag = worldMap.player->getDefeated();
+
             *worldMap.player = *(dynamic_cast<Player*>(toMove));
+
+            if(worldMap.player->getDefeated() == 1 || deleteFlag == 1){
+                setDeathScreen();
+                moveCost = -4;
+                worldMap.player->setRowNum(200);
+                worldMap.player->setColNum(200);
+
+                worldMap.player->restoreTeam();
+                worldMap.player->resetDefeat();
+            }
+
+
         }
+
+     
+
 
         if(moveCost == -1){
             exitCom = 1;
@@ -103,7 +123,7 @@ int main(int argc, char* argv[]){
                 worldMap.player->setColNum(78);    
             }
             else if(worldMap.player->getColNum() == 79){
-                worldLoc.colNum += 1;;
+                worldLoc.colNum += 1;
                 worldMap.player->setRowNum(map->rightEntLoc);
                 worldMap.player->setColNum(1);   
             }

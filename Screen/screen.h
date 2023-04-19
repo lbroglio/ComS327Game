@@ -84,4 +84,10 @@ int playerBattleInterface();
  * @param numLines The number of lines to clear
  */
 void clearInterfaceSection(int startLine, int numLines);
+
+/**
+ * @brief Sets the death screen on the screen.  
+ * 
+ */
+void setDeathScreen();
 #endif

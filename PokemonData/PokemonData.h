@@ -6,6 +6,7 @@
 #include<string>
 #include<vector>
 #include<iostream>
+#include<unordered_map>
 
 
 class Pokemon_Info{
@@ -208,6 +209,7 @@ class DataCon{
 		std::vector<Stat> stats;
 		std::vector<Pokemon_Type> pokemon_types;
 		std::vector<Type_Name> otherLangues;
+		std::unordered_map<int,std::string> typeNameMap;
 		float typeModGraph[18][18];
 
 

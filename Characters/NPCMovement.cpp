@@ -14,7 +14,7 @@
 
 //CODE FOR WAYFINDERS ---------------------------------------------------
 
-char Wayfinder::move(GameCharacter* player, mapTile_t* map){
+char Wayfinder::move(Player* player, mapTile_t* map){
     Point nextSpace = this->checkDirection(map);
 
     //If a trainer battle was signaled
@@ -693,7 +693,7 @@ int Pathfinder::getPossibleMoves(mapTile_t map, Point* possibleMoves){
 }
 
 
-char Pathfinder::move(GameCharacter* player, mapTile_t* map){
+char Pathfinder::move(Player* player, mapTile_t* map){
     //Gets the squares it could move to ordered by distance
     Point possibleMoves[8];
     int numMoves = getPossibleMoves(*map,possibleMoves);
@@ -759,7 +759,7 @@ int checkPlayerByWater(GameCharacter player, mapTile_t map){
     }
 }
 
-int moveGameChar(GameCharacter* toMove, int time, GameCharacter* player, mapTile_t* map){
+int moveGameChar(GameCharacter* toMove, int time, Player* player, mapTile_t* map){
     //Checks if this npc has been defeated
     if(checkTrainerDefeated(toMove->getID(),map->mapInfo) == 1){
         //Move off of a road
@@ -791,6 +791,11 @@ int moveGameChar(GameCharacter* toMove, int time, GameCharacter* player, mapTile
         //Return a defeated flag
         return -2;
     }
+
+    if(player->getDefeated() == 1){
+        return 20;
+    }
+
     //If the player has moved
     if(map->mapInfo.playerLocation.rowNum != player->getRowNum() || map->mapInfo.playerLocation.colNum != player->getColNum()){ 
         //printf("HERE");
@@ -993,14 +998,38 @@ GameCharacter* GameCharacter::clone(){
 }
 
 Pokemon GameCharacter::usePokemon(){
-    return usePokemon(0);
+    int i;
+    int numPokemon = heldPokemon.size();
+    
+    for(i = 0; i < numPokemon; i++){
+        if(heldPokemon[i].pokemonFainted() == 0){
+            return usePokemon(i);
+        }
+    }
+    return usePokemon(i - 1);
+
 }
 
 Pokemon GameCharacter::usePokemon(int i){
     Pokemon  toReturn = heldPokemon[i];
-    heldPokemon.erase(heldPokemon.begin() + i);
-
+    
+    
+    if(toReturn.pokemonFainted() == 1){
+        return Pokemon();
+    }
+    else{
+        heldPokemon.erase(heldPokemon.begin() + i);
+    }
+  
     return toReturn;
+}
+
+
+void GameCharacter::restoreTeam(){
+    int dataSize = heldPokemon.size();
+    for(int i =0; i < dataSize; i++){
+        heldPokemon[i].recover();
+    }
 }
 
 //MISC---------------------------------------------------

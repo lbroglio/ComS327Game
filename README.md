@@ -6,7 +6,7 @@ Map tiles feature a variety of biomes and certain maptiles can favor different l
 The game is written in C++ with the use of the ncurses library to make in playable in the terminal.
 
 ## How to play
-###Compile and Run
+### Compile and Run
 Compile the game using the provided Makefile by typing 'make' into the terminal of a machine with Make and GCC installed.
 This will produce the poke327 executable file which can be run with ./poke327
 

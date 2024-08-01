@@ -11,7 +11,7 @@ Compile the game using the provided Makefile by typing 'make' into the terminal 
 This will produce the poke327 executable file which can be run with ./poke327
 
 ### Controls
-You can control the game with the standard Rogueliek controls or the Numpad
+You can control the game with the standard Roguelike controls or the Numpad
 The controls map as:
     7 or y - Move diagnolly to the upper left space
     8 or k - Move up one space

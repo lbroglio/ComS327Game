@@ -60,7 +60,7 @@ If the player selects this option they will be able to change their current Poke
 
 ### Compile and Run
 
-Compile the game using the provided Makefile by typing `make` into the terminal of a machine with Make and GCC installed.
+Compile the game using the provided Makefile by typing `make` into the terminal of a machine with [Make](https://www.gnu.org/software/make/) and [GCC](https://gcc.gnu.org/) installed.
 This will produce the poke327 executable file which can be run with `./bin/poke327`
 
 ### Controls

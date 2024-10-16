@@ -81,6 +81,8 @@ The controls map as:
     t - Display a list of trainers on the map and their position relative to the player \
         The list can be scrolled with the up and down arrows. Exit the list with the 'esc' key \
     Q - Quit the game.
-    
+
+## Acknowledgments 
+Credit to https://github.com/veekun/pokedex for the Pokedex data
 
     
